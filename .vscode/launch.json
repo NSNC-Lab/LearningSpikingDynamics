@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "LearningSpikingDynamics (CUDA Python 3.11)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/Main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "python": "C:\\Users\\ipboy\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
+    }
+  ]
+}

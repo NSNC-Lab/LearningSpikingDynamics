@@ -1,0 +1,16 @@
+    #Holds the output rates
+    #a = np.zeros((len(target_fft['t']), args['simulation']['num_cells'], args['simulation']['batch_size']))
+    #a_deriv = np.zeros((len(target_fft['t']), args['simulation']['num_cells'], args['simulation']['batch_size']))
+
+    #Perform the convolution. multiply and sum of frequency for each time step along the STRF.
+    # for ti in range(args['strf']['strf_params']['maxdelay']):
+
+    #     a_slice = strf['strf']['w1'][:, ti, :, :]
+    #     a_deriv_slice = strf['strf_deriv']['w1'][:, ti, :, :]
+
+    #     # Stimulij shape is time x frequency. STRF is frequency x num cells x batch. We want to slide over our STRF and compute the 2D convolution using ein sum. 
+    #     # The output should be time x num cells x batch
+    #     at = np.einsum('ft,fhb->thb', target_fft['spec'], a_slice)
+    #     at_deriv = np.einsum('ft,fhb->thb', target_fft['spec'], a_deriv_slice)
+    #     a[ti:] = a[ti:] + np.squeeze(at[:len(at)-ti])
+    #     a_deriv[ti:] = a_deriv[ti:] + np.squeeze(at_deriv[:len(at_deriv)-ti])

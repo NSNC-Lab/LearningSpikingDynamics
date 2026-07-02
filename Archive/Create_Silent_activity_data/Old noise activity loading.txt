@@ -1,0 +1,29 @@
+    #Load in the data.
+    REPO_ROOT = Path(__file__).resolve().parents[1] 
+    mat = loadmat(REPO_ROOT / args['paths']['data'],variable_names=["all_data"],squeeze_me=True,struct_as_record=False)
+    all_data = mat["all_data"] 
+
+    noise_spks = np.zeros((rates['offset_rate'].shape[0], len(args['simulation']['cell_targets'])))
+    
+    #Generate activity based on average spiking activity in silent period of data.
+    for k in range(len(args['simulation']['cell_targets'])):
+        noise_hz = 0
+        for m in range(10):
+
+            if args['simulation']['data_target'] == "peak":
+
+                if str(all_data[args['simulation']['cell_targets'][k]].tuning_type) == 'contra-tuned':
+                    angle = 0
+                elif str(all_data[args['simulation']['cell_targets'][k]].tuning_type) == '45°-tuned':
+                    angle = 1
+                elif str(all_data[args['simulation']['cell_targets'][k]].tuning_type) == 'center-tuned':
+                    angle = 2
+                else:
+                    angle = 3
+
+                noise_hz += sum([all_data[args['simulation']['cell_targets'][k]].ctrl_tar1_timestamps[m,angle] < 0])
+        
+        #Average across trials
+        noise_hz = noise_hz/10
+
+        noise_spks[:,k] = 1 * ((noise_hz*args['simulation']['dt']/1000) > np.random.random(noise_spks[:,k].shape))
