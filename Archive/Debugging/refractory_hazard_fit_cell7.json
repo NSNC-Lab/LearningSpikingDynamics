@@ -1,0 +1,761 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-07-10T15:32:12.648896+00:00",
+  "method": {
+    "name": "time-inhomogeneous discrete conditional hazard",
+    "likelihood": "full Bernoulli event/no-event likelihood",
+    "right_censoring": "included through all no-event bins to trial end",
+    "trial_start": "fully recovered because previous spike is unobserved",
+    "baseline": "regularized low-dimensional piecewise-linear log-intensity basis",
+    "recovery": "hard absolute refractory plus normalized sigmoid tending to one",
+    "absolute_refractory_optimization": "discrete profile on the simulation dt grid",
+    "selection": "training objective only; held-out likelihood is evaluation only"
+  },
+  "inputs": {
+    "config_path": "C:\\Users\\ipboy\\Documents\\GitHub\\LearningSpikingDynamics\\simulation_config.yaml",
+    "production_target_loader": "Data.data_handler.load_gt_data",
+    "cells": [
+      7
+    ],
+    "dt_ms": 0.1,
+    "requested_abs_ref_grid_ms": [
+      0.0,
+      0.1,
+      0.2,
+      0.30000000000000004,
+      0.4,
+      0.5,
+      0.6000000000000001,
+      0.7000000000000001,
+      0.8,
+      0.9,
+      1.0,
+      1.1,
+      1.2000000000000002,
+      1.3,
+      1.4000000000000001,
+      1.5,
+      1.6,
+      1.7000000000000002,
+      1.8,
+      1.9000000000000001,
+      2.0
+    ],
+    "profiled_abs_ref_grid_ms": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5,
+      1.6,
+      1.7,
+      1.8,
+      1.9,
+      2.0
+    ],
+    "grid_values_snapped_to_dt": [],
+    "held_out_trial_one_based": 10,
+    "baseline_basis_count": 12,
+    "smoothness": 100.0,
+    "maximum_iterations": 100,
+    "recovery_bounds_ms": [
+      0.05,
+      500.0
+    ]
+  },
+  "analytic_gradient_self_check": {
+    "passed": true,
+    "objective": 36.6787350339283,
+    "step": 1e-06,
+    "analytic_gradient": [
+      -0.9584990288939943,
+      -1.3419135294230609,
+      -0.8604973018729801,
+      -0.6895135894706057,
+      -1.3655916588214059,
+      -0.6532740891769397,
+      1.7394447063904712,
+      0.9600683946504089
+    ],
+    "finite_difference_gradient": [
+      -0.9584990294797535,
+      -1.3419135314052255,
+      -0.8604973018577766,
+      -0.6895135875595315,
+      -1.365591657531695,
+      -0.6532740854936492,
+      1.7394447056062745,
+      0.9600683945620858
+    ],
+    "maximum_absolute_error": 3.6832905614403444e-09,
+    "maximum_scaled_relative_error": 3.6832905614403444e-09,
+    "tolerance": 1e-05
+  },
+  "cells": [
+    {
+      "cell_id": 7,
+      "trial_count": 10,
+      "train_trial_indices_one_based": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "held_out_trial_indices_one_based": [
+        10
+      ],
+      "total_spikes": 608,
+      "minimum_training_complete_isi_ms": 1.1,
+      "baseline_only": {
+        "optimizer_success": true,
+        "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+        "iterations": 29,
+        "training": {
+          "trials": 9,
+          "observed_spikes": 541,
+          "expected_spikes": 541.0055737141533,
+          "observed_rate_hz": 20.170836921952656,
+          "expected_rate_hz": 20.17104473429875,
+          "negative_log_likelihood": 3851.4449979710953,
+          "nll_per_bin": 0.014359864873927031
+        },
+        "held_out": {
+          "trials": 1,
+          "observed_spikes": 67,
+          "expected_spikes": 60.1117304126837,
+          "observed_rate_hz": 22.482467031307674,
+          "expected_rate_hz": 20.171044734298746,
+          "negative_log_likelihood": 479.39571381032175,
+          "nll_per_bin": 0.016086564672672787
+        }
+      },
+      "profile": [
+        {
+          "abs_ref_ms": 0.0,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 43,
+          "function_evaluations": 50,
+          "penalized_training_objective": 3838.622017360335,
+          "tau50_ms": 1.860185649197444,
+          "width_ms": 0.2100881593501634,
+          "current_model_mapping": {
+            "abs_ref": 0.0,
+            "rel_ref_a": 0.23799532612717478,
+            "rel_ref_b": 4.42715490237836,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.004733149884,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.171013394400784,
+            "negative_log_likelihood": 3833.9222291761675,
+            "nll_per_bin": 0.014294532357885708,
+            "mean_event_probability": 0.0020171013394400784
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.05543115062986,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.15215299843289,
+            "negative_log_likelihood": 477.0038636804016,
+            "nll_per_bin": 0.016006303938807476,
+            "mean_event_probability": 0.002015215299843289
+          }
+        },
+        {
+          "abs_ref_ms": 0.1,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 45,
+          "function_evaluations": 51,
+          "penalized_training_objective": 3838.6217204103227,
+          "tau50_ms": 1.8601312142813675,
+          "width_ms": 0.21015074636117206,
+          "current_model_mapping": {
+            "abs_ref": 0.1,
+            "rel_ref_a": 0.23792444645458619,
+            "rel_ref_b": 4.425706894907916,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0026430645063,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.17093546691223,
+            "negative_log_likelihood": 3833.9221383621993,
+            "nll_per_bin": 0.01429453201929167,
+            "mean_event_probability": 0.0020170935466912233
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.05520566358973,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.15207733417997,
+            "negative_log_likelihood": 477.00428574218137,
+            "nll_per_bin": 0.01600631810147919,
+            "mean_event_probability": 0.002015207733417997
+          }
+        },
+        {
+          "abs_ref_ms": 0.2,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 53,
+          "function_evaluations": 60,
+          "penalized_training_objective": 3838.6212400794852,
+          "tau50_ms": 1.8600017801029005,
+          "width_ms": 0.21020376077809128,
+          "current_model_mapping": {
+            "abs_ref": 0.2,
+            "rel_ref_a": 0.23786444074511207,
+            "rel_ref_b": 4.424282832090893,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0038380736727,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.170980022060135,
+            "negative_log_likelihood": 3833.921339308159,
+            "nll_per_bin": 0.014294529040070092,
+            "mean_event_probability": 0.0020170980022060137
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.0553362598323,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.152121156951882,
+            "negative_log_likelihood": 477.00398040779146,
+            "nll_per_bin": 0.01600630785570254,
+            "mean_event_probability": 0.002015212115695188
+          }
+        },
+        {
+          "abs_ref_ms": 0.3,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 44,
+          "function_evaluations": 52,
+          "penalized_training_objective": 3838.6212409379764,
+          "tau50_ms": 1.859993568755303,
+          "width_ms": 0.21025656667398043,
+          "current_model_mapping": {
+            "abs_ref": 0.3,
+            "rel_ref_a": 0.23780470113701127,
+            "rel_ref_b": 4.423152147346179,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0136456969738,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.171345692984715,
+            "negative_log_likelihood": 3833.9215140052347,
+            "nll_per_bin": 0.014294529691416898,
+            "mean_event_probability": 0.0020171345692984715
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.05642984728965,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.152488120294503,
+            "negative_log_likelihood": 477.00451184327136,
+            "nll_per_bin": 0.01600632568850949,
+            "mean_event_probability": 0.0020152488120294505
+          }
+        },
+        {
+          "abs_ref_ms": 0.4,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 45,
+          "function_evaluations": 50,
+          "penalized_training_objective": 3838.6192111640557,
+          "tau50_ms": 1.8596420156085065,
+          "width_ms": 0.21049744855250402,
+          "current_model_mapping": {
+            "abs_ref": 0.4,
+            "rel_ref_a": 0.23753257031772804,
+            "rel_ref_b": 4.41725547838329,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0239160541544,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.17172861664427,
+            "negative_log_likelihood": 3833.919203003115,
+            "nll_per_bin": 0.014294521074994184,
+            "mean_event_probability": 0.002017172861664427
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.05757876326906,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.152873649632248,
+            "negative_log_likelihood": 477.00487851442466,
+            "nll_per_bin": 0.016006337992497725,
+            "mean_event_probability": 0.0020152873649632247
+          }
+        },
+        {
+          "abs_ref_ms": 0.5,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 47,
+          "function_evaluations": 53,
+          "penalized_training_objective": 3838.617177503327,
+          "tau50_ms": 1.8592269590318085,
+          "width_ms": 0.21072893770751433,
+          "current_model_mapping": {
+            "abs_ref": 0.5,
+            "rel_ref_a": 0.23727163693767847,
+            "rel_ref_b": 4.411418240081392,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0150969150683,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.17139980071766,
+            "negative_log_likelihood": 3833.917833742882,
+            "nll_per_bin": 0.014294515969795503,
+            "mean_event_probability": 0.002017139980071766
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.05660458449591,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.15254675497329,
+            "negative_log_likelihood": 477.0051991985474,
+            "nll_per_bin": 0.016006348753348793,
+            "mean_event_probability": 0.0020152546754973293
+          }
+        },
+        {
+          "abs_ref_ms": 0.6,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 46,
+          "function_evaluations": 54,
+          "penalized_training_objective": 3838.617178201291,
+          "tau50_ms": 1.8592481266088567,
+          "width_ms": 0.21082565744384177,
+          "current_model_mapping": {
+            "abs_ref": 0.6,
+            "rel_ref_a": 0.23716278467348617,
+            "rel_ref_b": 4.409444631055188,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 540.9971755759117,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.17073161511775,
+            "negative_log_likelihood": 3833.9175202412926,
+            "nll_per_bin": 0.014294514800924998,
+            "mean_event_probability": 0.002017073161511775
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.05461317745556,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.151878520001194,
+            "negative_log_likelihood": 477.00529155796664,
+            "nll_per_bin": 0.016006351852554165,
+            "mean_event_probability": 0.002015187852000119
+          }
+        },
+        {
+          "abs_ref_ms": 0.7,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 53,
+          "function_evaluations": 59,
+          "penalized_training_objective": 3838.6138716895607,
+          "tau50_ms": 1.858637809389954,
+          "width_ms": 0.21117826916859164,
+          "current_model_mapping": {
+            "abs_ref": 0.7,
+            "rel_ref_a": 0.23676678569651077,
+            "rel_ref_b": 4.400636999032634,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0077276139565,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.171125041067096,
+            "negative_log_likelihood": 3833.9150654904297,
+            "nll_per_bin": 0.014294505648544342,
+            "mean_event_probability": 0.0020171125041067097
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.05579118028453,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.15227380969918,
+            "negative_log_likelihood": 477.00569278265164,
+            "nll_per_bin": 0.016006365316017974,
+            "mean_event_probability": 0.002015227380969918
+          }
+        },
+        {
+          "abs_ref_ms": 0.8,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 47,
+          "function_evaluations": 52,
+          "penalized_training_objective": 3838.5996164747326,
+          "tau50_ms": 1.8558261606647535,
+          "width_ms": 0.21279575918637914,
+          "current_model_mapping": {
+            "abs_ref": 0.8,
+            "rel_ref_a": 0.23496708858848564,
+            "rel_ref_b": 4.360580698977443,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0157508453765,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.17142418208846,
+            "negative_log_likelihood": 3833.899685816497,
+            "nll_per_bin": 0.01429444830641961,
+            "mean_event_probability": 0.0020171424182088464
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.056752789993624,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.152596486692936,
+            "negative_log_likelihood": 477.00879370113944,
+            "nll_per_bin": 0.0160064693701936,
+            "mean_event_probability": 0.0020152596486692938
+          }
+        },
+        {
+          "abs_ref_ms": 0.9,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 61,
+          "function_evaluations": 75,
+          "penalized_training_objective": 3838.5849546751833,
+          "tau50_ms": 1.8528824987167587,
+          "width_ms": 0.2143411712866541,
+          "current_model_mapping": {
+            "abs_ref": 0.9,
+            "rel_ref_a": 0.23327296244514478,
+            "rel_ref_b": 4.322273895384204,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0035793745353,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.170970376629242,
+            "negative_log_likelihood": 3833.8862552617416,
+            "nll_per_bin": 0.014294398231460323,
+            "mean_event_probability": 0.0020170970376629247
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.05544594779045,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.1521579637564,
+            "negative_log_likelihood": 477.01098117301973,
+            "nll_per_bin": 0.01600654277282708,
+            "mean_event_probability": 0.0020152157963756402
+          }
+        },
+        {
+          "abs_ref_ms": 1.0,
+          "valid": true,
+          "optimizer_success": true,
+          "optimizer_status": 0,
+          "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+          "iterations": 57,
+          "function_evaluations": 65,
+          "penalized_training_objective": 3838.5604148312964,
+          "tau50_ms": 1.8479030434455734,
+          "width_ms": 0.21674287533806266,
+          "current_model_mapping": {
+            "abs_ref": 1.0,
+            "rel_ref_a": 0.2306880903098336,
+            "rel_ref_b": 4.262892241701888,
+            "rel_ref_c": 0.5
+          },
+          "training": {
+            "trials": 9,
+            "bins_per_trial": 29801,
+            "observed_spikes": 541,
+            "expected_spikes": 541.0070050334905,
+            "observed_rate_hz": 20.170836921952656,
+            "expected_rate_hz": 20.171098100119327,
+            "negative_log_likelihood": 3833.862560383531,
+            "nll_per_bin": 0.014294309886631438,
+            "mean_event_probability": 0.002017109810011933
+          },
+          "held_out": {
+            "trials": 1,
+            "bins_per_trial": 29801,
+            "observed_spikes": 67,
+            "expected_spikes": 60.055905526629765,
+            "observed_rate_hz": 22.482467031307674,
+            "expected_rate_hz": 20.15231217966839,
+            "negative_log_likelihood": 477.0134004582106,
+            "nll_per_bin": 0.01600662395416968,
+            "mean_event_probability": 0.0020152312179668387
+          }
+        },
+        {
+          "abs_ref_ms": 1.1,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 1.2,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 1.3,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 1.4,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 1.5,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 1.6,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 1.7,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 1.8,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 1.9,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        },
+        {
+          "abs_ref_ms": 2.0,
+          "valid": false,
+          "reason": "A training spike occurs at or before the proposed hard absolute refractory duration."
+        }
+      ],
+      "profile_summary": {
+        "requested_value_count": 21,
+        "valid_value_count": 11,
+        "penalized_training_objective_span": 0.061602529038736975,
+        "held_out_nll_span": 0.009536777808989427,
+        "held_out_best_diagnostic_only": {
+          "abs_ref_ms": 0.0,
+          "negative_log_likelihood": 477.0038636804016
+        }
+      },
+      "selection_rule": "minimum penalized training objective; held-out trial is not used for selection",
+      "selected_profile_index": 10,
+      "selected": {
+        "abs_ref_ms": 1.0,
+        "valid": true,
+        "optimizer_success": true,
+        "optimizer_status": 0,
+        "optimizer_message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+        "iterations": 57,
+        "function_evaluations": 65,
+        "penalized_training_objective": 3838.5604148312964,
+        "tau50_ms": 1.8479030434455734,
+        "width_ms": 0.21674287533806266,
+        "current_model_mapping": {
+          "abs_ref": 1.0,
+          "rel_ref_a": 0.2306880903098336,
+          "rel_ref_b": 4.262892241701888,
+          "rel_ref_c": 0.5
+        },
+        "training": {
+          "trials": 9,
+          "bins_per_trial": 29801,
+          "observed_spikes": 541,
+          "expected_spikes": 541.0070050334905,
+          "observed_rate_hz": 20.170836921952656,
+          "expected_rate_hz": 20.171098100119327,
+          "negative_log_likelihood": 3833.862560383531,
+          "nll_per_bin": 0.014294309886631438,
+          "mean_event_probability": 0.002017109810011933
+        },
+        "held_out": {
+          "trials": 1,
+          "bins_per_trial": 29801,
+          "observed_spikes": 67,
+          "expected_spikes": 60.055905526629765,
+          "observed_rate_hz": 22.482467031307674,
+          "expected_rate_hz": 20.15231217966839,
+          "negative_log_likelihood": 477.0134004582106,
+          "nll_per_bin": 0.01600662395416968,
+          "mean_event_probability": 0.0020152312179668387
+        },
+        "baseline_beta": [
+          3.3347673628706382,
+          3.4374929670507437,
+          3.398900764010894,
+          3.3068417491032753,
+          3.1861852154960237,
+          3.107821393228741,
+          3.0942957848480637,
+          3.020018073057142,
+          2.8315316656824834,
+          2.570440994509768,
+          2.10699410420802,
+          1.6066240761642487
+        ],
+        "baseline_hz_summary": {
+          "count": 29801,
+          "finite_count": 29801,
+          "min": 4.985950594284312,
+          "q10": 8.613569367670934,
+          "median": 22.221462231364537,
+          "mean": 21.063627148164944,
+          "q90": 30.163252679264186,
+          "max": 31.108762125786807
+        },
+        "recovery_sample": {
+          "age_ms": [
+            0.0,
+            0.1,
+            0.5,
+            1.0,
+            2.0,
+            5.0,
+            10.0,
+            20.0,
+            50.0,
+            100.0,
+            250.0,
+            500.0
+          ],
+          "probability_multiplier": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.6685732466049512,
+            0.9999995168917222,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "held_out_nll_improvement_over_baseline_only": 2.3823133521111686
+      },
+      "warnings": [
+        "Training selected the largest valid abs_ref profile value; the shortest observed training ISI bounds the estimate.",
+        "The abs_ref training profile spans less than one nat and is weakly identified.",
+        "Held-out likelihood changes by less than one nat across valid abs_ref values."
+      ]
+    }
+  ],
+  "caveats": [
+    "This is a statistical conditional-hazard fit, not the exact marginal likelihood of the stochastic LIF simulator.",
+    "A smooth time baseline mitigates stimulus nonstationarity but cannot capture every latent voltage or adaptation effect.",
+    "The normalized recovery curve fixes its asymptote at one; rel_ref_c is mapped to 0.5 because a free asymptote is confounded with baseline intensity.",
+    "Only one held-out trial is used by default; use trial-level resampling or repeated held-out fits for uncertainty.",
+    "The current simulator's fake -30-step initial spike must be fixed before transferring these parameters."
+  ]
+}

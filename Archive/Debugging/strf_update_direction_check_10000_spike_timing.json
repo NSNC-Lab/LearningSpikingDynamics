@@ -1,0 +1,40 @@
+{
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 10000,
+  "seed": 123,
+  "baseline": {
+    "loss": 2551.0,
+    "firing_rate_hz": 27.7,
+    "STRF_gain_grad": 2943107.5,
+    "STRF_alpha_grad": 1819.8663330078125
+  },
+  "checks": {
+    "STRF_gain": {
+      "base_value": 0.008045428432524204,
+      "test_step": 0.0001,
+      "analytic_grad": 2943107.5,
+      "finite_difference_loss_grad": 700000.0,
+      "same_sign_analytic_vs_fd": true,
+      "loss_plus": 2630.0,
+      "loss_minus": 2490.0,
+      "loss_after_negative_analytic_step": 2490.0,
+      "loss_after_positive_analytic_step": 2630.0,
+      "firing_rate_after_negative_analytic_step_hz": 27.4,
+      "firing_rate_after_positive_analytic_step_hz": 28.0
+    },
+    "STRF_alpha": {
+      "base_value": 12.118277549743652,
+      "test_step": 0.25,
+      "analytic_grad": 1819.8663330078125,
+      "finite_difference_loss_grad": 284.0,
+      "same_sign_analytic_vs_fd": true,
+      "loss_plus": 2573.0,
+      "loss_minus": 2431.0,
+      "loss_after_negative_analytic_step": 2431.0,
+      "loss_after_positive_analytic_step": 2573.0,
+      "firing_rate_after_negative_analytic_step_hz": 26.9,
+      "firing_rate_after_positive_analytic_step_hz": 27.9
+    }
+  }
+}

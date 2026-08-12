@@ -1,0 +1,8 @@
+Seed 1415: preprocessing 112 rows took 3.6 s
+Seed 1415: timestep 5000/29800, elapsed 64.0 s, ETA 317.2 s
+Seed 1415: timestep 10000/29800, elapsed 127.4 s, ETA 252.3 s
+Seed 1415: timestep 15000/29800, elapsed 192.5 s, ETA 189.9 s
+Seed 1415: timestep 20000/29800, elapsed 256.1 s, ETA 125.5 s
+Seed 1415: timestep 25000/29800, elapsed 318.1 s, ETA 61.1 s
+Seed 1415: complete in 364.6 s
+Seed 1415: saved validated seed file C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Archive\strf_gain_local_fd_2026-07-15\output\data\raw_seed_1415.csv

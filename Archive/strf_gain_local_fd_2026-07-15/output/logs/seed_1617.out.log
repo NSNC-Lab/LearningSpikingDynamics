@@ -1,0 +1,8 @@
+Seed 1617: preprocessing 112 rows took 3.9 s
+Seed 1617: timestep 5000/29800, elapsed 63.7 s, ETA 315.9 s
+Seed 1617: timestep 10000/29800, elapsed 126.6 s, ETA 250.7 s
+Seed 1617: timestep 15000/29800, elapsed 191.3 s, ETA 188.7 s
+Seed 1617: timestep 20000/29800, elapsed 254.7 s, ETA 124.8 s
+Seed 1617: timestep 25000/29800, elapsed 316.9 s, ETA 60.8 s
+Seed 1617: complete in 364.1 s
+Seed 1617: saved validated seed file C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Archive\strf_gain_local_fd_2026-07-15\output\data\raw_seed_1617.csv

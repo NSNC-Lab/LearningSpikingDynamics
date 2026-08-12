@@ -1,0 +1,204 @@
+{
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 3001,
+  "seed": 123,
+  "summary": {
+    "STRF_gain": {
+      "on": {
+        "live_vs_stateful": {
+          "n": 3001,
+          "rmse": 22.28611194209691,
+          "relative_rmse": 0.11545544081728955,
+          "correlation": 0.9967160890848616,
+          "slope_fd_on_analytic": 1.0924559145858,
+          "sign_agreement": 1.0,
+          "analytic_rms": 176.14197318839743,
+          "finite_difference_rms": 193.0278190818655
+        },
+        "neg_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 368.88317463786734,
+          "relative_rmse": 1.9110363282994847,
+          "correlation": -0.9967160890848616,
+          "slope_fd_on_analytic": -1.0924559145858,
+          "sign_agreement": 0.0,
+          "analytic_rms": 176.14197318839743,
+          "finite_difference_rms": 193.0278190818655
+        },
+        "dt_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 175.47390860016094,
+          "relative_rmse": 0.9090602040410526,
+          "correlation": 0.9967160890848616,
+          "slope_fd_on_analytic": 10.924559145858,
+          "sign_agreement": 1.0,
+          "analytic_rms": 17.614197318839743,
+          "finite_difference_rms": 193.0278190818655
+        }
+      },
+      "off": {
+        "live_vs_stateful": {
+          "n": 3001,
+          "rmse": 70.46063397931908,
+          "relative_rmse": 0.3235604709422391,
+          "correlation": 0.9950265225161046,
+          "slope_fd_on_analytic": 1.449170893085613,
+          "sign_agreement": 1.0,
+          "analytic_rms": 149.55132570764238,
+          "finite_difference_rms": 217.76650829481932
+        },
+        "neg_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 366.89371944869043,
+          "relative_rmse": 1.6848032432607873,
+          "correlation": -0.9950265225161046,
+          "slope_fd_on_analytic": -1.449170893085613,
+          "sign_agreement": 0.0,
+          "analytic_rms": 149.55132570764238,
+          "finite_difference_rms": 217.76650829481932
+        },
+        "dt_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 202.88812952861585,
+          "relative_rmse": 0.9316773782951896,
+          "correlation": 0.9950265225161047,
+          "slope_fd_on_analytic": 14.491708930856134,
+          "sign_agreement": 1.0,
+          "analytic_rms": 14.955132570764237,
+          "finite_difference_rms": 217.76650829481932
+        }
+      },
+      "combined_on_plus_off": {
+        "live_vs_stateful": {
+          "n": 3001,
+          "rmse": 75.22181908708967,
+          "relative_rmse": 0.25098362969048243,
+          "correlation": 0.9874873310289723,
+          "slope_fd_on_analytic": 1.2549859257195572,
+          "sign_agreement": 1.0,
+          "analytic_rms": 236.0942871588373,
+          "finite_difference_rms": 299.70806932649083
+        },
+        "neg_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 534.2963189374726,
+          "relative_rmse": 1.782722501059617,
+          "correlation": -0.9874873310289723,
+          "slope_fd_on_analytic": -1.2549859257195572,
+          "sign_agreement": 0.0,
+          "analytic_rms": 236.0942871588373,
+          "finite_difference_rms": 299.70806932649083
+        },
+        "dt_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 276.39034032602314,
+          "relative_rmse": 0.9221985278779159,
+          "correlation": 0.9874873310289725,
+          "slope_fd_on_analytic": 12.549859257195578,
+          "sign_agreement": 1.0,
+          "analytic_rms": 23.60942871588373,
+          "finite_difference_rms": 299.70806932649083
+        }
+      }
+    },
+    "STRF_alpha": {
+      "on": {
+        "live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.012680082752620687,
+          "relative_rmse": 0.09081025054543218,
+          "correlation": 0.9986466996607414,
+          "slope_fd_on_analytic": 1.0812491919672167,
+          "sign_agreement": 0.9985119047619048,
+          "analytic_rms": 0.12897124896545367,
+          "finite_difference_rms": 0.13963272512045385
+        },
+        "neg_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.2685162517799122,
+          "relative_rmse": 1.9230180571664286,
+          "correlation": -0.9986466996607414,
+          "slope_fd_on_analytic": -1.0812491919672167,
+          "sign_agreement": 0.001488095238095238,
+          "analytic_rms": 0.12897124896545367,
+          "finite_difference_rms": 0.13963272512045385
+        },
+        "dt_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.12675418772804045,
+          "relative_rmse": 0.907768487779555,
+          "correlation": 0.9986466996607413,
+          "slope_fd_on_analytic": 10.812491919672166,
+          "sign_agreement": 0.9984871406959153,
+          "analytic_rms": 0.012897124896545367,
+          "finite_difference_rms": 0.13963272512045385
+        }
+      },
+      "off": {
+        "live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.08453160688116562,
+          "relative_rmse": 0.33270458813254633,
+          "correlation": 0.994075850010366,
+          "slope_fd_on_analytic": 1.4642067011185032,
+          "sign_agreement": 1.0,
+          "analytic_rms": 0.17253860402170265,
+          "finite_difference_rms": 0.25407406418800677
+        },
+        "neg_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.4260291156477766,
+          "relative_rmse": 1.6767910451924437,
+          "correlation": -0.994075850010366,
+          "slope_fd_on_analytic": -1.4642067011185032,
+          "sign_agreement": 0.0,
+          "analytic_rms": 0.17253860402170265,
+          "finite_difference_rms": 0.25407406418800677
+        },
+        "dt_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.2369252309293023,
+          "relative_rmse": 0.9325045895005349,
+          "correlation": 0.994075850010366,
+          "slope_fd_on_analytic": 14.642067011185029,
+          "sign_agreement": 1.0,
+          "analytic_rms": 0.017253860402170265,
+          "finite_difference_rms": 0.25407406418800677
+        }
+      },
+      "combined_on_plus_off": {
+        "live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.08570796885850597,
+          "relative_rmse": 0.295269131461201,
+          "correlation": 0.984118171437614,
+          "slope_fd_on_analytic": 1.323628552371982,
+          "sign_agreement": 0.9932489451476794,
+          "analytic_rms": 0.21607977408875748,
+          "finite_difference_rms": 0.2902706708082451
+        },
+        "neg_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.5045286971794404,
+          "relative_rmse": 1.7381318469856626,
+          "correlation": -0.984118171437614,
+          "slope_fd_on_analytic": -1.323628552371982,
+          "sign_agreement": 0.006751054852320675,
+          "analytic_rms": 0.21607977408875748,
+          "finite_difference_rms": 0.2902706708082451
+        },
+        "dt_live_vs_stateful": {
+          "n": 3001,
+          "rmse": 0.269005203484216,
+          "relative_rmse": 0.9267391801392022,
+          "correlation": 0.984118171437614,
+          "slope_fd_on_analytic": 13.236285523719825,
+          "sign_agreement": 0.9936006825938567,
+          "analytic_rms": 0.021607977408875746,
+          "finite_difference_rms": 0.2902706708082451
+        }
+      }
+    }
+  }
+}

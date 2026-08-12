@@ -1,0 +1,902 @@
+[
+  {
+    "epoch": 0,
+    "offset_0_100_mean_hz": 1964.6849365234375,
+    "offset_0_100_median_bc_hz": 1638.624755859375,
+    "offset_100_220_mean_hz": 1834.922607421875,
+    "onset_100_220_mean_hz": 129.76234436035156,
+    "offset_total_mean_hz": 589.3984985351562,
+    "onset_total_mean_hz": 1377.3170166015625
+  },
+  {
+    "epoch": 1,
+    "offset_0_100_mean_hz": 1612.88232421875,
+    "offset_0_100_median_bc_hz": 1252.676025390625,
+    "offset_100_220_mean_hz": 1502.704345703125,
+    "onset_100_220_mean_hz": 110.18012237548828,
+    "offset_total_mean_hz": 488.5715637207031,
+    "onset_total_mean_hz": 1126.210693359375
+  },
+  {
+    "epoch": 2,
+    "offset_0_100_mean_hz": 1314.786376953125,
+    "offset_0_100_median_bc_hz": 932.8499755859375,
+    "offset_100_220_mean_hz": 1216.5263671875,
+    "onset_100_220_mean_hz": 98.26078796386719,
+    "offset_total_mean_hz": 408.3201904296875,
+    "onset_total_mean_hz": 908.16796875
+  },
+  {
+    "epoch": 3,
+    "offset_0_100_mean_hz": 1103.2529296875,
+    "offset_0_100_median_bc_hz": 711.2010498046875,
+    "offset_100_220_mean_hz": 1011.3936767578125,
+    "onset_100_220_mean_hz": 91.86056518554688,
+    "offset_total_mean_hz": 356.8478698730469,
+    "onset_total_mean_hz": 747.9275512695312
+  },
+  {
+    "epoch": 4,
+    "offset_0_100_mean_hz": 961.1981811523438,
+    "offset_0_100_median_bc_hz": 594.2001953125,
+    "offset_100_220_mean_hz": 873.6687622070312,
+    "onset_100_220_mean_hz": 87.53086853027344,
+    "offset_total_mean_hz": 327.38079833984375,
+    "onset_total_mean_hz": 635.1697998046875
+  },
+  {
+    "epoch": 5,
+    "offset_0_100_mean_hz": 873.7351684570312,
+    "offset_0_100_median_bc_hz": 501.98748779296875,
+    "offset_100_220_mean_hz": 790.08154296875,
+    "onset_100_220_mean_hz": 83.65491485595703,
+    "offset_total_mean_hz": 311.0436706542969,
+    "onset_total_mean_hz": 563.996826171875
+  },
+  {
+    "epoch": 6,
+    "offset_0_100_mean_hz": 813.253662109375,
+    "offset_0_100_median_bc_hz": 444.07928466796875,
+    "offset_100_220_mean_hz": 733.11279296875,
+    "onset_100_220_mean_hz": 80.14238739013672,
+    "offset_total_mean_hz": 296.221923828125,
+    "onset_total_mean_hz": 518.3263549804688
+  },
+  {
+    "epoch": 7,
+    "offset_0_100_mean_hz": 765.6395263671875,
+    "offset_0_100_median_bc_hz": 400.2545166015625,
+    "offset_100_220_mean_hz": 688.2239990234375,
+    "onset_100_220_mean_hz": 77.4167709350586,
+    "offset_total_mean_hz": 283.4143371582031,
+    "onset_total_mean_hz": 483.60552978515625
+  },
+  {
+    "epoch": 8,
+    "offset_0_100_mean_hz": 728.3016357421875,
+    "offset_0_100_median_bc_hz": 362.2669982910156,
+    "offset_100_220_mean_hz": 653.3853759765625,
+    "onset_100_220_mean_hz": 74.91766357421875,
+    "offset_total_mean_hz": 272.0801696777344,
+    "onset_total_mean_hz": 457.69342041015625
+  },
+  {
+    "epoch": 9,
+    "offset_0_100_mean_hz": 696.9848022460938,
+    "offset_0_100_median_bc_hz": 333.2137451171875,
+    "offset_100_220_mean_hz": 624.2561645507812,
+    "onset_100_220_mean_hz": 72.7298812866211,
+    "offset_total_mean_hz": 261.7185363769531,
+    "onset_total_mean_hz": 436.8661193847656
+  },
+  {
+    "epoch": 10,
+    "offset_0_100_mean_hz": 670.1580200195312,
+    "offset_0_100_median_bc_hz": 303.36956787109375,
+    "offset_100_220_mean_hz": 599.4717407226562,
+    "onset_100_220_mean_hz": 70.68751525878906,
+    "offset_total_mean_hz": 252.5301055908203,
+    "onset_total_mean_hz": 419.3313293457031
+  },
+  {
+    "epoch": 11,
+    "offset_0_100_mean_hz": 648.8668823242188,
+    "offset_0_100_median_bc_hz": 283.35882568359375,
+    "offset_100_220_mean_hz": 579.8414306640625,
+    "onset_100_220_mean_hz": 69.02725982666016,
+    "offset_total_mean_hz": 244.75498962402344,
+    "onset_total_mean_hz": 405.90814208984375
+  },
+  {
+    "epoch": 12,
+    "offset_0_100_mean_hz": 628.938720703125,
+    "offset_0_100_median_bc_hz": 263.23760986328125,
+    "offset_100_220_mean_hz": 561.5616455078125,
+    "onset_100_220_mean_hz": 67.37865447998047,
+    "offset_total_mean_hz": 237.18577575683594,
+    "onset_total_mean_hz": 393.607177734375
+  },
+  {
+    "epoch": 13,
+    "offset_0_100_mean_hz": 613.4917602539062,
+    "offset_0_100_median_bc_hz": 252.76011657714844,
+    "offset_100_220_mean_hz": 547.4617919921875,
+    "onset_100_220_mean_hz": 66.03190612792969,
+    "offset_total_mean_hz": 231.4436492919922,
+    "onset_total_mean_hz": 383.9560546875
+  },
+  {
+    "epoch": 14,
+    "offset_0_100_mean_hz": 598.7020874023438,
+    "offset_0_100_median_bc_hz": 240.83419799804688,
+    "offset_100_220_mean_hz": 534.037353515625,
+    "onset_100_220_mean_hz": 64.66645812988281,
+    "offset_total_mean_hz": 225.59286499023438,
+    "onset_total_mean_hz": 375.05364990234375
+  },
+  {
+    "epoch": 15,
+    "offset_0_100_mean_hz": 586.1229248046875,
+    "offset_0_100_median_bc_hz": 234.25552368164062,
+    "offset_100_220_mean_hz": 522.6026611328125,
+    "onset_100_220_mean_hz": 63.522422790527344,
+    "offset_total_mean_hz": 220.78158569335938,
+    "onset_total_mean_hz": 367.31475830078125
+  },
+  {
+    "epoch": 16,
+    "offset_0_100_mean_hz": 575.201904296875,
+    "offset_0_100_median_bc_hz": 229.28915405273438,
+    "offset_100_220_mean_hz": 512.89404296875,
+    "onset_100_220_mean_hz": 62.309486389160156,
+    "offset_total_mean_hz": 216.07717895507812,
+    "onset_total_mean_hz": 361.1123962402344
+  },
+  {
+    "epoch": 17,
+    "offset_0_100_mean_hz": 564.5859375,
+    "offset_0_100_median_bc_hz": 223.33602905273438,
+    "offset_100_220_mean_hz": 503.32855224609375,
+    "onset_100_220_mean_hz": 61.25910568237305,
+    "offset_total_mean_hz": 212.02340698242188,
+    "onset_total_mean_hz": 354.5491027832031
+  },
+  {
+    "epoch": 18,
+    "offset_0_100_mean_hz": 556.0621948242188,
+    "offset_0_100_median_bc_hz": 220.29965209960938,
+    "offset_100_220_mean_hz": 495.5814514160156,
+    "onset_100_220_mean_hz": 60.48261642456055,
+    "offset_total_mean_hz": 208.61904907226562,
+    "onset_total_mean_hz": 349.4364318847656
+  },
+  {
+    "epoch": 19,
+    "offset_0_100_mean_hz": 547.9464721679688,
+    "offset_0_100_median_bc_hz": 215.3000946044922,
+    "offset_100_220_mean_hz": 488.3218078613281,
+    "onset_100_220_mean_hz": 59.6268424987793,
+    "offset_total_mean_hz": 205.32904052734375,
+    "onset_total_mean_hz": 344.6077880859375
+  },
+  {
+    "epoch": 20,
+    "offset_0_100_mean_hz": 541.47265625,
+    "offset_0_100_median_bc_hz": 214.30514526367188,
+    "offset_100_220_mean_hz": 482.28631591796875,
+    "onset_100_220_mean_hz": 59.18870544433594,
+    "offset_total_mean_hz": 202.92453002929688,
+    "onset_total_mean_hz": 340.5416564941406
+  },
+  {
+    "epoch": 21,
+    "offset_0_100_mean_hz": 536.162841796875,
+    "offset_0_100_median_bc_hz": 210.74163818359375,
+    "offset_100_220_mean_hz": 477.7166442871094,
+    "onset_100_220_mean_hz": 58.44862747192383,
+    "offset_total_mean_hz": 200.25372314453125,
+    "onset_total_mean_hz": 337.88604736328125
+  },
+  {
+    "epoch": 22,
+    "offset_0_100_mean_hz": 530.0665283203125,
+    "offset_0_100_median_bc_hz": 208.46920776367188,
+    "offset_100_220_mean_hz": 472.2879638671875,
+    "onset_100_220_mean_hz": 57.781009674072266,
+    "offset_total_mean_hz": 197.70474243164062,
+    "onset_total_mean_hz": 334.3380432128906
+  },
+  {
+    "epoch": 23,
+    "offset_0_100_mean_hz": 525.7619018554688,
+    "offset_0_100_median_bc_hz": 206.99954223632812,
+    "offset_100_220_mean_hz": 468.52618408203125,
+    "onset_100_220_mean_hz": 57.23779296875,
+    "offset_total_mean_hz": 195.89407348632812,
+    "onset_total_mean_hz": 331.8259582519531
+  },
+  {
+    "epoch": 24,
+    "offset_0_100_mean_hz": 520.803466796875,
+    "offset_0_100_median_bc_hz": 205.85243225097656,
+    "offset_100_220_mean_hz": 464.0452575683594,
+    "onset_100_220_mean_hz": 56.76054000854492,
+    "offset_total_mean_hz": 193.9030303955078,
+    "onset_total_mean_hz": 328.8540344238281
+  },
+  {
+    "epoch": 25,
+    "offset_0_100_mean_hz": 515.5992431640625,
+    "offset_0_100_median_bc_hz": 203.72157287597656,
+    "offset_100_220_mean_hz": 459.4891052246094,
+    "onset_100_220_mean_hz": 56.112548828125,
+    "offset_total_mean_hz": 191.90943908691406,
+    "onset_total_mean_hz": 325.6196594238281
+  },
+  {
+    "epoch": 26,
+    "offset_0_100_mean_hz": 512.4624633789062,
+    "offset_0_100_median_bc_hz": 202.9525604248047,
+    "offset_100_220_mean_hz": 456.8677062988281,
+    "onset_100_220_mean_hz": 55.597049713134766,
+    "offset_total_mean_hz": 190.35458374023438,
+    "onset_total_mean_hz": 324.0185241699219
+  },
+  {
+    "epoch": 27,
+    "offset_0_100_mean_hz": 509.69622802734375,
+    "offset_0_100_median_bc_hz": 201.53855895996094,
+    "offset_100_220_mean_hz": 454.41217041015625,
+    "onset_100_220_mean_hz": 55.286617279052734,
+    "offset_total_mean_hz": 189.0752410888672,
+    "onset_total_mean_hz": 322.5181579589844
+  },
+  {
+    "epoch": 28,
+    "offset_0_100_mean_hz": 507.8913879394531,
+    "offset_0_100_median_bc_hz": 200.84640502929688,
+    "offset_100_220_mean_hz": 453.093994140625,
+    "onset_100_220_mean_hz": 54.79966735839844,
+    "offset_total_mean_hz": 187.91171264648438,
+    "onset_total_mean_hz": 321.86614990234375
+  },
+  {
+    "epoch": 29,
+    "offset_0_100_mean_hz": 505.54864501953125,
+    "offset_0_100_median_bc_hz": 200.63340759277344,
+    "offset_100_220_mean_hz": 450.9161682128906,
+    "onset_100_220_mean_hz": 54.634849548339844,
+    "offset_total_mean_hz": 187.18260192871094,
+    "onset_total_mean_hz": 320.2460632324219
+  },
+  {
+    "epoch": 30,
+    "offset_0_100_mean_hz": 501.9201354980469,
+    "offset_0_100_median_bc_hz": 200.0186767578125,
+    "offset_100_220_mean_hz": 447.9108581542969,
+    "onset_100_220_mean_hz": 54.0120964050293,
+    "offset_total_mean_hz": 185.45449829101562,
+    "onset_total_mean_hz": 318.3282470703125
+  },
+  {
+    "epoch": 31,
+    "offset_0_100_mean_hz": 500.1253967285156,
+    "offset_0_100_median_bc_hz": 199.02915954589844,
+    "offset_100_220_mean_hz": 446.32373046875,
+    "onset_100_220_mean_hz": 53.804054260253906,
+    "offset_total_mean_hz": 184.6354217529297,
+    "onset_total_mean_hz": 317.34197998046875
+  },
+  {
+    "epoch": 32,
+    "offset_0_100_mean_hz": 497.0614929199219,
+    "offset_0_100_median_bc_hz": 196.8458251953125,
+    "offset_100_220_mean_hz": 443.8049621582031,
+    "onset_100_220_mean_hz": 53.25893783569336,
+    "offset_total_mean_hz": 183.27085876464844,
+    "onset_total_mean_hz": 315.6326599121094
+  },
+  {
+    "epoch": 33,
+    "offset_0_100_mean_hz": 495.6950378417969,
+    "offset_0_100_median_bc_hz": 196.19833374023438,
+    "offset_100_220_mean_hz": 442.71722412109375,
+    "onset_100_220_mean_hz": 52.980445861816406,
+    "offset_total_mean_hz": 182.48072814941406,
+    "onset_total_mean_hz": 315.03692626953125
+  },
+  {
+    "epoch": 34,
+    "offset_0_100_mean_hz": 494.28131103515625,
+    "offset_0_100_median_bc_hz": 194.4554443359375,
+    "offset_100_220_mean_hz": 441.5862731933594,
+    "onset_100_220_mean_hz": 52.6975212097168,
+    "offset_total_mean_hz": 181.7412109375,
+    "onset_total_mean_hz": 314.3582763671875
+  },
+  {
+    "epoch": 35,
+    "offset_0_100_mean_hz": 493.1008605957031,
+    "offset_0_100_median_bc_hz": 194.26318359375,
+    "offset_100_220_mean_hz": 440.4476318359375,
+    "onset_100_220_mean_hz": 52.655635833740234,
+    "offset_total_mean_hz": 181.1956024169922,
+    "onset_total_mean_hz": 313.7049865722656
+  },
+  {
+    "epoch": 36,
+    "offset_0_100_mean_hz": 492.5060729980469,
+    "offset_0_100_median_bc_hz": 192.80982971191406,
+    "offset_100_220_mean_hz": 440.0147399902344,
+    "onset_100_220_mean_hz": 52.49372100830078,
+    "offset_total_mean_hz": 181.16542053222656,
+    "onset_total_mean_hz": 313.1436462402344
+  },
+  {
+    "epoch": 37,
+    "offset_0_100_mean_hz": 492.1900939941406,
+    "offset_0_100_median_bc_hz": 192.55075073242188,
+    "offset_100_220_mean_hz": 440.0230407714844,
+    "onset_100_220_mean_hz": 52.169769287109375,
+    "offset_total_mean_hz": 180.54776000976562,
+    "onset_total_mean_hz": 313.4105529785156
+  },
+  {
+    "epoch": 38,
+    "offset_0_100_mean_hz": 491.0081787109375,
+    "offset_0_100_median_bc_hz": 191.060302734375,
+    "offset_100_220_mean_hz": 439.1076354980469,
+    "onset_100_220_mean_hz": 51.903202056884766,
+    "offset_total_mean_hz": 180.10693359375,
+    "onset_total_mean_hz": 312.6521911621094
+  },
+  {
+    "epoch": 39,
+    "offset_0_100_mean_hz": 490.96929931640625,
+    "offset_0_100_median_bc_hz": 191.18045043945312,
+    "offset_100_220_mean_hz": 439.1531677246094,
+    "onset_100_220_mean_hz": 51.81847381591797,
+    "offset_total_mean_hz": 179.63262939453125,
+    "onset_total_mean_hz": 313.0799560546875
+  },
+  {
+    "epoch": 40,
+    "offset_0_100_mean_hz": 492.7668762207031,
+    "offset_0_100_median_bc_hz": 190.95156860351562,
+    "offset_100_220_mean_hz": 441.19708251953125,
+    "onset_100_220_mean_hz": 51.57244110107422,
+    "offset_total_mean_hz": 179.54705810546875,
+    "onset_total_mean_hz": 314.9463195800781
+  },
+  {
+    "epoch": 41,
+    "offset_0_100_mean_hz": 491.6952819824219,
+    "offset_0_100_median_bc_hz": 190.19805908203125,
+    "offset_100_220_mean_hz": 440.4601135253906,
+    "onset_100_220_mean_hz": 51.2379035949707,
+    "offset_total_mean_hz": 179.01808166503906,
+    "onset_total_mean_hz": 314.40423583984375
+  },
+  {
+    "epoch": 42,
+    "offset_0_100_mean_hz": 492.5492858886719,
+    "offset_0_100_median_bc_hz": 190.14102172851562,
+    "offset_100_220_mean_hz": 441.5301513671875,
+    "onset_100_220_mean_hz": 51.02210235595703,
+    "offset_total_mean_hz": 178.9264678955078,
+    "onset_total_mean_hz": 315.3338928222656
+  },
+  {
+    "epoch": 43,
+    "offset_0_100_mean_hz": 491.2182312011719,
+    "offset_0_100_median_bc_hz": 190.28976440429688,
+    "offset_100_220_mean_hz": 440.30535888671875,
+    "onset_100_220_mean_hz": 50.91550827026367,
+    "offset_total_mean_hz": 178.56289672851562,
+    "onset_total_mean_hz": 314.3664245605469
+  },
+  {
+    "epoch": 44,
+    "offset_0_100_mean_hz": 492.5478820800781,
+    "offset_0_100_median_bc_hz": 189.92196655273438,
+    "offset_100_220_mean_hz": 441.7571716308594,
+    "onset_100_220_mean_hz": 50.79332733154297,
+    "offset_total_mean_hz": 178.40249633789062,
+    "onset_total_mean_hz": 315.8376770019531
+  },
+  {
+    "epoch": 45,
+    "offset_0_100_mean_hz": 491.84295654296875,
+    "offset_0_100_median_bc_hz": 189.62527465820312,
+    "offset_100_220_mean_hz": 441.05987548828125,
+    "onset_100_220_mean_hz": 50.78561019897461,
+    "offset_total_mean_hz": 178.37220764160156,
+    "onset_total_mean_hz": 315.1663818359375
+  },
+  {
+    "epoch": 46,
+    "offset_0_100_mean_hz": 492.9817199707031,
+    "offset_0_100_median_bc_hz": 188.06915283203125,
+    "offset_100_220_mean_hz": 442.5017395019531,
+    "onset_100_220_mean_hz": 50.48272705078125,
+    "offset_total_mean_hz": 178.3241729736328,
+    "onset_total_mean_hz": 316.3396301269531
+  },
+  {
+    "epoch": 47,
+    "offset_0_100_mean_hz": 491.34619140625,
+    "offset_0_100_median_bc_hz": 187.87164306640625,
+    "offset_100_220_mean_hz": 440.98443603515625,
+    "onset_100_220_mean_hz": 50.36442947387695,
+    "offset_total_mean_hz": 178.07754516601562,
+    "onset_total_mean_hz": 314.9353942871094
+  },
+  {
+    "epoch": 48,
+    "offset_0_100_mean_hz": 492.9767150878906,
+    "offset_0_100_median_bc_hz": 187.19476318359375,
+    "offset_100_220_mean_hz": 442.63372802734375,
+    "onset_100_220_mean_hz": 50.34571838378906,
+    "offset_total_mean_hz": 178.3722381591797,
+    "onset_total_mean_hz": 316.248291015625
+  },
+  {
+    "epoch": 49,
+    "offset_0_100_mean_hz": 493.5028991699219,
+    "offset_0_100_median_bc_hz": 186.90374755859375,
+    "offset_100_220_mean_hz": 443.32672119140625,
+    "onset_100_220_mean_hz": 50.17900466918945,
+    "offset_total_mean_hz": 178.28016662597656,
+    "onset_total_mean_hz": 316.85302734375
+  },
+  {
+    "epoch": 50,
+    "offset_0_100_mean_hz": 495.6127624511719,
+    "offset_0_100_median_bc_hz": 186.37521362304688,
+    "offset_100_220_mean_hz": 445.438232421875,
+    "onset_100_220_mean_hz": 50.177181243896484,
+    "offset_total_mean_hz": 178.58969116210938,
+    "onset_total_mean_hz": 318.65118408203125
+  },
+  {
+    "epoch": 51,
+    "offset_0_100_mean_hz": 495.5638732910156,
+    "offset_0_100_median_bc_hz": 186.70880126953125,
+    "offset_100_220_mean_hz": 445.4957580566406,
+    "onset_100_220_mean_hz": 50.0709228515625,
+    "offset_total_mean_hz": 178.34849548339844,
+    "onset_total_mean_hz": 318.8238220214844
+  },
+  {
+    "epoch": 52,
+    "offset_0_100_mean_hz": 498.5958251953125,
+    "offset_0_100_median_bc_hz": 186.92626953125,
+    "offset_100_220_mean_hz": 448.5115966796875,
+    "onset_100_220_mean_hz": 50.08693313598633,
+    "offset_total_mean_hz": 178.95211791992188,
+    "onset_total_mean_hz": 321.2453918457031
+  },
+  {
+    "epoch": 53,
+    "offset_0_100_mean_hz": 497.7035217285156,
+    "offset_0_100_median_bc_hz": 187.049072265625,
+    "offset_100_220_mean_hz": 447.7120361328125,
+    "onset_100_220_mean_hz": 49.99428939819336,
+    "offset_total_mean_hz": 178.72518920898438,
+    "onset_total_mean_hz": 320.5742492675781
+  },
+  {
+    "epoch": 54,
+    "offset_0_100_mean_hz": 501.19189453125,
+    "offset_0_100_median_bc_hz": 186.70245361328125,
+    "offset_100_220_mean_hz": 451.1143798828125,
+    "onset_100_220_mean_hz": 50.08024597167969,
+    "offset_total_mean_hz": 179.4918212890625,
+    "onset_total_mean_hz": 323.29681396484375
+  },
+  {
+    "epoch": 55,
+    "offset_0_100_mean_hz": 499.2955627441406,
+    "offset_0_100_median_bc_hz": 186.72384643554688,
+    "offset_100_220_mean_hz": 449.0765686035156,
+    "onset_100_220_mean_hz": 50.22184753417969,
+    "offset_total_mean_hz": 179.2205352783203,
+    "onset_total_mean_hz": 321.67669677734375
+  },
+  {
+    "epoch": 56,
+    "offset_0_100_mean_hz": 502.73687744140625,
+    "offset_0_100_median_bc_hz": 186.014892578125,
+    "offset_100_220_mean_hz": 452.4780578613281,
+    "onset_100_220_mean_hz": 50.26130676269531,
+    "offset_total_mean_hz": 180.00733947753906,
+    "onset_total_mean_hz": 324.3236083984375
+  },
+  {
+    "epoch": 57,
+    "offset_0_100_mean_hz": 502.12103271484375,
+    "offset_0_100_median_bc_hz": 185.68234252929688,
+    "offset_100_220_mean_hz": 451.9504699707031,
+    "onset_100_220_mean_hz": 50.17348861694336,
+    "offset_total_mean_hz": 180.13333129882812,
+    "onset_total_mean_hz": 323.5650329589844
+  },
+  {
+    "epoch": 58,
+    "offset_0_100_mean_hz": 504.37139892578125,
+    "offset_0_100_median_bc_hz": 185.77713012695312,
+    "offset_100_220_mean_hz": 454.09002685546875,
+    "onset_100_220_mean_hz": 50.284393310546875,
+    "offset_total_mean_hz": 180.7147674560547,
+    "onset_total_mean_hz": 325.2213439941406
+  },
+  {
+    "epoch": 59,
+    "offset_0_100_mean_hz": 507.14642333984375,
+    "offset_0_100_median_bc_hz": 185.64788818359375,
+    "offset_100_220_mean_hz": 456.9993896484375,
+    "onset_100_220_mean_hz": 50.149864196777344,
+    "offset_total_mean_hz": 180.91839599609375,
+    "onset_total_mean_hz": 327.78472900390625
+  },
+  {
+    "epoch": 60,
+    "offset_0_100_mean_hz": 508.7303161621094,
+    "offset_0_100_median_bc_hz": 184.900634765625,
+    "offset_100_220_mean_hz": 458.6007385253906,
+    "onset_100_220_mean_hz": 50.132015228271484,
+    "offset_total_mean_hz": 181.32687377929688,
+    "onset_total_mean_hz": 328.9547119140625
+  },
+  {
+    "epoch": 61,
+    "offset_0_100_mean_hz": 511.2658386230469,
+    "offset_0_100_median_bc_hz": 185.30984497070312,
+    "offset_100_220_mean_hz": 461.1335754394531,
+    "onset_100_220_mean_hz": 50.13505935668945,
+    "offset_total_mean_hz": 182.03465270996094,
+    "onset_total_mean_hz": 330.7886047363281
+  },
+  {
+    "epoch": 62,
+    "offset_0_100_mean_hz": 514.7492065429688,
+    "offset_0_100_median_bc_hz": 185.02655029296875,
+    "offset_100_220_mean_hz": 464.47491455078125,
+    "onset_100_220_mean_hz": 50.27695083618164,
+    "offset_total_mean_hz": 182.5650634765625,
+    "onset_total_mean_hz": 333.72576904296875
+  },
+  {
+    "epoch": 63,
+    "offset_0_100_mean_hz": 516.520751953125,
+    "offset_0_100_median_bc_hz": 184.8253173828125,
+    "offset_100_220_mean_hz": 466.37237548828125,
+    "onset_100_220_mean_hz": 50.1511116027832,
+    "offset_total_mean_hz": 183.08065795898438,
+    "onset_total_mean_hz": 334.97027587890625
+  },
+  {
+    "epoch": 64,
+    "offset_0_100_mean_hz": 519.315185546875,
+    "offset_0_100_median_bc_hz": 184.5703125,
+    "offset_100_220_mean_hz": 468.9993896484375,
+    "onset_100_220_mean_hz": 50.31851577758789,
+    "offset_total_mean_hz": 183.6403045654297,
+    "onset_total_mean_hz": 337.1980285644531
+  },
+  {
+    "epoch": 65,
+    "offset_0_100_mean_hz": 522.4561767578125,
+    "offset_0_100_median_bc_hz": 185.36260986328125,
+    "offset_100_220_mean_hz": 472.1874084472656,
+    "onset_100_220_mean_hz": 50.27123260498047,
+    "offset_total_mean_hz": 184.17735290527344,
+    "onset_total_mean_hz": 339.8042297363281
+  },
+  {
+    "epoch": 66,
+    "offset_0_100_mean_hz": 522.3916625976562,
+    "offset_0_100_median_bc_hz": 184.1100311279297,
+    "offset_100_220_mean_hz": 472.33209228515625,
+    "onset_100_220_mean_hz": 50.06220626831055,
+    "offset_total_mean_hz": 183.9520263671875,
+    "onset_total_mean_hz": 339.9656677246094
+  },
+  {
+    "epoch": 67,
+    "offset_0_100_mean_hz": 524.0582275390625,
+    "offset_0_100_median_bc_hz": 184.8645477294922,
+    "offset_100_220_mean_hz": 473.81640625,
+    "onset_100_220_mean_hz": 50.24424743652344,
+    "offset_total_mean_hz": 184.5694122314453,
+    "onset_total_mean_hz": 341.02862548828125
+  },
+  {
+    "epoch": 68,
+    "offset_0_100_mean_hz": 520.9522705078125,
+    "offset_0_100_median_bc_hz": 184.03627014160156,
+    "offset_100_220_mean_hz": 470.4942932128906,
+    "onset_100_220_mean_hz": 50.46102523803711,
+    "offset_total_mean_hz": 183.45736694335938,
+    "onset_total_mean_hz": 339.0416564941406
+  },
+  {
+    "epoch": 69,
+    "offset_0_100_mean_hz": 524.9921264648438,
+    "offset_0_100_median_bc_hz": 183.48602294921875,
+    "offset_100_220_mean_hz": 474.69696044921875,
+    "onset_100_220_mean_hz": 50.297874450683594,
+    "offset_total_mean_hz": 184.86058044433594,
+    "onset_total_mean_hz": 341.68841552734375
+  },
+  {
+    "epoch": 70,
+    "offset_0_100_mean_hz": 527.741455078125,
+    "offset_0_100_median_bc_hz": 183.2868194580078,
+    "offset_100_220_mean_hz": 477.4996337890625,
+    "onset_100_220_mean_hz": 50.24488067626953,
+    "offset_total_mean_hz": 185.16371154785156,
+    "onset_total_mean_hz": 344.1039123535156
+  },
+  {
+    "epoch": 71,
+    "offset_0_100_mean_hz": 530.0859375,
+    "offset_0_100_median_bc_hz": 183.23175048828125,
+    "offset_100_220_mean_hz": 479.5461120605469,
+    "onset_100_220_mean_hz": 50.542572021484375,
+    "offset_total_mean_hz": 186.2625274658203,
+    "onset_total_mean_hz": 345.35467529296875
+  },
+  {
+    "epoch": 72,
+    "offset_0_100_mean_hz": 531.6044311523438,
+    "offset_0_100_median_bc_hz": 182.84036254882812,
+    "offset_100_220_mean_hz": 480.8061828613281,
+    "onset_100_220_mean_hz": 50.80125427246094,
+    "offset_total_mean_hz": 186.29306030273438,
+    "onset_total_mean_hz": 346.8482666015625
+  },
+  {
+    "epoch": 73,
+    "offset_0_100_mean_hz": 530.8009643554688,
+    "offset_0_100_median_bc_hz": 183.2530517578125,
+    "offset_100_220_mean_hz": 480.276123046875,
+    "onset_100_220_mean_hz": 50.52740478515625,
+    "offset_total_mean_hz": 186.37911987304688,
+    "onset_total_mean_hz": 345.9418029785156
+  },
+  {
+    "epoch": 74,
+    "offset_0_100_mean_hz": 532.7420654296875,
+    "offset_0_100_median_bc_hz": 183.1451416015625,
+    "offset_100_220_mean_hz": 481.888671875,
+    "onset_100_220_mean_hz": 50.8558235168457,
+    "offset_total_mean_hz": 186.8839569091797,
+    "onset_total_mean_hz": 347.3934326171875
+  },
+  {
+    "epoch": 75,
+    "offset_0_100_mean_hz": 536.7258911132812,
+    "offset_0_100_median_bc_hz": 183.54757690429688,
+    "offset_100_220_mean_hz": 485.6907043457031,
+    "onset_100_220_mean_hz": 51.03764724731445,
+    "offset_total_mean_hz": 187.97946166992188,
+    "onset_total_mean_hz": 350.261474609375
+  },
+  {
+    "epoch": 76,
+    "offset_0_100_mean_hz": 536.8898315429688,
+    "offset_0_100_median_bc_hz": 184.23666381835938,
+    "offset_100_220_mean_hz": 485.6860656738281,
+    "onset_100_220_mean_hz": 51.20657730102539,
+    "offset_total_mean_hz": 188.30117797851562,
+    "onset_total_mean_hz": 350.1361083984375
+  },
+  {
+    "epoch": 77,
+    "offset_0_100_mean_hz": 541.062255859375,
+    "offset_0_100_median_bc_hz": 183.84896850585938,
+    "offset_100_220_mean_hz": 489.5024108886719,
+    "onset_100_220_mean_hz": 51.56299591064453,
+    "offset_total_mean_hz": 189.65443420410156,
+    "onset_total_mean_hz": 352.91461181640625
+  },
+  {
+    "epoch": 78,
+    "offset_0_100_mean_hz": 544.350341796875,
+    "offset_0_100_median_bc_hz": 183.26815795898438,
+    "offset_100_220_mean_hz": 493.18695068359375,
+    "onset_100_220_mean_hz": 51.166255950927734,
+    "offset_total_mean_hz": 189.9956512451172,
+    "onset_total_mean_hz": 355.8572082519531
+  },
+  {
+    "epoch": 79,
+    "offset_0_100_mean_hz": 545.1873168945312,
+    "offset_0_100_median_bc_hz": 183.19017028808594,
+    "offset_100_220_mean_hz": 494.1021423339844,
+    "onset_100_220_mean_hz": 51.08827590942383,
+    "offset_total_mean_hz": 189.81185913085938,
+    "onset_total_mean_hz": 356.8843078613281
+  },
+  {
+    "epoch": 80,
+    "offset_0_100_mean_hz": 546.413818359375,
+    "offset_0_100_median_bc_hz": 183.51856994628906,
+    "offset_100_220_mean_hz": 495.5187072753906,
+    "onset_100_220_mean_hz": 50.89799880981445,
+    "offset_total_mean_hz": 189.9357147216797,
+    "onset_total_mean_hz": 357.9715270996094
+  },
+  {
+    "epoch": 81,
+    "offset_0_100_mean_hz": 548.3717651367188,
+    "offset_0_100_median_bc_hz": 183.9055633544922,
+    "offset_100_220_mean_hz": 497.1161193847656,
+    "onset_100_220_mean_hz": 51.25878143310547,
+    "offset_total_mean_hz": 191.02374267578125,
+    "onset_total_mean_hz": 358.8465881347656
+  },
+  {
+    "epoch": 82,
+    "offset_0_100_mean_hz": 549.952880859375,
+    "offset_0_100_median_bc_hz": 183.3958282470703,
+    "offset_100_220_mean_hz": 498.73809814453125,
+    "onset_100_220_mean_hz": 51.21755599975586,
+    "offset_total_mean_hz": 191.81312561035156,
+    "onset_total_mean_hz": 359.6408386230469
+  },
+  {
+    "epoch": 83,
+    "offset_0_100_mean_hz": 555.2354125976562,
+    "offset_0_100_median_bc_hz": 183.91079711914062,
+    "offset_100_220_mean_hz": 503.5033264160156,
+    "onset_100_220_mean_hz": 51.73483657836914,
+    "offset_total_mean_hz": 193.0727081298828,
+    "onset_total_mean_hz": 363.6654968261719
+  },
+  {
+    "epoch": 84,
+    "offset_0_100_mean_hz": 556.37548828125,
+    "offset_0_100_median_bc_hz": 184.02120971679688,
+    "offset_100_220_mean_hz": 505.12060546875,
+    "onset_100_220_mean_hz": 51.2577018737793,
+    "offset_total_mean_hz": 192.3751678466797,
+    "onset_total_mean_hz": 365.4801940917969
+  },
+  {
+    "epoch": 85,
+    "offset_0_100_mean_hz": 560.0831298828125,
+    "offset_0_100_median_bc_hz": 183.89605712890625,
+    "offset_100_220_mean_hz": 508.5696716308594,
+    "onset_100_220_mean_hz": 51.516258239746094,
+    "offset_total_mean_hz": 193.39488220214844,
+    "onset_total_mean_hz": 368.18743896484375
+  },
+  {
+    "epoch": 86,
+    "offset_0_100_mean_hz": 562.3806762695312,
+    "offset_0_100_median_bc_hz": 183.66964721679688,
+    "offset_100_220_mean_hz": 510.8966369628906,
+    "onset_100_220_mean_hz": 51.487060546875,
+    "offset_total_mean_hz": 194.28778076171875,
+    "onset_total_mean_hz": 369.5659484863281
+  },
+  {
+    "epoch": 87,
+    "offset_0_100_mean_hz": 564.3184814453125,
+    "offset_0_100_median_bc_hz": 183.3751220703125,
+    "offset_100_220_mean_hz": 512.6647338867188,
+    "onset_100_220_mean_hz": 51.65618133544922,
+    "offset_total_mean_hz": 194.82846069335938,
+    "onset_total_mean_hz": 370.9875183105469
+  },
+  {
+    "epoch": 88,
+    "offset_0_100_mean_hz": 565.0465698242188,
+    "offset_0_100_median_bc_hz": 183.03076171875,
+    "offset_100_220_mean_hz": 513.4129638671875,
+    "onset_100_220_mean_hz": 51.636260986328125,
+    "offset_total_mean_hz": 194.7501220703125,
+    "onset_total_mean_hz": 371.77099609375
+  },
+  {
+    "epoch": 89,
+    "offset_0_100_mean_hz": 568.6214599609375,
+    "offset_0_100_median_bc_hz": 182.59442138671875,
+    "offset_100_220_mean_hz": 517.5428466796875,
+    "onset_100_220_mean_hz": 51.08125686645508,
+    "offset_total_mean_hz": 195.0756072998047,
+    "onset_total_mean_hz": 375.0155334472656
+  },
+  {
+    "epoch": 90,
+    "offset_0_100_mean_hz": 573.313720703125,
+    "offset_0_100_median_bc_hz": 183.01719665527344,
+    "offset_100_220_mean_hz": 521.5979614257812,
+    "onset_100_220_mean_hz": 51.71822738647461,
+    "offset_total_mean_hz": 196.80809020996094,
+    "onset_total_mean_hz": 377.9901123046875
+  },
+  {
+    "epoch": 91,
+    "offset_0_100_mean_hz": 575.7367553710938,
+    "offset_0_100_median_bc_hz": 182.98684692382812,
+    "offset_100_220_mean_hz": 524.0927124023438,
+    "onset_100_220_mean_hz": 51.64677429199219,
+    "offset_total_mean_hz": 197.18434143066406,
+    "onset_total_mean_hz": 380.0120544433594
+  },
+  {
+    "epoch": 92,
+    "offset_0_100_mean_hz": 581.2181396484375,
+    "offset_0_100_median_bc_hz": 183.51559448242188,
+    "offset_100_220_mean_hz": 529.32568359375,
+    "onset_100_220_mean_hz": 51.89518737792969,
+    "offset_total_mean_hz": 198.58554077148438,
+    "onset_total_mean_hz": 384.11328125
+  },
+  {
+    "epoch": 93,
+    "offset_0_100_mean_hz": 584.5401000976562,
+    "offset_0_100_median_bc_hz": 183.56686401367188,
+    "offset_100_220_mean_hz": 532.4484252929688,
+    "onset_100_220_mean_hz": 52.09451675415039,
+    "offset_total_mean_hz": 199.32284545898438,
+    "onset_total_mean_hz": 386.7160949707031
+  },
+  {
+    "epoch": 94,
+    "offset_0_100_mean_hz": 587.5227661132812,
+    "offset_0_100_median_bc_hz": 184.73965454101562,
+    "offset_100_220_mean_hz": 535.2386474609375,
+    "onset_100_220_mean_hz": 52.28681945800781,
+    "offset_total_mean_hz": 200.3810577392578,
+    "onset_total_mean_hz": 388.6455078125
+  },
+  {
+    "epoch": 95,
+    "offset_0_100_mean_hz": 588.4607543945312,
+    "offset_0_100_median_bc_hz": 184.111572265625,
+    "offset_100_220_mean_hz": 535.7424926757812,
+    "onset_100_220_mean_hz": 52.72098159790039,
+    "offset_total_mean_hz": 200.6454620361328,
+    "onset_total_mean_hz": 389.3072814941406
+  },
+  {
+    "epoch": 96,
+    "offset_0_100_mean_hz": 590.3251953125,
+    "offset_0_100_median_bc_hz": 184.516357421875,
+    "offset_100_220_mean_hz": 537.7931518554688,
+    "onset_100_220_mean_hz": 52.53459167480469,
+    "offset_total_mean_hz": 201.21417236328125,
+    "onset_total_mean_hz": 390.60345458984375
+  },
+  {
+    "epoch": 97,
+    "offset_0_100_mean_hz": 592.6980590820312,
+    "offset_0_100_median_bc_hz": 184.5345458984375,
+    "offset_100_220_mean_hz": 540.02587890625,
+    "onset_100_220_mean_hz": 52.675079345703125,
+    "offset_total_mean_hz": 201.7481689453125,
+    "onset_total_mean_hz": 392.4208068847656
+  },
+  {
+    "epoch": 98,
+    "offset_0_100_mean_hz": 594.79345703125,
+    "offset_0_100_median_bc_hz": 184.43515014648438,
+    "offset_100_220_mean_hz": 542.4676513671875,
+    "onset_100_220_mean_hz": 52.32827377319336,
+    "offset_total_mean_hz": 202.3844451904297,
+    "onset_total_mean_hz": 393.9053039550781
+  },
+  {
+    "epoch": 99,
+    "offset_0_100_mean_hz": 597.6783447265625,
+    "offset_0_100_median_bc_hz": 184.51849365234375,
+    "offset_100_220_mean_hz": 544.9031372070312,
+    "onset_100_220_mean_hz": 52.77815628051758,
+    "offset_total_mean_hz": 203.33712768554688,
+    "onset_total_mean_hz": 395.81109619140625
+  }
+]

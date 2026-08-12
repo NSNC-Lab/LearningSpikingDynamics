@@ -1,0 +1,512 @@
+{
+  "validation": {
+    "raw_r2": 0.7399814066963117,
+    "log_r2": 0.779924188838627,
+    "mae_hz": 2.752217434032244,
+    "corr": 0.8937887570617874,
+    "actual_pop_hz": 9.291227770473434,
+    "cv_pred_pop_hz": 8.00345783902869
+  },
+  "trajectory": [
+    {
+      "epoch": 0,
+      "pred_population_mean_hz": 27.140249869797774,
+      "pred_median_cell_mean_hz": 27.342266831839893
+    },
+    {
+      "epoch": 1,
+      "pred_population_mean_hz": 24.99671549238807,
+      "pred_median_cell_mean_hz": 25.16936842030032
+    },
+    {
+      "epoch": 2,
+      "pred_population_mean_hz": 23.575469292095555,
+      "pred_median_cell_mean_hz": 23.886658417647954
+    },
+    {
+      "epoch": 3,
+      "pred_population_mean_hz": 22.439327190177167,
+      "pred_median_cell_mean_hz": 22.604760789167297
+    },
+    {
+      "epoch": 4,
+      "pred_population_mean_hz": 21.410148935763942,
+      "pred_median_cell_mean_hz": 21.56464811936633
+    },
+    {
+      "epoch": 5,
+      "pred_population_mean_hz": 20.482694262045754,
+      "pred_median_cell_mean_hz": 20.54857899562461
+    },
+    {
+      "epoch": 6,
+      "pred_population_mean_hz": 19.642692799970575,
+      "pred_median_cell_mean_hz": 19.836993235837593
+    },
+    {
+      "epoch": 7,
+      "pred_population_mean_hz": 18.90524396248018,
+      "pred_median_cell_mean_hz": 18.792759566564577
+    },
+    {
+      "epoch": 8,
+      "pred_population_mean_hz": 18.250874797560925,
+      "pred_median_cell_mean_hz": 18.1569986209904
+    },
+    {
+      "epoch": 9,
+      "pred_population_mean_hz": 17.645141374925515,
+      "pred_median_cell_mean_hz": 17.4571919918831
+    },
+    {
+      "epoch": 10,
+      "pred_population_mean_hz": 17.08701562589197,
+      "pred_median_cell_mean_hz": 16.881342956239664
+    },
+    {
+      "epoch": 11,
+      "pred_population_mean_hz": 16.580039977761018,
+      "pred_median_cell_mean_hz": 16.23502466747057
+    },
+    {
+      "epoch": 12,
+      "pred_population_mean_hz": 16.089672066896576,
+      "pred_median_cell_mean_hz": 15.90081358758712
+    },
+    {
+      "epoch": 13,
+      "pred_population_mean_hz": 15.662359382506969,
+      "pred_median_cell_mean_hz": 15.458166109439102
+    },
+    {
+      "epoch": 14,
+      "pred_population_mean_hz": 15.218974385583435,
+      "pred_median_cell_mean_hz": 15.039043630499037
+    },
+    {
+      "epoch": 15,
+      "pred_population_mean_hz": 14.83667675515104,
+      "pred_median_cell_mean_hz": 14.614983670972094
+    },
+    {
+      "epoch": 16,
+      "pred_population_mean_hz": 14.471148572894421,
+      "pred_median_cell_mean_hz": 14.297201020344342
+    },
+    {
+      "epoch": 17,
+      "pred_population_mean_hz": 14.12766784039242,
+      "pred_median_cell_mean_hz": 13.88716384209556
+    },
+    {
+      "epoch": 18,
+      "pred_population_mean_hz": 13.820550578211089,
+      "pred_median_cell_mean_hz": 13.535428092757924
+    },
+    {
+      "epoch": 19,
+      "pred_population_mean_hz": 13.486680047563643,
+      "pred_median_cell_mean_hz": 13.241272112190273
+    },
+    {
+      "epoch": 20,
+      "pred_population_mean_hz": 13.189139910740437,
+      "pred_median_cell_mean_hz": 12.828297522362778
+    },
+    {
+      "epoch": 21,
+      "pred_population_mean_hz": 12.922526143262619,
+      "pred_median_cell_mean_hz": 12.440572307257135
+    },
+    {
+      "epoch": 22,
+      "pred_population_mean_hz": 12.645820263261317,
+      "pred_median_cell_mean_hz": 12.123627157958662
+    },
+    {
+      "epoch": 23,
+      "pred_population_mean_hz": 12.448114630154398,
+      "pred_median_cell_mean_hz": 11.806997645026318
+    },
+    {
+      "epoch": 24,
+      "pred_population_mean_hz": 12.243546382350688,
+      "pred_median_cell_mean_hz": 11.615979655537618
+    },
+    {
+      "epoch": 25,
+      "pred_population_mean_hz": 12.003448574651236,
+      "pred_median_cell_mean_hz": 11.387363953436626
+    },
+    {
+      "epoch": 26,
+      "pred_population_mean_hz": 11.796647263500176,
+      "pred_median_cell_mean_hz": 11.122420018321126
+    },
+    {
+      "epoch": 27,
+      "pred_population_mean_hz": 11.621569810323429,
+      "pred_median_cell_mean_hz": 10.920364517293084
+    },
+    {
+      "epoch": 28,
+      "pred_population_mean_hz": 11.46546164805168,
+      "pred_median_cell_mean_hz": 10.626677532908378
+    },
+    {
+      "epoch": 29,
+      "pred_population_mean_hz": 11.325794574888231,
+      "pred_median_cell_mean_hz": 10.389313364353185
+    },
+    {
+      "epoch": 30,
+      "pred_population_mean_hz": 11.139051038868075,
+      "pred_median_cell_mean_hz": 10.231159305118357
+    },
+    {
+      "epoch": 31,
+      "pred_population_mean_hz": 11.011793210301443,
+      "pred_median_cell_mean_hz": 9.989903385694786
+    },
+    {
+      "epoch": 32,
+      "pred_population_mean_hz": 10.843987009271535,
+      "pred_median_cell_mean_hz": 9.967569383926373
+    },
+    {
+      "epoch": 33,
+      "pred_population_mean_hz": 10.719982325015806,
+      "pred_median_cell_mean_hz": 9.792070593936135
+    },
+    {
+      "epoch": 34,
+      "pred_population_mean_hz": 10.6060846245153,
+      "pred_median_cell_mean_hz": 9.650236790762143
+    },
+    {
+      "epoch": 35,
+      "pred_population_mean_hz": 10.5002535218959,
+      "pred_median_cell_mean_hz": 9.471822091939092
+    },
+    {
+      "epoch": 36,
+      "pred_population_mean_hz": 10.398816697909169,
+      "pred_median_cell_mean_hz": 9.395865218759985
+    },
+    {
+      "epoch": 37,
+      "pred_population_mean_hz": 10.291160142405467,
+      "pred_median_cell_mean_hz": 9.269032734948446
+    },
+    {
+      "epoch": 38,
+      "pred_population_mean_hz": 10.188945169912481,
+      "pred_median_cell_mean_hz": 9.19326684790455
+    },
+    {
+      "epoch": 39,
+      "pred_population_mean_hz": 10.104839312561214,
+      "pred_median_cell_mean_hz": 9.049984418081412
+    },
+    {
+      "epoch": 40,
+      "pred_population_mean_hz": 10.015549733079688,
+      "pred_median_cell_mean_hz": 8.987288585149024
+    },
+    {
+      "epoch": 41,
+      "pred_population_mean_hz": 9.921478464880877,
+      "pred_median_cell_mean_hz": 8.834956837547157
+    },
+    {
+      "epoch": 42,
+      "pred_population_mean_hz": 9.854178232810686,
+      "pred_median_cell_mean_hz": 8.660810576796447
+    },
+    {
+      "epoch": 43,
+      "pred_population_mean_hz": 9.764563095338676,
+      "pred_median_cell_mean_hz": 8.610825857913495
+    },
+    {
+      "epoch": 44,
+      "pred_population_mean_hz": 9.708068618587596,
+      "pred_median_cell_mean_hz": 8.472774611529905
+    },
+    {
+      "epoch": 45,
+      "pred_population_mean_hz": 9.647039973375442,
+      "pred_median_cell_mean_hz": 8.39615016932935
+    },
+    {
+      "epoch": 46,
+      "pred_population_mean_hz": 9.576996991959366,
+      "pred_median_cell_mean_hz": 8.236927547578667
+    },
+    {
+      "epoch": 47,
+      "pred_population_mean_hz": 9.505518175808094,
+      "pred_median_cell_mean_hz": 8.080283258507993
+    },
+    {
+      "epoch": 48,
+      "pred_population_mean_hz": 9.459282052650895,
+      "pred_median_cell_mean_hz": 8.019189241284014
+    },
+    {
+      "epoch": 49,
+      "pred_population_mean_hz": 9.398249155346424,
+      "pred_median_cell_mean_hz": 7.974475795797854
+    },
+    {
+      "epoch": 50,
+      "pred_population_mean_hz": 9.35591442415659,
+      "pred_median_cell_mean_hz": 7.814134233986267
+    },
+    {
+      "epoch": 51,
+      "pred_population_mean_hz": 9.313141799631252,
+      "pred_median_cell_mean_hz": 7.814483072778033
+    },
+    {
+      "epoch": 52,
+      "pred_population_mean_hz": 9.28162255000198,
+      "pred_median_cell_mean_hz": 7.723565850371283
+    },
+    {
+      "epoch": 53,
+      "pred_population_mean_hz": 9.216529805912382,
+      "pred_median_cell_mean_hz": 7.769896650070967
+    },
+    {
+      "epoch": 54,
+      "pred_population_mean_hz": 9.200511021362564,
+      "pred_median_cell_mean_hz": 7.630106961275144
+    },
+    {
+      "epoch": 55,
+      "pred_population_mean_hz": 9.140696412934824,
+      "pred_median_cell_mean_hz": 7.554093600524855
+    },
+    {
+      "epoch": 56,
+      "pred_population_mean_hz": 9.1135007458455,
+      "pred_median_cell_mean_hz": 7.480595888955085
+    },
+    {
+      "epoch": 57,
+      "pred_population_mean_hz": 9.05223748068427,
+      "pred_median_cell_mean_hz": 7.425521136237155
+    },
+    {
+      "epoch": 58,
+      "pred_population_mean_hz": 9.024791325420635,
+      "pred_median_cell_mean_hz": 7.3474995669677305
+    },
+    {
+      "epoch": 59,
+      "pred_population_mean_hz": 8.991839953344815,
+      "pred_median_cell_mean_hz": 7.299293730261395
+    },
+    {
+      "epoch": 60,
+      "pred_population_mean_hz": 8.956062443414785,
+      "pred_median_cell_mean_hz": 7.234678515281244
+    },
+    {
+      "epoch": 61,
+      "pred_population_mean_hz": 8.938619502068017,
+      "pred_median_cell_mean_hz": 7.1605917996723605
+    },
+    {
+      "epoch": 62,
+      "pred_population_mean_hz": 8.927148525481623,
+      "pred_median_cell_mean_hz": 7.100464523440518
+    },
+    {
+      "epoch": 63,
+      "pred_population_mean_hz": 8.87177103869732,
+      "pred_median_cell_mean_hz": 7.060987143057378
+    },
+    {
+      "epoch": 64,
+      "pred_population_mean_hz": 8.865197552747219,
+      "pred_median_cell_mean_hz": 7.0063731420972015
+    },
+    {
+      "epoch": 65,
+      "pred_population_mean_hz": 8.856203018484818,
+      "pred_median_cell_mean_hz": 6.953262978202721
+    },
+    {
+      "epoch": 66,
+      "pred_population_mean_hz": 8.808908866238035,
+      "pred_median_cell_mean_hz": 6.894549599161138
+    },
+    {
+      "epoch": 67,
+      "pred_population_mean_hz": 8.82868242588686,
+      "pred_median_cell_mean_hz": 6.835815282841541
+    },
+    {
+      "epoch": 68,
+      "pred_population_mean_hz": 8.772938232105005,
+      "pred_median_cell_mean_hz": 6.812876808315206
+    },
+    {
+      "epoch": 69,
+      "pred_population_mean_hz": 8.777495443607043,
+      "pred_median_cell_mean_hz": 6.782203249996101
+    },
+    {
+      "epoch": 70,
+      "pred_population_mean_hz": 8.739451839938498,
+      "pred_median_cell_mean_hz": 6.726122146800456
+    },
+    {
+      "epoch": 71,
+      "pred_population_mean_hz": 8.715275063325715,
+      "pred_median_cell_mean_hz": 6.6550118994178415
+    },
+    {
+      "epoch": 72,
+      "pred_population_mean_hz": 8.724505089041966,
+      "pred_median_cell_mean_hz": 6.604906501490217
+    },
+    {
+      "epoch": 73,
+      "pred_population_mean_hz": 8.69760965091119,
+      "pred_median_cell_mean_hz": 6.543897172032829
+    },
+    {
+      "epoch": 74,
+      "pred_population_mean_hz": 8.70485706139521,
+      "pred_median_cell_mean_hz": 6.510585698818202
+    },
+    {
+      "epoch": 75,
+      "pred_population_mean_hz": 8.693064895892304,
+      "pred_median_cell_mean_hz": 6.480982518973997
+    },
+    {
+      "epoch": 76,
+      "pred_population_mean_hz": 8.67157879898612,
+      "pred_median_cell_mean_hz": 6.455530760430092
+    },
+    {
+      "epoch": 77,
+      "pred_population_mean_hz": 8.701424814970203,
+      "pred_median_cell_mean_hz": 6.410566421429791
+    },
+    {
+      "epoch": 78,
+      "pred_population_mean_hz": 8.687559561097137,
+      "pred_median_cell_mean_hz": 6.394884350637507
+    },
+    {
+      "epoch": 79,
+      "pred_population_mean_hz": 8.691565753648948,
+      "pred_median_cell_mean_hz": 6.384085190460855
+    },
+    {
+      "epoch": 80,
+      "pred_population_mean_hz": 8.653166555900953,
+      "pred_median_cell_mean_hz": 6.3676202197333005
+    },
+    {
+      "epoch": 81,
+      "pred_population_mean_hz": 8.704591559110446,
+      "pred_median_cell_mean_hz": 6.379524878537504
+    },
+    {
+      "epoch": 82,
+      "pred_population_mean_hz": 8.67432475993078,
+      "pred_median_cell_mean_hz": 6.443725167528683
+    },
+    {
+      "epoch": 83,
+      "pred_population_mean_hz": 8.722762971161732,
+      "pred_median_cell_mean_hz": 6.394966732879961
+    },
+    {
+      "epoch": 84,
+      "pred_population_mean_hz": 8.682896565998577,
+      "pred_median_cell_mean_hz": 6.387316137758425
+    },
+    {
+      "epoch": 85,
+      "pred_population_mean_hz": 8.70577002400325,
+      "pred_median_cell_mean_hz": 6.3677027619153845
+    },
+    {
+      "epoch": 86,
+      "pred_population_mean_hz": 8.693451918284099,
+      "pred_median_cell_mean_hz": 6.311009957592772
+    },
+    {
+      "epoch": 87,
+      "pred_population_mean_hz": 8.703308452861567,
+      "pred_median_cell_mean_hz": 6.334007628400959
+    },
+    {
+      "epoch": 88,
+      "pred_population_mean_hz": 8.657766267392013,
+      "pred_median_cell_mean_hz": 6.288353866302916
+    },
+    {
+      "epoch": 89,
+      "pred_population_mean_hz": 8.673670302380895,
+      "pred_median_cell_mean_hz": 6.264849229977717
+    },
+    {
+      "epoch": 90,
+      "pred_population_mean_hz": 8.704045809883786,
+      "pred_median_cell_mean_hz": 6.264963002238968
+    },
+    {
+      "epoch": 91,
+      "pred_population_mean_hz": 8.68313433527582,
+      "pred_median_cell_mean_hz": 6.2649516429775485
+    },
+    {
+      "epoch": 92,
+      "pred_population_mean_hz": 8.72209908496295,
+      "pred_median_cell_mean_hz": 6.270100831070877
+    },
+    {
+      "epoch": 93,
+      "pred_population_mean_hz": 8.756749534915043,
+      "pred_median_cell_mean_hz": 6.297928542158996
+    },
+    {
+      "epoch": 94,
+      "pred_population_mean_hz": 8.79113784854058,
+      "pred_median_cell_mean_hz": 6.276041954876092
+    },
+    {
+      "epoch": 95,
+      "pred_population_mean_hz": 8.814210047511972,
+      "pred_median_cell_mean_hz": 6.219990519652175
+    },
+    {
+      "epoch": 96,
+      "pred_population_mean_hz": 8.854224697437365,
+      "pred_median_cell_mean_hz": 6.20530016153143
+    },
+    {
+      "epoch": 97,
+      "pred_population_mean_hz": 8.858613385071719,
+      "pred_median_cell_mean_hz": 6.206270615601973
+    },
+    {
+      "epoch": 98,
+      "pred_population_mean_hz": 8.884325454614588,
+      "pred_median_cell_mean_hz": 6.169594378684629
+    },
+    {
+      "epoch": 99,
+      "pred_population_mean_hz": 9.02307782485021,
+      "pred_median_cell_mean_hz": 6.140877402185925
+    }
+  ]
+}

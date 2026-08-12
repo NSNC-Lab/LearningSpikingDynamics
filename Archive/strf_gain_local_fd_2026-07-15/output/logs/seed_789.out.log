@@ -1,0 +1,8 @@
+Seed 789: preprocessing 112 rows took 4.6 s
+Seed 789: timestep 5000/29800, elapsed 61.0 s, ETA 302.4 s
+Seed 789: timestep 10000/29800, elapsed 121.9 s, ETA 241.4 s
+Seed 789: timestep 15000/29800, elapsed 184.0 s, ETA 181.5 s
+Seed 789: timestep 20000/29800, elapsed 244.3 s, ETA 119.7 s
+Seed 789: timestep 25000/29800, elapsed 304.7 s, ETA 58.5 s
+Seed 789: complete in 368.0 s
+Seed 789: saved validated seed file C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Archive\strf_gain_local_fd_2026-07-15\output\data\raw_seed_789.csv

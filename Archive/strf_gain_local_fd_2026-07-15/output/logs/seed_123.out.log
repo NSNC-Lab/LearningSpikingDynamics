@@ -1,0 +1,8 @@
+Seed 123: preprocessing 112 rows took 4.5 s
+Seed 123: timestep 5000/29800, elapsed 61.4 s, ETA 304.7 s
+Seed 123: timestep 10000/29800, elapsed 122.5 s, ETA 242.5 s
+Seed 123: timestep 15000/29800, elapsed 184.6 s, ETA 182.1 s
+Seed 123: timestep 20000/29800, elapsed 245.1 s, ETA 120.1 s
+Seed 123: timestep 25000/29800, elapsed 305.0 s, ETA 58.6 s
+Seed 123: complete in 368.4 s
+Seed 123: saved validated seed file C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Archive\strf_gain_local_fd_2026-07-15\output\data\raw_seed_123.csv

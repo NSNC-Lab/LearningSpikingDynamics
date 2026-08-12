@@ -1,0 +1,82 @@
+{
+  "config": "C:\\Users\\ipboy\\Documents\\GitHub\\LearningSpikingDynamics\\simulation_config.yaml",
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 5001,
+  "seed": 123,
+  "device": "cpu",
+  "params_tested": [
+    "STRF_gain",
+    "STRF_alpha"
+  ],
+  "full_psth_finite_difference_test": {
+    "baseline_loss": 1510.0,
+    "baseline_mean_Bk": -1.486059546470642,
+    "params": {
+      "STRF_gain": 0.008045428432524204,
+      "STRF_alpha": 12.118277549743652
+    },
+    "by_param": {
+      "STRF_gain": {
+        "epsilon": 0.00040227142162621023,
+        "loss_plus": 1575.0,
+        "loss_minus": 1313.0,
+        "loss_fd_grad": 325650.7744706879,
+        "current_surrogate_grad": 1412.9915771484375,
+        "current_times_mean_Bk": -2099.7896223040443,
+        "same_sign_current_vs_fd": true,
+        "same_sign_current_times_Bk_vs_fd": false,
+        "psth_derivative_vs_current_accum": {
+          "n": 50,
+          "rmse": 2034.4976253270484,
+          "relative_rmse": 0.9998594744111946,
+          "correlation": -0.014558395480445007,
+          "slope_fd_on_analytic": 9.094064516809313,
+          "sign_agreement": 0.2857142857142857,
+          "analytic_rms": 8.227755265876665,
+          "finite_difference_rms": 2034.7835644855384
+        },
+        "psth_derivative_vs_current_accum_times_Bk": {
+          "n": 50,
+          "rmse": 2035.2698548481824,
+          "relative_rmse": 1.0002389887411764,
+          "correlation": 0.014558395480445005,
+          "slope_fd_on_analytic": -6.119582851445968,
+          "sign_agreement": 0.21428571428571427,
+          "analytic_rms": 12.226934258880114,
+          "finite_difference_rms": 2034.7835644855384
+        }
+      },
+      "STRF_alpha": {
+        "epsilon": 0.6059138774871826,
+        "loss_plus": 1623.0,
+        "loss_minus": 1216.0,
+        "loss_fd_grad": 335.8563115338199,
+        "current_surrogate_grad": 0.9515222907066345,
+        "current_times_mean_Bk": -1.4140187837842078,
+        "same_sign_current_vs_fd": true,
+        "same_sign_current_times_Bk_vs_fd": false,
+        "psth_derivative_vs_current_accum": {
+          "n": 50,
+          "rmse": 1.2610025922374588,
+          "relative_rmse": 0.9989619483335057,
+          "correlation": 0.12699036617075884,
+          "slope_fd_on_analytic": 26.79094746792072,
+          "sign_agreement": 0.35714285714285715,
+          "analytic_rms": 0.007929771360376143,
+          "finite_difference_rms": 1.2623129382856846
+        },
+        "psth_derivative_vs_current_accum_times_Bk": {
+          "n": 50,
+          "rmse": 1.2643495547676808,
+          "relative_rmse": 1.0016134006229551,
+          "correlation": -0.12699036617075882,
+          "slope_fd_on_analytic": -18.028178972739433,
+          "sign_agreement": 0.2619047619047619,
+          "analytic_rms": 0.011784112431416457,
+          "finite_difference_rms": 1.2623129382856846
+        }
+      }
+    }
+  }
+}

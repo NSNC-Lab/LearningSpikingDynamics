@@ -1,0 +1,40 @@
+{
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 3001,
+  "seed": 124,
+  "baseline": {
+    "loss": 485.0,
+    "firing_rate_hz": 42.65244918360546,
+    "STRF_gain_grad": -4058008.0,
+    "STRF_alpha_grad": -4976.69482421875
+  },
+  "checks": {
+    "STRF_gain": {
+      "base_value": 0.008045428432524204,
+      "test_step": 0.0001,
+      "analytic_grad": -4058008.0,
+      "finite_difference_loss_grad": -240000.0,
+      "same_sign_analytic_vs_fd": true,
+      "loss_plus": 488.0,
+      "loss_minus": 536.0,
+      "loss_after_negative_analytic_step": 488.0,
+      "loss_after_positive_analytic_step": 536.0,
+      "firing_rate_after_negative_analytic_step_hz": 42.98567144285238,
+      "firing_rate_after_positive_analytic_step_hz": 41.652782405864706
+    },
+    "STRF_alpha": {
+      "base_value": 12.118277549743652,
+      "test_step": 0.25,
+      "analytic_grad": -4976.69482421875,
+      "finite_difference_loss_grad": -42.0,
+      "same_sign_analytic_vs_fd": true,
+      "loss_plus": 508.0,
+      "loss_minus": 529.0,
+      "loss_after_negative_analytic_step": 508.0,
+      "loss_after_positive_analytic_step": 529.0,
+      "firing_rate_after_negative_analytic_step_hz": 43.65211596134621,
+      "firing_rate_after_positive_analytic_step_hz": 40.653115628123956
+    }
+  }
+}

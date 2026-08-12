@@ -1,0 +1,44 @@
+{
+  "best_psth": {
+    "cell_target": 7,
+    "batch_zero_based": 11,
+    "batch_one_based": 12,
+    "psth_mse": 6.9865771812080535,
+    "cv_loss": 0.2258436068277471,
+    "sim_cv": 1.2255947559032498,
+    "data_cv": 1.7008248126418226,
+    "psth_rank": 1,
+    "cv_rank": 2,
+    "combined_score": 3.0,
+    "combined_rank": 1,
+    "total_candidates": 15
+  },
+  "best_cv": {
+    "cell_target": 7,
+    "batch_zero_based": 0,
+    "batch_one_based": 1,
+    "psth_mse": 15.073825503355705,
+    "cv_loss": 0.001458128488280824,
+    "sim_cv": 1.6626393639960253,
+    "data_cv": 1.7008248126418226,
+    "psth_rank": 15,
+    "cv_rank": 1,
+    "combined_score": 16.0,
+    "combined_rank": 8,
+    "total_candidates": 15
+  },
+  "best_combined": {
+    "cell_target": 7,
+    "batch_zero_based": 11,
+    "batch_one_based": 12,
+    "psth_mse": 6.9865771812080535,
+    "cv_loss": 0.2258436068277471,
+    "sim_cv": 1.2255947559032498,
+    "data_cv": 1.7008248126418226,
+    "psth_rank": 1,
+    "cv_rank": 2,
+    "combined_score": 3.0,
+    "combined_rank": 1,
+    "total_candidates": 15
+  }
+}

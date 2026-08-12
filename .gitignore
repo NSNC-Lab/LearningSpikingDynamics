@@ -1,0 +1,21 @@
+# Python-generated files
+__pycache__/
+*.py[cod]
+
+# MATLAB editor autosaves
+*.asv
+
+# Simulation outputs and restartable epoch checkpoints
+/Epoch_Rasters/
+/Epoch_Rasters_Eprop/
+/simulation_output.mat
+/*_epoch*.mat
+/Model_Outputs/
+
+# Generated analysis result directories
+**/*_outputs/
+**/*_results/
+
+# Local editor and operating-system files
+.DS_Store
+Thumbs.db

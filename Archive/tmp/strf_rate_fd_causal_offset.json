@@ -1,0 +1,62 @@
+{
+  "config": "C:\\Users\\ipboy\\Documents\\GitHub\\LearningSpikingDynamics\\simulation_config.yaml",
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 301,
+  "seed": 123,
+  "device": "cpu",
+  "params_tested": [
+    "STRF_gain",
+    "STRF_alpha"
+  ],
+  "rate_derivative_test": {
+    "STRF_gain": {
+      "epsilon": 1.9905716180801394e-05,
+      "base_value": 0.001990571618080139,
+      "onset": {
+        "n": 29801,
+        "rmse": 0.03564027451116144,
+        "relative_rmse": 4.209699282462096e-06,
+        "correlation": 0.9999999999968118,
+        "slope_fd_on_analytic": 0.9999963295850349,
+        "sign_agreement": 1.0,
+        "analytic_rms": 8466.25921111354,
+        "finite_difference_rms": 8466.228136447022
+      },
+      "offset": {
+        "n": 29801,
+        "rmse": 0.1211928588128525,
+        "relative_rmse": 4.709437881385287e-06,
+        "correlation": 0.9999999999976305,
+        "slope_fd_on_analytic": 0.9999953622919822,
+        "sign_agreement": 1.0,
+        "analytic_rms": 25734.15849724774,
+        "finite_difference_rms": 25734.039149743166
+      }
+    },
+    "STRF_alpha": {
+      "epsilon": 0.09786066055297851,
+      "base_value": 9.786066055297852,
+      "onset": {
+        "n": 29801,
+        "rmse": 0.05966063540237718,
+        "relative_rmse": 0.018091381928978675,
+        "correlation": 0.9997968171833882,
+        "slope_fd_on_analytic": 0.9994134985895581,
+        "sign_agreement": 0.9944083015215872,
+        "analytic_rms": 3.299133673699415,
+        "finite_difference_rms": 3.2977378752252755
+      },
+      "offset": {
+        "n": 29801,
+        "rmse": 0.026426188515519432,
+        "relative_rmse": 0.002849237971805429,
+        "correlation": 0.9999784935305286,
+        "slope_fd_on_analytic": 1.0001493323794344,
+        "sign_agreement": 0.9993183611968143,
+        "analytic_rms": 9.27340437160088,
+        "finite_difference_rms": 9.274826735083677
+      }
+    }
+  }
+}

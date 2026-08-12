@@ -1,0 +1,290 @@
+{
+  "summary": {
+    "gain": {
+      "direct_grad": 2845926.078994781,
+      "indirect_grad": -13347950.187664628,
+      "total_split": -10502024.108669847,
+      "stored_grad": -10502025.0
+    },
+    "alpha": {
+      "direct_grad": 1727.210201774021,
+      "indirect_grad": -11076.236765463076,
+      "total_split": -9349.026563689054,
+      "stored_grad": -9349.029296875
+    }
+  },
+  "first_10_records": [
+    {
+      "timestep": 100,
+      "sim": 0.0,
+      "data": 2.0,
+      "loss_grad": -4.0,
+      "gain": {
+        "direct_accum": 0.0,
+        "indirect_accum": 0.0,
+        "direct_grad_contrib": -0.0,
+        "indirect_grad_contrib": -0.0
+      },
+      "alpha": {
+        "direct_accum": 0.0,
+        "indirect_accum": 0.0,
+        "direct_grad_contrib": -0.0,
+        "indirect_grad_contrib": -0.0
+      }
+    },
+    {
+      "timestep": 200,
+      "sim": 1.0,
+      "data": 0.0,
+      "loss_grad": 2.0,
+      "gain": {
+        "direct_accum": 1117.367919921875,
+        "indirect_accum": -2397.373779296875,
+        "direct_grad_contrib": 2234.73583984375,
+        "indirect_grad_contrib": -4794.74755859375
+      },
+      "alpha": {
+        "direct_accum": 1.2323204278945923,
+        "indirect_accum": -2.6440091133117676,
+        "direct_grad_contrib": 2.4646408557891846,
+        "indirect_grad_contrib": -5.288018226623535
+      }
+    },
+    {
+      "timestep": 300,
+      "sim": 0.0,
+      "data": 0.0,
+      "loss_grad": 0.0,
+      "gain": {
+        "direct_accum": 0.04134726896882057,
+        "indirect_accum": -0.22555258870124817,
+        "direct_grad_contrib": 0.0,
+        "indirect_grad_contrib": -0.0
+      },
+      "alpha": {
+        "direct_accum": 4.560094384942204e-05,
+        "indirect_accum": -0.0002487569290678948,
+        "direct_grad_contrib": 0.0,
+        "indirect_grad_contrib": -0.0
+      }
+    },
+    {
+      "timestep": 400,
+      "sim": 5.0,
+      "data": 1.0,
+      "loss_grad": 8.0,
+      "gain": {
+        "direct_accum": 13408.5048828125,
+        "indirect_accum": -97576.34375,
+        "direct_grad_contrib": 107268.0390625,
+        "indirect_grad_contrib": -780610.75
+      },
+      "alpha": {
+        "direct_accum": 14.787936210632324,
+        "indirect_accum": -107.61475372314453,
+        "direct_grad_contrib": 118.3034896850586,
+        "indirect_grad_contrib": -860.9180297851562
+      }
+    },
+    {
+      "timestep": 500,
+      "sim": 5.0,
+      "data": 1.0,
+      "loss_grad": 8.0,
+      "gain": {
+        "direct_accum": 59176.4921875,
+        "indirect_accum": -385748.21875,
+        "direct_grad_contrib": 473411.9375,
+        "indirect_grad_contrib": -3085985.75
+      },
+      "alpha": {
+        "direct_accum": 65.26443481445312,
+        "indirect_accum": -425.4329833984375,
+        "direct_grad_contrib": 522.115478515625,
+        "indirect_grad_contrib": -3403.4638671875
+      }
+    },
+    {
+      "timestep": 600,
+      "sim": 0.0,
+      "data": 1.0,
+      "loss_grad": -2.0,
+      "gain": {
+        "direct_accum": 3421.61962890625,
+        "indirect_accum": -31028.947265625,
+        "direct_grad_contrib": -6843.2392578125,
+        "indirect_grad_contrib": 62057.89453125
+      },
+      "alpha": {
+        "direct_accum": 3.773629665374756,
+        "indirect_accum": -34.22111511230469,
+        "direct_grad_contrib": -7.547259330749512,
+        "indirect_grad_contrib": 68.44223022460938
+      }
+    },
+    {
+      "timestep": 700,
+      "sim": 1.0,
+      "data": 0.0,
+      "loss_grad": 2.0,
+      "gain": {
+        "direct_accum": 2558.3369140625,
+        "indirect_accum": -28952.94140625,
+        "direct_grad_contrib": 5116.673828125,
+        "indirect_grad_contrib": -57905.8828125
+      },
+      "alpha": {
+        "direct_accum": 2.821531295776367,
+        "indirect_accum": -31.931529998779297,
+        "direct_grad_contrib": 5.643062591552734,
+        "indirect_grad_contrib": -63.863059997558594
+      }
+    },
+    {
+      "timestep": 800,
+      "sim": 0.0,
+      "data": 0.0,
+      "loss_grad": 0.0,
+      "gain": {
+        "direct_accum": 39.47188949584961,
+        "indirect_accum": -431.916259765625,
+        "direct_grad_contrib": 0.0,
+        "indirect_grad_contrib": -0.0
+      },
+      "alpha": {
+        "direct_accum": 0.04353266581892967,
+        "indirect_accum": -0.4763503968715668,
+        "direct_grad_contrib": 0.0,
+        "indirect_grad_contrib": -0.0
+      }
+    },
+    {
+      "timestep": 900,
+      "sim": 1.0,
+      "data": 0.0,
+      "loss_grad": 2.0,
+      "gain": {
+        "direct_accum": 1354.9449462890625,
+        "indirect_accum": -6502.0927734375,
+        "direct_grad_contrib": 2709.889892578125,
+        "indirect_grad_contrib": -13004.185546875
+      },
+      "alpha": {
+        "direct_accum": 1.4943729639053345,
+        "indirect_accum": -7.1710991859436035,
+        "direct_grad_contrib": 2.988745927810669,
+        "indirect_grad_contrib": -14.342198371887207
+      }
+    },
+    {
+      "timestep": 1000,
+      "sim": 0.0,
+      "data": 0.0,
+      "loss_grad": 0.0,
+      "gain": {
+        "direct_accum": 53.48421096801758,
+        "indirect_accum": -428.7851867675781,
+        "direct_grad_contrib": 0.0,
+        "indirect_grad_contrib": -0.0
+      },
+      "alpha": {
+        "direct_accum": 0.058988019824028015,
+        "indirect_accum": -0.4729049503803253,
+        "direct_grad_contrib": 0.0,
+        "indirect_grad_contrib": -0.0
+      }
+    }
+  ],
+  "last_5_records": [
+    {
+      "timestep": 9500,
+      "sim": 2.0,
+      "data": 0.0,
+      "loss_grad": 4.0,
+      "gain": {
+        "direct_accum": 11232.0537109375,
+        "indirect_accum": -29353.681640625,
+        "direct_grad_contrib": 44928.21484375,
+        "indirect_grad_contrib": -117414.7265625
+      },
+      "alpha": {
+        "direct_accum": 10.864615440368652,
+        "indirect_accum": -26.03893280029297,
+        "direct_grad_contrib": 43.45846176147461,
+        "indirect_grad_contrib": -104.15573120117188
+      }
+    },
+    {
+      "timestep": 9600,
+      "sim": 8.0,
+      "data": 9.0,
+      "loss_grad": -2.0,
+      "gain": {
+        "direct_accum": 3899.817626953125,
+        "indirect_accum": -13573.0380859375,
+        "direct_grad_contrib": -7799.63525390625,
+        "indirect_grad_contrib": 27146.076171875
+      },
+      "alpha": {
+        "direct_accum": 4.875009059906006,
+        "indirect_accum": -13.02991771697998,
+        "direct_grad_contrib": -9.750018119812012,
+        "indirect_grad_contrib": 26.05983543395996
+      }
+    },
+    {
+      "timestep": 9700,
+      "sim": 4.0,
+      "data": 7.0,
+      "loss_grad": -6.0,
+      "gain": {
+        "direct_accum": 1440.9727783203125,
+        "indirect_accum": -10586.89453125,
+        "direct_grad_contrib": -8645.8369140625,
+        "indirect_grad_contrib": 63521.3671875
+      },
+      "alpha": {
+        "direct_accum": 1.2352981567382812,
+        "indirect_accum": -8.455568313598633,
+        "direct_grad_contrib": -7.4117889404296875,
+        "indirect_grad_contrib": 50.7334098815918
+      }
+    },
+    {
+      "timestep": 9800,
+      "sim": 4.0,
+      "data": 3.0,
+      "loss_grad": 2.0,
+      "gain": {
+        "direct_accum": 4139.17431640625,
+        "indirect_accum": -3283.19091796875,
+        "direct_grad_contrib": 8278.3486328125,
+        "indirect_grad_contrib": -6566.3818359375
+      },
+      "alpha": {
+        "direct_accum": 6.424189567565918,
+        "indirect_accum": -3.4355101585388184,
+        "direct_grad_contrib": 12.848379135131836,
+        "indirect_grad_contrib": -6.871020317077637
+      }
+    },
+    {
+      "timestep": 9900,
+      "sim": 1.0,
+      "data": 6.0,
+      "loss_grad": -10.0,
+      "gain": {
+        "direct_accum": 558.2799072265625,
+        "indirect_accum": -94.81305694580078,
+        "direct_grad_contrib": -5582.798828125,
+        "indirect_grad_contrib": 948.1305541992188
+      },
+      "alpha": {
+        "direct_accum": 0.8051585555076599,
+        "indirect_accum": -0.1219455897808075,
+        "direct_grad_contrib": -8.05158519744873,
+        "indirect_grad_contrib": 1.2194559574127197
+      }
+    }
+  ]
+}

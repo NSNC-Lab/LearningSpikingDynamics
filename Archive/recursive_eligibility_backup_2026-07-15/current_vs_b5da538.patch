@@ -1,0 +1,2003 @@
+diff --git a/.vscode/launch.json b/.vscode/launch.json
+index 5f46b74447006f1948a81597ab65b24112417e24..790cb05b916151458f8c75c68dbb813e89c0e813 100644
+--- a/.vscode/launch.json
++++ b/.vscode/launch.json
+@@ -5,7 +5,7 @@
+       "name": "LearningSpikingDynamics (CUDA Python 3.11)",
+       "type": "debugpy",
+       "request": "launch",
+-      "program": "${workspaceFolder}/Main.py",
++      "program": "${file}",
+       "console": "integratedTerminal",
+       "cwd": "${workspaceFolder}",
+       "python": "C:\\Users\\ipboy\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
+diff --git a/Data/data_handler.py b/Data/data_handler.py
+index f070734e052cba5fbc0ca92d2d8efe7cba0dcc28..2f4d04f7b78915b28b5a99418a2f99058489ea4a 100644
+--- a/Data/data_handler.py
++++ b/Data/data_handler.py
+@@ -9,34 +9,35 @@ def load_gt_data(args):
+ 
+     mat = loadmat(repo_root / args["paths"]["data"],variable_names=["all_data"],squeeze_me=True,struct_as_record=False)
+     all_data = mat["all_data"]
+-    bin_edges = np.arange(0, (args["simulation"]["sim_len"])/10000, args["simulation"]["PSTH_granularity"]/10000)
+-    psth_holder = torch.zeros((len(args["simulation"]["cell_targets"]), int(np.round(args["simulation"]["sim_len"]/args["simulation"]["PSTH_granularity"]))), dtype=torch.float32, device=torch.device(args["simulation"]["device"]))
++    if args["simulation"]["data_target"] != "peak":
++        raise NotImplementedError("data_target currently supports only 'peak'; returning zero targets would collapse training.")
++
++    dt_seconds = args["simulation"]["dt"] / 1000.0
++    complete_bins = int(np.floor(args["simulation"]["sim_len"]/args["simulation"]["PSTH_granularity"]))
++    bin_edges = np.arange(complete_bins + 1) * args["simulation"]["PSTH_granularity"] * dt_seconds
++    max_binned_time = bin_edges[-1]
++    psth_holder = torch.zeros((len(args["simulation"]["cell_targets"]), complete_bins), dtype=torch.float32, device=torch.device(args["simulation"]["device"]))
+     raster_holder = torch.zeros((len(args["simulation"]["cell_targets"]), 10, int(np.round(args["simulation"]["sim_len"]))), dtype=torch.float32, device=torch.device(args["simulation"]["device"]))
+ 
+     for k,cell in enumerate(args["simulation"]["cell_targets"]):
+         timestamps = all_data[cell-1].ctrl_tar1_timestamps
+-        if args["simulation"]["data_target"] == "peak":
+-            if all_data[cell-1].tuning_type == 'contra-tuned':
+-                angle = 0
+-            elif all_data[cell-1].tuning_type == '45°-tuned':
+-                angle = 1
+-            elif all_data[cell-1].tuning_type == 'center-tuned':
+-                angle = 2
+-            else:
+-                angle = 3
+-            
+-            timestamps_peak = timestamps[:,angle]
+-            
+-            for m in range(10):
+-                timestamps_peak[m] = np.asarray(timestamps_peak[m])
+-                if timestamps_peak[m].size > 0: #Just makes sure there are acutally spikes or else it will fail out
+-                    cut_timesteps = timestamps_peak[m][(timestamps_peak[m] >= 0) & (timestamps_peak[m] <= 2.9801)]
+-                    counts, bin_edges = np.histogram(cut_timesteps, bins=bin_edges) 
+-                    psth_holder[k,:] += torch.tensor(counts, dtype=torch.float32, device=torch.device(args["simulation"]["device"]))
+-                    raster_holder[k,m,(cut_timesteps*10000).astype(np.int64)] = 1
++        if all_data[cell-1].tuning_type == 'contra-tuned':
++            angle = 0
++        elif '45' in str(all_data[cell-1].tuning_type):
++            angle = 1
++        elif all_data[cell-1].tuning_type == 'center-tuned':
++            angle = 2
++        else:
++            angle = 3
++
++        timestamps_peak = timestamps[:,angle]
++
++        for m in range(10):
++            timestamps_peak[m] = np.asarray(timestamps_peak[m])
++            if timestamps_peak[m].size > 0: #Just makes sure there are acutally spikes or else it will fail out
++                cut_timesteps = timestamps_peak[m][(timestamps_peak[m] >= 0) & (timestamps_peak[m] < max_binned_time)]
++                counts, bin_edges = np.histogram(cut_timesteps, bins=bin_edges)
++                psth_holder[k,:] += torch.tensor(counts, dtype=torch.float32, device=torch.device(args["simulation"]["device"]))
++                raster_holder[k,m,np.floor(cut_timesteps/dt_seconds).astype(np.int64)] = 1
+ 
+     return {'psth_holder' : psth_holder, 'raster_holder' : raster_holder}
+-
+-
+-
+-    
+\ No newline at end of file
+diff --git a/Main.py b/Main.py
+index 145b337437bb39893d6a35a5d6dde7df624a768b..a0842922e58bb82cbdb2c1a629ee78550a554378 100644
+--- a/Main.py
++++ b/Main.py
+@@ -13,6 +13,10 @@ def main():
+     #Load in simulation configureation
+     args = yaml.safe_load(open('simulation_config.yaml', 'r'))
+ 
++    seed = args.get('simulation', {}).get('seed')
++    if seed is not None:
++        np.random.seed(int(seed))
++
+     #Initialize learnable parameters
+     params = Parameter_initialization.init_params(args)
+ 
+@@ -28,4 +32,4 @@ def main():
+     return output
+ 
+ if __name__ == "__main__":
+-    main()
+\ No newline at end of file
++    main()
+diff --git a/Pre_Processing/pre_cortical_handler.py b/Pre_Processing/pre_cortical_handler.py
+index 4f25863f63de11db788fc3dd619e4ddd4d1f3a5f..6cbfc2d93073b016d77544a4a3aab7c3a5446483 100644
+--- a/Pre_Processing/pre_cortical_handler.py
++++ b/Pre_Processing/pre_cortical_handler.py
+@@ -61,9 +61,12 @@ def create_strf(args,states,f):
+     
+     strf = {}
+     strf_deriv = {}
++    strf_deriv_alpha = {}
++    strf_deriv_gain = {}
+ 
+     #Temporal kernel -- Derivative is also calcualted here.
+-    strf['t'] = torch.linspace(0, args['strf']['strf_params']['maxdelay']*args['simulation']['dt'], int((args['strf']['strf_params']['maxdelay']*args['simulation']['dt'])/args['simulation']['dt']),device=torch.device(args['simulation']['device']))
++    kernel_steps = int(args['strf']['strf_params']['maxdelay'])
++    strf['t'] = torch.arange(kernel_steps, device=torch.device(args['simulation']['device']), dtype=torch.float32) * args['simulation']['dt']
+     strf['H'] = torch.exp(-strf['t'][:,None,None]/states['neurons']['Learnable']['STRF_alpha'][None,:,:])*(args['strf']['strf_params']['SC1']*(strf['t'][:,None,None]/states['neurons']['Learnable']['STRF_alpha'][None,:,:])**args['strf']['strf_params']['N1']/math.factorial(args['strf']['strf_params']['N1']) - args['strf']['strf_params']['SC2'] * (strf['t'][:,None,None]/states['neurons']['Learnable']['STRF_alpha'][None,:,:])**args['strf']['strf_params']['N2']/math.factorial(args['strf']['strf_params']['N2']))
+     strf_deriv['H_epsilon'] = torch.exp(-strf['t'][:,None,None]/states['neurons']['Learnable']['STRF_alpha'][None,:,:])
+     strf_deriv['H_gamma'] = (args['strf']['strf_params']['SC1']*(strf['t'][:,None,None]/states['neurons']['Learnable']['STRF_alpha'][None,:,:])**args['strf']['strf_params']['N1']/math.factorial(args['strf']['strf_params']['N1']) - args['strf']['strf_params']['SC2'] * (strf['t'][:,None,None]/states['neurons']['Learnable']['STRF_alpha'][None,:,:])**args['strf']['strf_params']['N2']/math.factorial(args['strf']['strf_params']['N2']))
+@@ -72,38 +75,133 @@ def create_strf(args,states,f):
+     #Frequency kernel
+     strf['G'] = torch.exp(-0.5*((torch.tensor(f,device=torch.device(args['simulation']['device']))-args['strf']['strf_params']['f0'])/args['strf']['strf_params']['BW'])**2)* torch.cos(2*torch.pi*args['strf']['strf_params']['BSM']*(torch.tensor(f,device=torch.device(args['simulation']['device']))-args['strf']['strf_params']['f0']))
+ 
++
++    #Add gain.
++    strf_deriv_alpha['H'] = strf_deriv['H'] * states['neurons']['Learnable']['STRF_gain'][None,:,:]
++    strf_deriv_gain['H'] = strf['H']
++    strf['H'] = strf['H'] * states['neurons']['Learnable']['STRF_gain'][None,:,:]
++
++
+     #Outer Product to get STRF
+     strf['w1']=strf['G'][:,None,None,None]*strf['H'][None,:,:,:]
+     strf_deriv['w1'] = strf['G'][:,None,None,None]*strf_deriv['H'][None,:,:,:]
+ 
+-    return {'strf': strf, 'strf_deriv': strf_deriv}
++    return {'strf': strf, 'strf_deriv_alpha': strf_deriv_alpha, 'strf_deriv_gain': strf_deriv_gain}
+ 
+ def compute_convolution(args, strf, target_fft):
+ 
+-    drive = np.einsum("ft,f->t", target_fft["spec"], strf["strf"]["G"].detach().cpu().numpy())
+-    a = fftconvolve(drive[:, None, None], strf["strf"]["H"].detach().cpu().numpy(), mode="full", axes=0)
+-    a = a[:len(target_fft["t"])]
+-    a = a[2500:]
+-
+-    a_deriv = fftconvolve(drive[:, None, None], strf["strf_deriv"]["H"].detach().cpu().numpy(), mode="full", axes=0)
+-    a_deriv = a_deriv[:len(target_fft["t"])]
+-    a_deriv = a_deriv[2500:]
++    rate_params = args["strf"].get("rate_params", {})
++    stim_gain = rate_params.get("stimGain", 0.5)
++    mean_rate = rate_params.get("mean_rate", 0.1)
+ 
+-    return {'a': a, 'a_deriv': a_deriv}
++    drive = stim_gain * np.einsum("ft,f->t", target_fft["spec"], strf["strf"]["G"].detach().cpu().numpy())
++    a = fftconvolve(drive[:, None, None], strf["strf"]["H"].detach().cpu().numpy(), mode="full", axes=0)
++    a = mean_rate * a[:len(target_fft["t"])]
++    crop_start = int(args['strf']['strf_params']['maxdelay'])
++    a = a[crop_start:]
++
++    a_deriv_alpha = fftconvolve(drive[:, None, None], strf["strf_deriv_alpha"]["H"].detach().cpu().numpy(), mode="full", axes=0)
++    a_deriv_gain = fftconvolve(drive[:, None, None], strf["strf_deriv_gain"]["H"].detach().cpu().numpy(), mode="full", axes=0)
++    a_deriv_alpha = mean_rate * a_deriv_alpha[:len(target_fft["t"])]
++    a_deriv_gain = mean_rate * a_deriv_gain[:len(target_fft["t"])]
++    a_deriv_alpha = a_deriv_alpha[crop_start:]
++    a_deriv_gain = a_deriv_gain[crop_start:]
++
++    return {'a': a, 'a_deriv_alpha': a_deriv_alpha, 'a_deriv_gain': a_deriv_gain}
++
++
++def causal_running_max_offset(values, alpha_derivative, gain_derivative):
++    """Create a causal falling-drive channel and its piecewise derivatives.
++
++    ``offset[t] = running_max(values[:t+1]) - values[t]``.  Unlike a global
++    maximum, this cannot use a future response to create spikes at time zero.
++    At max-switching ties the earlier maximum is retained, defining a stable
++    one-sided subgradient.
++    """
++    offset = np.zeros_like(values)
++    offset_alpha_derivative = np.zeros_like(alpha_derivative)
++    offset_gain_derivative = np.zeros_like(gain_derivative)
++
++    running_value = values[0].copy()
++    running_alpha_derivative = alpha_derivative[0].copy()
++    running_gain_derivative = gain_derivative[0].copy()
++    for timestep in range(1, values.shape[0]):
++        new_maximum = values[timestep] > running_value
++        running_value = np.where(new_maximum, values[timestep], running_value)
++        running_alpha_derivative = np.where(
++            new_maximum, alpha_derivative[timestep], running_alpha_derivative
++        )
++        running_gain_derivative = np.where(
++            new_maximum, gain_derivative[timestep], running_gain_derivative
++        )
++
++        raw_offset = running_value - values[timestep]
++        active = raw_offset > 0
++        offset[timestep] = np.where(active, raw_offset, 0.0)
++        offset_alpha_derivative[timestep] = np.where(
++            active,
++            running_alpha_derivative - alpha_derivative[timestep],
++            0.0,
++        )
++        offset_gain_derivative[timestep] = np.where(
++            active,
++            running_gain_derivative - gain_derivative[timestep],
++            0.0,
++        )
++
++    return offset, offset_alpha_derivative, offset_gain_derivative
+ 
+ def compute_rates(args, states, rates, device):
+ 
+-    #Compute the onset and offset rates. Match the AUC by subtracting out the mean of the trace.
+-    onset_rate = (rates['a'] - np.mean(rates['a'], axis=0)[None,:,:])*states['neurons']['Learnable']['STRF_gain'][None,:,:].cpu().numpy()
+-    offset_rate = -onset_rate
+-    onset_rate[onset_rate<0] = 0
+-    offset_rate[offset_rate<0] = 0
+-    onset_rate_deriv = rates['a_deriv'] - np.mean(rates['a_deriv'], axis=0)[None,:,:]
+-    offset_rate_deriv = -onset_rate_deriv
+-    onset_rate_deriv[onset_rate_deriv<0 ] = 0
+-    offset_rate_deriv[offset_rate_deriv<0 ] = 0
+-
+-    return {'onset_rate': torch.tensor(onset_rate, device=device), 'offset_rate': torch.tensor(offset_rate, device=device), 'onset_rate_deriv': torch.tensor(onset_rate_deriv, device=device), 'offset_rate_deriv': torch.tensor(offset_rate_deriv, device=device)}
++    # Match the old onset implementation: gain is already baked into H, so the
++    # rate is the rectified, scaled convolution output.
++    strf_gain = states['neurons']['Learnable']['STRF_gain'][None,:,:].detach().cpu().numpy()
++
++
++    #ungained_rate = rates['a'] / np.maximum(strf_gain, 1e-12)
++    #centered_rate = rates['a'] - np.mean(rates['a'], axis=0, keepdims=True)
++    #centered_rate_deriv = rates['a_deriv'] - np.mean(rates['a_deriv'], axis=0, keepdims=True)
++    #centered_ungained_rate = ungained_rate - np.mean(ungained_rate, axis=0, keepdims=True)
++
++    #onset_rate_gain_deriv = np.maximum(ungained_rate, 0)
++    #offset_rate_gain_deriv = np.maximum(-centered_ungained_rate, 0)
++    onset_rate = np.maximum(rates['a'], 0)
++
++    onset_rate_gain_deriv = rates['a_deriv_gain'] * (rates['a'] > 0)
++    onset_rate_deriv = rates['a_deriv_alpha'] * (rates['a'] > 0)
++
++    offset_mode = args.get("preprocessing", {}).get(
++        "offset_mode", "causal_running_max"
++    )
++    if offset_mode == "causal_running_max":
++        offset_rate, offset_rate_deriv, offset_rate_gain_deriv = causal_running_max_offset(
++            rates['a'], rates['a_deriv_alpha'], rates['a_deriv_gain']
++        )
++    elif offset_mode == "global_max":
++        offset_drive = -rates['a'] + np.max(rates['a'], axis=0, keepdims=True)
++        offset_active = offset_drive > 0
++        offset_rate = np.maximum(offset_drive, 0)
++        max_index = np.argmax(rates['a'], axis=0, keepdims=True)
++        offset_rate_gain_deriv = (
++            -rates['a_deriv_gain']
++            + np.take_along_axis(rates['a_deriv_gain'], max_index, axis=0)
++        ) * offset_active
++        offset_rate_deriv = (
++            -rates['a_deriv_alpha']
++            + np.take_along_axis(rates['a_deriv_alpha'], max_index, axis=0)
++        ) * offset_active
++    else:
++        raise ValueError(
++            f"Unknown preprocessing.offset_mode={offset_mode!r}; "
++            "expected 'causal_running_max' or 'global_max'."
++        )
++
++    return {'onset_rate': torch.tensor(onset_rate, device=device),
++            'offset_rate': torch.tensor(offset_rate, device=device),
++            'onset_rate_deriv': torch.tensor(onset_rate_deriv, device=device),
++            'offset_rate_deriv': torch.tensor(offset_rate_deriv, device=device),
++            'onset_rate_gain_deriv': torch.tensor(onset_rate_gain_deriv, device=device),
++            'offset_rate_gain_deriv': torch.tensor(offset_rate_gain_deriv, device=device)}
+ 
+ 
+ 
+diff --git a/Pre_Processing/preprocess_handler.py b/Pre_Processing/preprocess_handler.py
+index 38966e0d3f05205dc0d9099c7c77dd594db4cd05..bec9c8c2b051c1b61ca86c8524c1afd89c45a7e4 100644
+--- a/Pre_Processing/preprocess_handler.py
++++ b/Pre_Processing/preprocess_handler.py
+@@ -1,10 +1,16 @@
+-from Pre_Processing import pre_cortical_handler
++from Pre_Processing import pre_cortical_handler, pre_cortical_handler_legacy_match
+ from Pre_Processing import spiking_handler
+ 
+ def preprocess(args,params,device):
+ 
+     #Calculate STRF
+-    onset_offset_rates = pre_cortical_handler.create_input_fr(args,params, device)
++    onset_offset_rates = get_pre_cortical_handler(args).create_input_fr(args,params, device)
+     spks = spiking_handler.generate_spike_trains(onset_offset_rates,args,device)
+     
+-    return {'spks': spks, 'onset_offset_rates': onset_offset_rates}
+\ No newline at end of file
++    return {'spks': spks, 'onset_offset_rates': onset_offset_rates}
++
++def get_pre_cortical_handler(args):
++    handler_name = args.get("preprocessing", {}).get("pre_cortical_handler", "current")
++    if handler_name == "legacy_match":
++        return pre_cortical_handler_legacy_match
++    return pre_cortical_handler
+diff --git a/Pre_Processing/spiking_handler.py b/Pre_Processing/spiking_handler.py
+index 9bbaf04f2587a960f7dc8418705ae0180a6c67c9..570b21e4029dfcc0766b13046fcbacf9adc25973 100644
+--- a/Pre_Processing/spiking_handler.py
++++ b/Pre_Processing/spiking_handler.py
+@@ -14,9 +14,11 @@ def generate_spike_trains(rates, args, device):
+ def generate_model_inputs(rates,args,device):
+ 
+     #P(spiking) is approximately rate*dt (/1000 to convert ms to s). I found 1* converts from bool to int.
+-    onset_spks = 1 * ((rates['onset_rate']*args['simulation']['dt']/1000)[:,:,:,None] > torch.rand([rates['onset_rate'].shape[0],rates['onset_rate'].shape[1],rates['onset_rate'].shape[2],10], device=device))
++    onset_probability = torch.clamp(rates['onset_rate']*args['simulation']['dt']/1000, min=0.0, max=1.0)
++    onset_spks = 1 * (onset_probability[:,:,:,None] > torch.rand([rates['onset_rate'].shape[0],rates['onset_rate'].shape[1],rates['onset_rate'].shape[2],10], device=device))
+     onset_spks = onset_spks.permute(1,3,2,0)
+-    offset_spks = 1 * ((rates['offset_rate']*args['simulation']['dt']/1000)[:,:,:,None] > torch.rand([rates['offset_rate'].shape[0],rates['offset_rate'].shape[1],rates['offset_rate'].shape[2],10], device=device))
++    offset_probability = torch.clamp(rates['offset_rate']*args['simulation']['dt']/1000, min=0.0, max=1.0)
++    offset_spks = 1 * (offset_probability[:,:,:,None] > torch.rand([rates['offset_rate'].shape[0],rates['offset_rate'].shape[1],rates['offset_rate'].shape[2],10], device=device))
+     offset_spks = offset_spks.permute(1,3,2,0)
+ 
+     return {'onset_spks': onset_spks, 'offset_spks': offset_spks}
+@@ -33,4 +35,4 @@ def generate_noise_activity(rates,args,device):
+     for count,k in enumerate(args['simulation']['cell_targets']):
+         noise_spks[:,count,:] = 1 * ((np.mean(m[k-1,0:4])*args['simulation']['dt']/1000) > np.random.random((10,noise_spks.shape[2])))
+ 
+-    return torch.tensor(noise_spks, dtype=torch.float32, device=device)
+\ No newline at end of file
++    return torch.tensor(noise_spks, dtype=torch.float32, device=device)
+diff --git a/Simulation/Architecture_Declaration.py b/Simulation/Architecture_Declaration.py
+index 902630dda017b6fd6428d916d0780d802d1a35d2..3bc662065953a750c2a42e0703842776221ac4d3 100644
+--- a/Simulation/Architecture_Declaration.py
++++ b/Simulation/Architecture_Declaration.py
+@@ -27,6 +27,9 @@ def build_network(args, device, params):
+     neuron_init["Learnable"]["STRF_alpha_accum"] = torch.zeros((params['Strf_alpha'].shape), device=device, dtype=torch.float32)
+     neuron_init["Learnable"]["STRF_alpha_grad"] = torch.zeros((params['Strf_alpha'].shape), device=device, dtype=torch.float32)  
+ 
++    neuron_init["Learnable"]["STRF_gain_tracker"] = torch.zeros((*params['Strf_gain'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
++    neuron_init["Learnable"]["STRF_alpha_tracker"] = torch.zeros((*params['Strf_alpha'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
++
+     #Adam Parameters
+     neuron_init["Adam"] = {}
+     neuron_init["Adam"]["t"] = 0
+@@ -66,6 +69,27 @@ def declare_neuron_properties(args, device, params, this_neuron_init, name, C =
+     this_neuron_init["Dynamic"][name]["g_ad"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+     this_neuron_init["Dynamic"][name]["tspike"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),5), device=device, dtype=torch.float32) * -30
+     this_neuron_init["Dynamic"][name]["buffer_index"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets'])), device=device, dtype=torch.int64)
++    # Current-step event flag.  Delayed synapses enqueue this mask directly;
++    # the short tspike ring above is retained only for last-spike/refractory
++    # bookkeeping and must not be used as a pending-event queue.
++    this_neuron_init["Dynamic"][name]["spike_mask"] = torch.zeros(
++        (args['simulation']['batch_size'], 10, len(args['simulation']['cell_targets'])),
++        device=device,
++        dtype=torch.bool,
++    )
++
++    if input == 1:
++        # Persistent input-neuron voltage sensitivities.  They are advanced
++        # after the forward Euler step once the STRF rate derivatives for the
++        # current timestep are available.
++        for param_name in ("gain", "alpha"):
++            this_neuron_init["Dynamic"][name][f"dV_STRF_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++        this_neuron_init["Dynamic"][name]["input_V_jacobian"] = torch.full(
++            (args['simulation']['batch_size'],10,len(args['simulation']['cell_targets'])),
++            -1.0 / this_neuron_init["Static"][name]["tau"],
++            device=device,
++            dtype=torch.float32,
++        )
+ 
+     #Noise specific
+     if noise == 1:
+@@ -82,6 +106,17 @@ def declare_neuron_properties(args, device, params, this_neuron_init, name, C =
+         this_neuron_init["Dynamic"][name]["spikes_holder"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),args['simulation']['sim_len']), device=device, dtype=torch.int64)
+         this_neuron_init["Dynamic"][name]["mean_sse_loss"] = 0
+         this_neuron_init["Dynamic"][name]["mean_CV_loss"] = 0
++        # Persistent state sensitivities for the output-adaptation increment.
++        # These are separate from the per-PSTH-bin eligibility accumulator.
++        this_neuron_init["Dynamic"][name]["dV_output_ad"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++        this_neuron_init["Dynamic"][name]["dg_ad_output_ad"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++        
++        # Persistent state sensitivities for the output-refractoriness increment.
++        this_neuron_init["Dynamic"][name]["dV_abs_ref"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++        this_neuron_init["Dynamic"][name]["dV_rel_ref_a"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++        this_neuron_init["Dynamic"][name]["dV_rel_ref_b"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)   
++        this_neuron_init["Dynamic"][name]["dV_rel_ref_c"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++
+     #Learnable
+     if output == 1:
+         #Adapatation
+@@ -89,20 +124,25 @@ def declare_neuron_properties(args, device, params, this_neuron_init, name, C =
+         this_neuron_init["Learnable"][name]["output_ad"] = torch.nn.Parameter(torch.tensor((params['output_ad']), device=device, dtype=torch.float32)) 
+         this_neuron_init["Learnable"][name]["output_ad_accum"] = torch.zeros((params['output_ad'].shape), device=device, dtype=torch.float32)
+         this_neuron_init["Learnable"][name]["output_ad_grad"] = torch.zeros((params['output_ad'].shape), device=device, dtype=torch.float32)
++        this_neuron_init["Learnable"][name]["output_ad_tracker"] = torch.zeros((*params['output_ad'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
+ 
+         #Refractory period
+         this_neuron_init['Learnable'][name]['abs_ref'] = torch.nn.Parameter(torch.tensor((params['abs_ref']), device=device, dtype=torch.float32))
+         this_neuron_init['Learnable'][name]['abs_ref_accum'] = torch.zeros((params['abs_ref'].shape), device=device, dtype=torch.float32)
+         this_neuron_init['Learnable'][name]['abs_ref_grad'] = torch.zeros((params['abs_ref'].shape), device=device, dtype=torch.float32)
++        this_neuron_init['Learnable'][name]['abs_ref_tracker'] = torch.zeros((*params['abs_ref'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
+         this_neuron_init['Learnable'][name]['rel_ref_a'] = torch.nn.Parameter(torch.tensor((params['rel_ref_a']), device=device, dtype=torch.float32))
+         this_neuron_init['Learnable'][name]['rel_ref_a_accum'] = torch.zeros((params['rel_ref_a'].shape), device=device, dtype=torch.float32)
+         this_neuron_init['Learnable'][name]['rel_ref_a_grad'] = torch.zeros((params['rel_ref_a'].shape), device=device, dtype=torch.float32)
++        this_neuron_init['Learnable'][name]['rel_ref_a_tracker'] = torch.zeros((*params['rel_ref_a'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
+         this_neuron_init['Learnable'][name]['rel_ref_b'] = torch.nn.Parameter(torch.tensor((params['rel_ref_b']), device=device, dtype=torch.float32)) 
+         this_neuron_init['Learnable'][name]['rel_ref_b_accum'] = torch.zeros((params['rel_ref_b'].shape), device=device, dtype=torch.float32)
+         this_neuron_init['Learnable'][name]['rel_ref_b_grad'] = torch.zeros((params['rel_ref_b'].shape), device=device, dtype=torch.float32)
++        this_neuron_init['Learnable'][name]['rel_ref_b_tracker'] = torch.zeros((*params['rel_ref_b'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
+         this_neuron_init['Learnable'][name]['rel_ref_c'] = torch.nn.Parameter(torch.tensor((params['rel_ref_c']), device=device, dtype=torch.float32))
+         this_neuron_init['Learnable'][name]['rel_ref_c_accum'] = torch.zeros((params['rel_ref_c'].shape), device=device, dtype=torch.float32)
+         this_neuron_init['Learnable'][name]['rel_ref_c_grad'] = torch.zeros((params['rel_ref_c'].shape), device=device, dtype=torch.float32)
++        this_neuron_init['Learnable'][name]['rel_ref_c_tracker'] = torch.zeros((*params['rel_ref_c'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
+ 
+     else:
+         this_neuron_init["Static"][name]["g_inc"] = g_inc
+@@ -133,12 +173,62 @@ def declare_synapse_properties(args, device, params, this_synapse_init, name, ES
+     this_synapse_init["Dynamic"][name]["PSC_F"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+     this_synapse_init["Dynamic"][name]["PSC_P"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+     this_synapse_init["Dynamic"][name]["PSC_q"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++    delay_steps = int(PSC_delay/args['simulation']['dt'])
++    # One slot per possible presynaptic timestep through the static delay.
++    # This is lossless even when more than five spikes are simultaneously in
++    # flight, unlike reconstructing arrivals from the five-entry tspike ring.
++    this_synapse_init["Dynamic"][name]["spike_delay_queue"] = torch.zeros(
++        (
++            args['simulation']['batch_size'],
++            10,
++            len(args['simulation']['cell_targets']),
++            delay_steps + 1,
++        ),
++        device=device,
++        dtype=torch.bool,
++    )
++
++    if name in ("on_ron", "off_ron", "on_sonoff", "off_sonoff", "sonoff_ron"):
++        # Voltage sensitivity to this synapse's own conductance.  Unlike
++        # gSYN_accum, this trace persists across PSTH bins.
++        this_synapse_init["Dynamic"][name]["dV_gSYN"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++        for param_name in ("gain", "alpha"):
++            # Persistent short-term-plasticity state tangents.  F is currently
++            # constant because every PSC_fF is zero, but retaining dF keeps the
++            # event map complete and makes future facilitation changes safe.
++            this_synapse_init["Dynamic"][name][f"dPSC_F_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++            this_synapse_init["Dynamic"][name][f"dPSC_P_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++            this_synapse_init["Dynamic"][name][f"dPSC_x_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++            this_synapse_init["Dynamic"][name][f"dPSC_s_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++            this_synapse_init["Dynamic"][name][f"dV_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++            if name == "sonoff_ron":
++                # Raw continuous arrival-time derivative, in milliseconds per
++                # parameter.  It is deliberately not divided by tauD.
++                this_synapse_init["Dynamic"][name][f"dtime_{param_name}_delay"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),delay_steps+1), device=device, dtype=torch.float32)
++            else:
++                # Fixed-grid straight-through derivative of the hard on/off
++                # event strength.  This has different units and a different
++                # event map from dtime_*.
++                this_synapse_init["Dynamic"][name][f"dsoft_{param_name}_delay"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),delay_steps+1), device=device, dtype=torch.float32)
++
++        if name == "sonoff_ron":
++            # Sensitivities that carry each upstream sonoff conductance through
++            # sonoff spike timing, the inhibitory PSC, and finally ron voltage.
++            for source_name in ("on_sonoff", "off_sonoff"):
++                trace_name = f"{source_name}_gSYN"
++                this_synapse_init["Dynamic"][name][f"dPSC_F_{trace_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++                this_synapse_init["Dynamic"][name][f"dPSC_P_{trace_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++                this_synapse_init["Dynamic"][name][f"dPSC_x_{trace_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++                this_synapse_init["Dynamic"][name][f"dPSC_s_{trace_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++                this_synapse_init["Dynamic"][name][f"dV_{trace_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++                this_synapse_init["Dynamic"][name][f"dtime_{trace_name}_delay"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),delay_steps+1), device=device, dtype=torch.float32)
+ 
+     #Learnable
+     this_synapse_init["Learnable"][name] = {}
+     this_synapse_init["Learnable"][name]["gSYN"] = torch.nn.Parameter(torch.tensor((params[f"{name}_gSYN"]), device=device, dtype=torch.float32))
+     this_synapse_init["Learnable"][name]["gSYN_accum"] = torch.zeros((params[f"{name}_gSYN"].shape), device=device, dtype=torch.float32)
+     this_synapse_init["Learnable"][name]["gSYN_grad"] = torch.zeros((params[f"{name}_gSYN"].shape), device=device, dtype=torch.float32)
++    this_synapse_init["Learnable"][name]["gSYN_tracker"] = torch.zeros((*params[f"{name}_gSYN"].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
+ 
+     return this_synapse_init
+ 
+diff --git a/Simulation/Eligibility_handler.py b/Simulation/Eligibility_handler.py
+index 1c662c61a3c5c6b8181318e90e612dd0521b7d7f..bfb49a3e6928e70004d5e0aa72e42d8d95e7f54c 100644
+--- a/Simulation/Eligibility_handler.py
++++ b/Simulation/Eligibility_handler.py
+@@ -1,42 +1,193 @@
+ import torch
+ 
++from Simulation import conditional_handler, ode_handler
++
++
++def _advance_input_strf_sensitivity(
++    args,
++    neuron_static,
++    neuron_dynamic,
++    rate_derivative,
++    probability_active,
++    param_name,
++):
++    """Advance one input neuron's persistent dV/dSTRF trace."""
++    trace = neuron_dynamic[f"dV_STRF_{param_name}"]
++    old_sensitivity = trace[:,:,:,-1]
++    active_rate_derivative = (
++        rate_derivative[:, None, :]
++        * probability_active[:, None, :]
++    )
++    source = ode_handler.input_rate_voltage_source(
++        neuron_static,
++        neuron_dynamic['V'][:,:,:,-2],
++        active_rate_derivative,
++        args['simulation']['dt'],
++    )
++    trace[:,:,:,-2] = old_sensitivity
++    trace[:,:,:,-1] = ode_handler.advance_voltage_sensitivity(
++        old_sensitivity,
++        neuron_dynamic['input_V_jacobian'],
++        source,
++        args['simulation']['dt'],
++    )
++
+ def update_eligibility(args, states, rate_object, timestep):
+-    
+-    #Calculate Psis
++
++    # Normalized derivative of the smooth threshold gate
++    #   h(V) = 0.5 * (1 + tanh((V - V_thresh) / width)).
++    # The recurrent hard events remain frozen in this estimator; psi supplies
++    # only the local conditional-mean spike derivative.
++    surrogate_width = float(args.get("eligibility", {}).get("surrogate_width_mv", 1.0))
+     for k in list(states['neurons']['Static']):
+-        states['neurons']['Static'][k]['psi'] = (1 - torch.tanh(states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Static'][k]['V_thresh'])**2)
++        voltage_offset = (states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Static'][k]['V_thresh']) / surrogate_width
++        states['neurons']['Static'][k]['psi'] = 0.5 * (1 - torch.tanh(voltage_offset)**2) / surrogate_width
++
++    ron_static = states['neurons']['Static']['ron']
++    ron_dynamic = states['neurons']['Dynamic']['ron']
++    relative_ref = conditional_handler.refractory_state(states, timestep)
++    ron_active = (~conditional_handler.absolute_refractory_mask(
++        args, states, "ron", timestep
++    )).to(ron_dynamic['V'].dtype)
++    # Marginalize the output Bernoulli refractory draw: the local smooth
++    # conditional mean is active * relative_probability * h(V).  Input
++    # neurons have no corresponding relative-refractory probability factor.
++    ron_output_psi = (
++        ron_static['psi']
++        * ron_active
++        * relative_ref["probability"].to(ron_dynamic['V'].dtype)
++    )
+ 
+-    #Calculate conducatance eligibilities
+-    for k in list(states['synapses']['Static']):
+-        post_neuron_static = states['neurons']['Static'][k.split("_")[1]]
+-        post_neuron_dynamic = states['neurons']['Dynamic'][k.split("_")[1]]
+-        states['synapses']['Learnable'][k]['gSYN_accum'] = states['synapses']['Learnable'][k]['gSYN_accum'] + torch.sum(args['simulation']['dt']*post_neuron_static['psi']*-post_neuron_static['R'] * states['synapses']['Dynamic'][k]['PSC_s'][:,:,:,-1]*(post_neuron_dynamic['V'][:,:,:,-1]-states['synapses']['Static'][k]['ESYN'])/post_neuron_static['tau'],axis=1)
++    # Conductance eligibilities are the output neuron's recursive voltage
++    # sensitivities, accumulated over exactly the current PSTH bin.
++    for syn_name in list(states['synapses']['Static']):
++        if syn_name in ("on_ron", "off_ron", "sonoff_ron"):
++            output_dv = states['synapses']['Dynamic'][syn_name]['dV_gSYN'][:,:,:,-1]
++        else:
++            output_dv = states['synapses']['Dynamic']['sonoff_ron'][f"dV_{syn_name}_gSYN"][:,:,:,-1]
++        states['synapses']['Learnable'][syn_name]['gSYN_accum'] = (
++            states['synapses']['Learnable'][syn_name]['gSYN_accum']
++            + torch.sum(ron_output_psi * output_dv, dim=1)
++        )
+ 
+     #Calculate strf eligibilities
+     onset_static = states['neurons']['Static']['on']
+     onset_dynamic = states['neurons']['Dynamic']['on']
+     offset_static = states['neurons']['Static']['off']
+     offset_dynamic = states['neurons']['Dynamic']['off']
++    onset_probability = rate_object['onset_rate'][timestep] * args['simulation']['dt']/1000
++    offset_probability = rate_object['offset_rate'][timestep] * args['simulation']['dt']/1000
++    onset_probability_active = (onset_probability > 0.0) & (onset_probability < 1.0)
++    offset_probability_active = (offset_probability > 0.0) & (offset_probability < 1.0)
++
++    states['neurons']['Learnable']['STRF_gain_accum'] = states['neurons']['Learnable']['STRF_gain_accum'] + torch.sum(ron_output_psi*(states['synapses']['Dynamic']['on_ron']['dV_gain'][:,:,:,-1] + states['synapses']['Dynamic']['off_ron']['dV_gain'][:,:,:,-1] + states['synapses']['Dynamic']['sonoff_ron']['dV_gain'][:,:,:,-1]),axis=1)
++    states['neurons']['Learnable']['STRF_alpha_accum'] = states['neurons']['Learnable']['STRF_alpha_accum'] + torch.sum(ron_output_psi*(states['synapses']['Dynamic']['on_ron']['dV_alpha'][:,:,:,-1] + states['synapses']['Dynamic']['off_ron']['dV_alpha'][:,:,:,-1] + states['synapses']['Dynamic']['sonoff_ron']['dV_alpha'][:,:,:,-1]),axis=1)
+ 
+-    states['neurons']['Learnable']['STRF_gain_accum'] = states['neurons']['Learnable']['STRF_gain_accum'] + ((torch.sum(onset_static['psi']*-onset_static['R']*onset_static['g_postIC']*30 * (onset_dynamic['V'][:,:,:,-1]-onset_static['E_exc']),axis=1) * (1 - torch.tanh((args['simulation']['dt']/1000)*rate_object['onset_rate'][timestep,:,:]-1.5)**2)/onset_static['tau']) + 
+-                                                                                                            (torch.sum(offset_static['psi']*-offset_static['R']*offset_static['g_postIC']*30  * (offset_dynamic['V'][:,:,:,-1]-offset_static['E_exc']),axis=1)* (1 - torch.tanh((args['simulation']['dt']/1000)*rate_object['offset_rate'][timestep,:,:]-1.5)**2)/offset_static['tau']))
++    _advance_input_strf_sensitivity(
++        args,
++        onset_static,
++        onset_dynamic,
++        rate_object['onset_rate_gain_deriv'][timestep],
++        onset_probability_active,
++        "gain",
++    )
++    _advance_input_strf_sensitivity(
++        args,
++        onset_static,
++        onset_dynamic,
++        rate_object['onset_rate_deriv'][timestep],
++        onset_probability_active,
++        "alpha",
++    )
++    _advance_input_strf_sensitivity(
++        args,
++        offset_static,
++        offset_dynamic,
++        rate_object['offset_rate_gain_deriv'][timestep],
++        offset_probability_active,
++        "gain",
++    )
++    _advance_input_strf_sensitivity(
++        args,
++        offset_static,
++        offset_dynamic,
++        rate_object['offset_rate_deriv'][timestep],
++        offset_probability_active,
++        "alpha",
++    )
+ 
+-    states['neurons']['Learnable']['STRF_alpha_accum'] = states['neurons']['Learnable']['STRF_alpha_accum'] + ((torch.sum(onset_static['psi']*-onset_static['R']*onset_static['g_postIC']*30 * (onset_dynamic['V'][:,:,:,-1]-onset_static['E_exc']),axis=1)* (1 - torch.tanh((args['simulation']['dt']/1000)*rate_object['onset_rate_deriv'][timestep,:,:]-1.5)**2)/onset_static['tau']) +
+-                                                                                                            (torch.sum(offset_static['psi']*-offset_static['R']*offset_static['g_postIC']*30 * (offset_dynamic['V'][:,:,:,-1]-offset_static['E_exc']),axis=1)* (1 - torch.tanh((args['simulation']['dt']/1000)*rate_object['offset_rate_deriv'][timestep,:,:]-1.5)**2) /offset_static['tau']))
++    onset_active = (~conditional_handler.absolute_refractory_mask(
++        args, states, "on", timestep
++    )).to(onset_dynamic['V'].dtype)
++    offset_active = (~conditional_handler.absolute_refractory_mask(
++        args, states, "off", timestep
++    )).to(offset_dynamic['V'].dtype)
++    onset_pre_derivs = {
++        param_name: onset_static['psi'] * onset_active * onset_dynamic[f"dV_STRF_{param_name}"][:,:,:,-1]
++        for param_name in ("gain", "alpha")
++    }
++    offset_pre_derivs = {
++        param_name: offset_static['psi'] * offset_active * offset_dynamic[f"dV_STRF_{param_name}"][:,:,:,-1]
++        for param_name in ("gain", "alpha")
++    }
++
++    local_pre_derivs = {
++        "on_ron": {
++            "gain": onset_pre_derivs["gain"],
++            "alpha": onset_pre_derivs["alpha"],
++        },
++        "off_ron": {
++            "gain": offset_pre_derivs["gain"],
++            "alpha": offset_pre_derivs["alpha"],
++        },
++        "on_sonoff": {
++            "gain": onset_pre_derivs["gain"],
++            "alpha": onset_pre_derivs["alpha"],
++        },
++        "off_sonoff": {
++            "gain": offset_pre_derivs["gain"],
++            "alpha": offset_pre_derivs["alpha"],
++        }
++    }
++    # Preserve the first-layer estimator explicitly as a fixed-grid soft event
++    # strength.  Delivery and the complete STP tangent event map occur beside
++    # the matching hard forward event in conditional_handler.condtion3.
++    for syn_name in ("on_ron", "off_ron", "on_sonoff", "off_sonoff"):
++        delay_steps = int(states['synapses']['Static'][syn_name]['PSC_delay']/args['simulation']['dt'])
++        delay_idx = timestep % (delay_steps + 1)
++        for param_name in ("gain", "alpha"):
++            syn_dynamic = states['synapses']['Dynamic'][syn_name]
++            syn_dynamic[f"dsoft_{param_name}_delay"][:,:,:,delay_idx] = (
++                local_pre_derivs[syn_name][param_name]
++            )
+     
+     #Calculate adaptation eligibilities
+-    ron_static = states['neurons']['Static']['ron']
+-    ron_dynamic = states['neurons']['Dynamic']['ron']
+-    states['neurons']['Learnable']['ron']["output_ad_accum"] = states['neurons']['Learnable']['ron']["output_ad_accum"] + torch.sum(-ron_static['R']*ron_static['psi']*(((1+torch.tanh(ron_dynamic['V'][:,:,:,-1]-ron_static['V_thresh']))/2)*((1+torch.tanh(-(ron_dynamic['V'][:,:,:,-2]-ron_static['V_thresh'])))/2) * args['simulation']['dt'] * (ron_dynamic['V'][:,:,:,-1]-ron_static['E_k'])/ron_static['tau']),axis=1)  
++    states['neurons']['Learnable']['ron']["output_ad_accum"] = (
++        states['neurons']['Learnable']['ron']["output_ad_accum"]
++        + torch.sum(
++            ron_output_psi * ron_dynamic['dV_output_ad'][:,:,:,-1],
++            dim=1,
++        )
++    )
+     
+     #Calculate refractoriness eligibilities
+-    last_spike = ron_dynamic["tspike"].max(dim=-1).values
+-    states["neurons"]["Learnable"]["ron"]["abs_ref_accum"] = states["neurons"]["Learnable"]["ron"]["abs_ref_accum"] + torch.sum(ron_static['psi']*(ron_dynamic['V'][:,:,:,-1] - ron_static['V_reset'])*(-(1-(torch.tanh((timestep-last_spike)-states["neurons"]["Learnable"]["ron"]["abs_ref"][:,None,:])**2))),axis=1)
+-    states["neurons"]["Learnable"]["ron"]["rel_ref_a_accum"] = states["neurons"]["Learnable"]["ron"]["rel_ref_a_accum"] + torch.sum(ron_static['psi']*torch.tanh((timestep-last_spike)-states["neurons"]["Learnable"]["ron"]["abs_ref"][:,None,:])*states["neurons"]["Learnable"]["ron"]["rel_ref_c"][:,None,:]*(timestep-last_spike)*(1-torch.tanh(states["neurons"]["Learnable"]["ron"]["rel_ref_a"][:,None,:]*(timestep-last_spike)-states["neurons"]["Learnable"]["ron"]["rel_ref_b"][:,None,:])**2),axis=1)
+-    states["neurons"]["Learnable"]["ron"]["rel_ref_b_accum"] = states["neurons"]["Learnable"]["ron"]["rel_ref_b_accum"] + torch.sum(ron_static['psi']*torch.tanh((timestep-last_spike)-states["neurons"]["Learnable"]["ron"]["abs_ref"][:,None,:])*states["neurons"]["Learnable"]["ron"]["rel_ref_c"][:,None,:]*(-1)*(1-torch.tanh(states["neurons"]["Learnable"]["ron"]["rel_ref_a"][:,None,:]*(timestep-last_spike)-states["neurons"]["Learnable"]["ron"]["rel_ref_b"][:,None,:])**2),axis=1)
+-    states["neurons"]["Learnable"]["ron"]["rel_ref_c_accum"] = states["neurons"]["Learnable"]["ron"]["rel_ref_c_accum"] + torch.sum(ron_static['psi']*torch.tanh((timestep-last_spike)-states["neurons"]["Learnable"]["ron"]["abs_ref"][:,None,:])*(torch.tanh(states["neurons"]["Learnable"]["ron"]["rel_ref_a"][:,None,:]*(timestep-last_spike)-states["neurons"]["Learnable"]["ron"]["rel_ref_b"][:,None,:])) + ron_static['psi']*torch.tanh((timestep-last_spike)-states["neurons"]["Learnable"]["ron"]["abs_ref"][:,None,:]),axis=1)
+-    
+-    #Store Bk for now
+-    states['neurons']['Learnable']['Bk'] = -states['synapses']['Learnable']['sonoff_ron']['gSYN']*(states['neurons']['Static']['ron']['V_thresh']-states['synapses']['Static']['sonoff_ron']['ESYN'])
++    elapsed_steps = relative_ref["elapsed_steps"]
++    has_previous_spike = relative_ref["has_previous_spike"].to(ron_dynamic['V'].dtype)
++    abs_argument = elapsed_steps - states["neurons"]["Learnable"]["ron"]["abs_ref"][:,None,:]/args['simulation']['dt']
++    recovered_gate = torch.where(
++        relative_ref["has_previous_spike"],
++        0.5*(1+torch.tanh(abs_argument)),
++        torch.ones_like(abs_argument),
++    )
++    states["neurons"]["Learnable"]["ron"]["abs_ref_accum"] = states["neurons"]["Learnable"]["ron"]["abs_ref_accum"] + torch.sum(ron_static['psi']*(ron_dynamic['V'][:,:,:,-1] - ron_static['V_reset'])*(-0.5/args['simulation']['dt']*(1-torch.tanh(abs_argument)**2))*has_previous_spike,axis=1)
++
++    voltage_gate = 0.5*(1+torch.tanh((ron_dynamic['V'][:,:,:,-1]-ron_static['V_thresh'])/surrogate_width))
++    hazard_argument = states["neurons"]["Learnable"]["ron"]["rel_ref_a"][:,None,:]*elapsed_steps-states["neurons"]["Learnable"]["ron"]["rel_ref_b"][:,None,:]
++    hazard_sech2 = 1-torch.tanh(hazard_argument)**2
++    clamp_active = relative_ref["clamp_active"].to(ron_dynamic['V'].dtype)
++    common_gate = voltage_gate*recovered_gate*clamp_active
++    states["neurons"]["Learnable"]["ron"]["rel_ref_a_accum"] = states["neurons"]["Learnable"]["ron"]["rel_ref_a_accum"] + torch.sum(common_gate*states["neurons"]["Learnable"]["ron"]["rel_ref_c"][:,None,:]*elapsed_steps*hazard_sech2,axis=1)
++    states["neurons"]["Learnable"]["ron"]["rel_ref_b_accum"] = states["neurons"]["Learnable"]["ron"]["rel_ref_b_accum"] + torch.sum(common_gate*-states["neurons"]["Learnable"]["ron"]["rel_ref_c"][:,None,:]*hazard_sech2,axis=1)
++    states["neurons"]["Learnable"]["ron"]["rel_ref_c_accum"] = states["neurons"]["Learnable"]["ron"]["rel_ref_c_accum"] + torch.sum(common_gate*(torch.tanh(hazard_argument)+1),axis=1)
+ 
+-    return states
+\ No newline at end of file
++    return states
+diff --git a/Simulation/Loss_handler.py b/Simulation/Loss_handler.py
+index a59606d30cb57165d4adac6c2ac3026bc1fbc740..c7dcb7b86889819beb7d71a650f995c7cbfe085b 100644
+--- a/Simulation/Loss_handler.py
++++ b/Simulation/Loss_handler.py
+@@ -1,23 +1,40 @@
+ import torch
+ import numpy as np
+ 
+-def handle_loss(args, states, gt_data, timestep):
++from Simulation import debug_plot_handler
+ 
+-    if timestep % args['simulation']['PSTH_granularity'] == 0 and timestep > 0:
+-        loss = calculate_loss(states, gt_data['psth_holder'], args, timestep)
++def handle_loss(args, states, gt_data, timestep, epoch=0):
++
++    # Close a bin only after all G samples (including the current one) have
++    # been simulated.  This keeps spike counts and eligibility samples in the
++    # same [t-G+1, t] interval.
++    if (timestep + 1) % args['simulation']['PSTH_granularity'] == 0:
++        loss = calculate_loss(states, gt_data['psth_holder'], args, timestep,args["simulation"]["PSTH_granularity"])
+         states = update_grad(states, loss['gradient'])
++        debug_plot_handler.plot_loss_update(args, states, gt_data, timestep + 1, epoch)
+ 
+     if timestep == args['simulation']['sim_len'] - 1:
+         loss_cv = calculate_CV_loss(states, gt_data['raster_holder'], args, timestep)
+-        states = update_grad_CV(states, loss_cv['gradient'])
++        if bool(args.get("optimization", {}).get("train_refractory", False)):
++            states = update_grad_CV(states, loss_cv['gradient'])
++
++        #Firing rate loss
++
++        #loss = calculate_loss(states, gt_data['psth_holder'], args, timestep,29801)
++        #states = update_grad(states, loss['gradient']*100)
++
++
++
+ 
+     return states
+ 
+-def calculate_loss(states,gt_data,args,timestep):
++def calculate_loss(states,gt_data,args,timestep, granularity):
+ 
+     #Caluclate simulation PSTHs
+     #Trim 
+-    holder = states["neurons"]["Dynamic"]['ron']['spikes_holder'][:,:,:,timestep-args["simulation"]["PSTH_granularity"]:timestep]
++    bin_end = timestep + 1
++    bin_start = bin_end - granularity
++    holder = states["neurons"]["Dynamic"]['ron']['spikes_holder'][:,:,:,bin_start:bin_end]
+     #Sums across trial dim
+     holder = torch.sum(holder, dim = 1,keepdim = False)
+     #Reshape in order to sum across bins
+@@ -26,11 +43,17 @@ def calculate_loss(states,gt_data,args,timestep):
+ 
+     #Calculate Loss and gradient
+     #Average SSE
+-    loss = (sim_psth - gt_data[None,:,int(timestep/args["simulation"]["PSTH_granularity"])-1])**2
++    target_index = int(bin_end/granularity) - 1
++    target = gt_data[None,:,target_index]
++    loss = (sim_psth - target)**2
+     states["neurons"]["Dynamic"]['ron']['mean_sse_loss'] += torch.mean(loss.flatten()).cpu()
+ 
+-    #Associated SSE gradient
+-    gradient = 2*(sim_psth - gt_data[None,:,int(timestep/args["simulation"]["PSTH_granularity"])-1])
++    # A sampled Poisson-like count MSE has a 0.5-count downward optimum bias:
++    # E[(S-Y)^2] = Var(S) + (E[S]-Y)^2.  Subtracting 1 from the pathwise
++    # multiplier (equivalently targeting Y+0.5) removes the leading-order
++    # count bias.  Keep the reported loss against the unshifted data target.
++    count_bias_correction = float(args.get("loss", {}).get("psth_count_bias_correction", 0.0))
++    gradient = 2*(sim_psth - target - count_bias_correction)
+     return {'loss': loss, 'gradient': gradient}
+ 
+ def calculate_CV_loss(states,gt_data,args,timestep):
+@@ -38,25 +61,31 @@ def calculate_CV_loss(states,gt_data,args,timestep):
+     #Calculate simualtion and data ISIs
+     #Simulation
+     gradient = torch.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])), device=torch.device(args['simulation']['device']), dtype=torch.float32)
++    loss = torch.tensor(0.0, device=torch.device(args['simulation']['device']))
+ 
+     for k in range(args['simulation']['batch_size']):
+         for m in range(len(args['simulation']['cell_targets'])):
+             isi_holder_sim = []
+             isi_holder_data = []
+             for n in range(10):
+-                if len(torch.where(states["neurons"]["Dynamic"]['ron']['spikes_holder'][k,n,m,:] == 1)[0]) > 0:
+-                    isi_holder_sim.append(torch.diff(torch.where(states["neurons"]["Dynamic"]['ron']['spikes_holder'][k,n,m,:] == 1)[0]))
+-                
+-                isi_holder_data.append(torch.diff(torch.where(gt_data[m,n,:] == 1)[0]))
+-
+-            
+-            if len(isi_holder_sim) <= 1: #The idea behind this is that if there is nothing to go off of (aka no spikes) don't move the gradient... The other loss should rebound things (assuming that the refractory parameters are well enough constrained)
++                sim_spike_times = torch.where(states["neurons"]["Dynamic"]['ron']['spikes_holder'][k,n,m,:] == 1)[0]
++                data_spike_times = torch.where(gt_data[m,n,:] == 1)[0]
++                if len(sim_spike_times) > 1:
++                    isi_holder_sim.append(torch.diff(sim_spike_times))
++                if len(data_spike_times) > 1:
++                    isi_holder_data.append(torch.diff(data_spike_times))
++
++            if not isi_holder_sim or not isi_holder_data:
+                 gradient[k,m] = 0
+-            elif torch.mean(torch.cat(isi_holder_sim).to(torch.float32)) == 0 or len(torch.cat(isi_holder_sim).to(torch.float32)) <= 1: #If mean is zero it will break the grad, or if there is only 1 example it will break the std.
++                continue
++
++            sim_isis = torch.cat(isi_holder_sim).to(torch.float32)
++            data_isis = torch.cat(isi_holder_data).to(torch.float32)
++            if sim_isis.numel() <= 1 or data_isis.numel() <= 1 or torch.mean(sim_isis) == 0 or torch.mean(data_isis) == 0:
+                 gradient[k,m] = 0
+             else:
+-                sim_cv = torch.std(torch.cat(isi_holder_sim).to(torch.float32))/torch.mean(torch.cat(isi_holder_sim).to(torch.float32))
+-                data_cv = torch.std(torch.cat(isi_holder_data).to(torch.float32))/torch.mean(torch.cat(isi_holder_data).to(torch.float32))
++                sim_cv = torch.std(sim_isis)/torch.mean(sim_isis)
++                data_cv = torch.std(data_isis)/torch.mean(data_isis)
+ 
+                 loss = (sim_cv - data_cv)**2
+                 states["neurons"]["Dynamic"]['ron']['mean_CV_loss'] += loss
+@@ -67,10 +96,9 @@ def calculate_CV_loss(states,gt_data,args,timestep):
+ 
+ def update_grad(states,gradient):
+     for k in list(states['synapses']['Static'].keys()): 
+-        if k.rsplit("_")[1] == "ron":
+-            states["synapses"]["Learnable"][k]["gSYN_grad"] += gradient*states["synapses"]["Learnable"][k]["gSYN_accum"]
+-        else:
+-            states["synapses"]["Learnable"][k]["gSYN_grad"] += gradient*states["synapses"]["Learnable"][k]["gSYN_accum"]*states['neurons']['Learnable']['Bk']
++        # Every accumulator is now d(output spike surrogate)/d(the named
++        # conductance), including the full on/off -> sonoff -> ron path.
++        states["synapses"]["Learnable"][k]["gSYN_grad"] += gradient*states["synapses"]["Learnable"][k]["gSYN_accum"]
+         states["synapses"]["Learnable"][k]["gSYN_accum"].zero_()
+ 
+     states["neurons"]["Learnable"]["ron"]["output_ad_grad"]+= gradient*states["neurons"]["Learnable"]["ron"]["output_ad_accum"]
+@@ -91,4 +119,4 @@ def update_grad_CV(states,gradient):
+     states["neurons"]["Learnable"]["ron"]["rel_ref_b_grad"] += gradient*states["neurons"]["Learnable"]["ron"]["rel_ref_b_accum"]
+     states["neurons"]["Learnable"]["ron"]["rel_ref_c_grad"] += gradient*states["neurons"]["Learnable"]["ron"]["rel_ref_c_accum"]
+ 
+-    return states
+\ No newline at end of file
++    return states
+diff --git a/Simulation/Parameter_initialization.py b/Simulation/Parameter_initialization.py
+index 2abbdd77556a7b658383c56101b4d9af3addb609..aa0133f34c3101f8530d14ff0670b30b2902c763 100644
+--- a/Simulation/Parameter_initialization.py
++++ b/Simulation/Parameter_initialization.py
+@@ -1,35 +1,66 @@
+ import numpy as np
++try:
++    from Simulation.initialize_from_mat import maybe_replace_initialization_from_mat
++except ModuleNotFoundError:
++    from initialize_from_mat import maybe_replace_initialization_from_mat
+ 
+ def init_params(args):
+     params = {}
+     lrs = {}
+ 
+-    Strf_alpha_mag = 30
+-    Strf_gain_mag = 0.1
+-    output_ad_mag = 0.00001
+-    on_ron_gSYN_mag = 0.03
+-    off_ron_gSYN_mag = 0.03
++    Strf_alpha_mag = 100
++    Strf_gain_mag = 0.02
++    output_ad_mag = 0.005
++    on_ron_gSYN_mag = 0.05
++    off_ron_gSYN_mag = 0.05
+     on_sonoff_gSYN_mag = 0.05
+     off_sonoff_gSYN_mag = 0.05
+     sonoff_ron_gSYN_mag = 0.05
+-    abs_ref_mag = 100
+-    rel_ref_a_mag = 0.1
+-    rel_ref_b_mag = 0.5
++    abs_ref_mag = 10
++    rel_ref_a_mag = 10
++    rel_ref_b_mag = 10
+     rel_ref_c_mag = 1
+ 
+-    Strf_alpha_min = 10
+-    Strf_gain_min = 0.01
+-    output_ad_min = 0
++    # Strf_alpha_mag = 25
++    # Strf_gain_mag = 0.06
++    # output_ad_mag = 0.005
++    # on_ron_gSYN_mag = 0.032
++    # off_ron_gSYN_mag = 0.001
++    # on_sonoff_gSYN_mag = 0.17
++    # off_sonoff_gSYN_mag = 0.0264
++    # sonoff_ron_gSYN_mag = 0.42
++    # abs_ref_mag = 0
++    # rel_ref_a_mag = 0.8
++    # rel_ref_b_mag = 4.4
++    # rel_ref_c_mag = 1
++
++    Strf_alpha_min = 1
++    Strf_gain_min = 0.001
++    output_ad_min = 0.0001
+     on_ron_gSYN_min = 0.01
+     off_ron_gSYN_min = 0.01
+     on_sonoff_gSYN_min = 0.01
+     off_sonoff_gSYN_min = 0.01
+     sonoff_ron_gSYN_min = 0.01
+-    abs_ref_min = 1
++    abs_ref_min = 0.1
+     rel_ref_a_min = 0.001
+-    rel_ref_b_min = 0.005
++    rel_ref_b_min = 0
+     rel_ref_c_min = 0.2
+ 
++
++    # Strf_alpha_min = 0.01
++    # Strf_gain_min = 0.06
++    # output_ad_min = 0.0001
++    # on_ron_gSYN_min = 0.032
++    # off_ron_gSYN_min = 0.001
++    # on_sonoff_gSYN_min = 0.17
++    # off_sonoff_gSYN_min = 0.0264
++    # sonoff_ron_gSYN_min = 0.42
++    # abs_ref_min = 0
++    # rel_ref_a_min = 0.8
++    # rel_ref_b_min = 4.4
++    # rel_ref_c_min = 1
++
+     params['Strf_alpha'] = (np.random.rand(args['simulation']['batch_size'],len(args['simulation']['cell_targets']))*(Strf_alpha_mag-Strf_alpha_min)+Strf_alpha_min)
+     params['Strf_gain'] = (np.random.rand(args['simulation']['batch_size'],len(args['simulation']['cell_targets']))*(Strf_gain_mag-Strf_gain_min)+Strf_gain_min)
+     params['output_ad'] = (np.random.rand(args['simulation']['batch_size'],len(args['simulation']['cell_targets']))*(output_ad_mag-output_ad_min)+output_ad_min)
+@@ -42,8 +73,9 @@ def init_params(args):
+     params['rel_ref_a'] = (np.random.rand(args['simulation']['batch_size'],len(args['simulation']['cell_targets']))*(rel_ref_a_mag-rel_ref_a_min)+rel_ref_a_min)
+     params['rel_ref_b'] = (np.random.rand(args['simulation']['batch_size'],len(args['simulation']['cell_targets']))*(rel_ref_b_mag-rel_ref_b_min)+rel_ref_b_min)
+     params['rel_ref_c'] = (np.random.rand(args['simulation']['batch_size'],len(args['simulation']['cell_targets']))*(rel_ref_c_mag-rel_ref_c_min)+rel_ref_c_min)
++    params = maybe_replace_initialization_from_mat(args, params)
+ 
+-    lrs['Strf_alpha'] = Strf_alpha_mag/2*args['simulation']['lr']
++    lrs['Strf_alpha'] = Strf_alpha_mag*args['simulation']['lr']
+     lrs['Strf_gain'] = Strf_gain_mag*args['simulation']['lr']
+     lrs['output_ad'] = output_ad_mag*args['simulation']['lr']
+     lrs['on_ron_gSYN'] = on_ron_gSYN_mag*args['simulation']['lr']
+@@ -51,9 +83,9 @@ def init_params(args):
+     lrs['on_sonoff_gSYN'] = on_sonoff_gSYN_mag*args['simulation']['lr']
+     lrs['off_sonoff_gSYN'] = off_sonoff_gSYN_mag*args['simulation']['lr']
+     lrs['sonoff_ron_gSYN'] = sonoff_ron_gSYN_mag*args['simulation']['lr']
+-    lrs['abs_ref'] = abs_ref_mag*args['simulation']['lr']
+-    lrs['rel_ref_a'] = rel_ref_a_mag/10*args['simulation']['lr']
+-    lrs['rel_ref_b'] = rel_ref_b_mag*args['simulation']['lr']
+-    lrs['rel_ref_c'] = rel_ref_c_mag/10*args['simulation']['lr']
++    lrs['abs_ref'] = 2
++    lrs['rel_ref_a'] = 1
++    lrs['rel_ref_b'] = 2
++    lrs['rel_ref_c'] = 0.02
+ 
+     return {'params': params, 'lrs' : lrs}
+diff --git a/Simulation/Reset_handler.py b/Simulation/Reset_handler.py
+index 0ebd6be33137353ea6e21c3f5d209f82f7692cd6..191b5b5842d52f228f34c89d7b2bcf6fdb542b5d 100644
+--- a/Simulation/Reset_handler.py
++++ b/Simulation/Reset_handler.py
+@@ -12,6 +12,17 @@ def reset_dyanmics(states,args,device):
+         states["neurons"]["Dynamic"][name]["g_ad"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+         states["neurons"]["Dynamic"][name]["tspike"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),5), device=device, dtype=torch.float32) * -30
+         states["neurons"]["Dynamic"][name]["buffer_index"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets'])), device=device, dtype=torch.int64)
++        states["neurons"]["Dynamic"][name]["spike_mask"] = torch.zeros_like(
++            states["neurons"]["Dynamic"][name]["spike_mask"]
++        )
++        if states["neurons"]["Static"][name]["input"] == 1:
++            for param_name in ("gain", "alpha"):
++                trace_name = f"dV_STRF_{param_name}"
++                states["neurons"]["Dynamic"][name][trace_name] = torch.zeros_like(states["neurons"]["Dynamic"][name][trace_name])
++            states["neurons"]["Dynamic"][name]["input_V_jacobian"] = torch.full_like(
++                states["neurons"]["Dynamic"][name]["input_V_jacobian"],
++                -1.0 / states["neurons"]["Static"][name]["tau"],
++            )
+         if states["neurons"]["Static"][name]["noise"] == 1:
+             states["neurons"]["Dynamic"][name]["noise_sn"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+             states["neurons"]["Dynamic"][name]["noise_xn"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+@@ -29,13 +40,46 @@ def reset_dyanmics(states,args,device):
+             states["neurons"]["Learnable"][name]["rel_ref_b_grad"] = torch.zeros((states["neurons"]["Learnable"][name]["rel_ref_b"].shape), device=device, dtype=torch.float32)
+             states["neurons"]["Learnable"][name]["rel_ref_c_accum"] = torch.zeros((states["neurons"]["Learnable"][name]["rel_ref_c"].shape), device=device, dtype=torch.float32)
+             states["neurons"]["Learnable"][name]["rel_ref_c_grad"] = torch.zeros((states["neurons"]["Learnable"][name]["rel_ref_c"].shape), device=device, dtype=torch.float32)
++            states["neurons"]["Dynamic"][name]["dV_output_ad"] = torch.zeros_like(states["neurons"]["Dynamic"][name]["dV_output_ad"])
++            states["neurons"]["Dynamic"][name]["dg_ad_output_ad"] = torch.zeros_like(states["neurons"]["Dynamic"][name]["dg_ad_output_ad"])
+ 
+     for k in list(states["synapses"]["Static"].keys()):
+         states["synapses"]["Dynamic"][k]["PSC_s"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+         states["synapses"]["Dynamic"][k]["PSC_x"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+         states["synapses"]["Dynamic"][k]["PSC_F"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+         states["synapses"]["Dynamic"][k]["PSC_q"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++        states["synapses"]["Dynamic"][k]["PSC_P"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++        states["synapses"]["Dynamic"][k]["spike_delay_queue"] = torch.zeros_like(
++            states["synapses"]["Dynamic"][k]["spike_delay_queue"]
++        )
++        if "dV_gSYN" in states["synapses"]["Dynamic"][k]:
++            states["synapses"]["Dynamic"][k]["dV_gSYN"] = torch.zeros_like(states["synapses"]["Dynamic"][k]["dV_gSYN"])
++        for param_name in ("gain", "alpha"):
++            if f"dPSC_x_{param_name}" in states["synapses"]["Dynamic"][k]:
++                states["synapses"]["Dynamic"][k][f"dPSC_F_{param_name}"] = torch.zeros_like(states["synapses"]["Dynamic"][k][f"dPSC_F_{param_name}"])
++                states["synapses"]["Dynamic"][k][f"dPSC_P_{param_name}"] = torch.zeros_like(states["synapses"]["Dynamic"][k][f"dPSC_P_{param_name}"])
++                states["synapses"]["Dynamic"][k][f"dPSC_x_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++                states["synapses"]["Dynamic"][k][f"dPSC_s_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++                states["synapses"]["Dynamic"][k][f"dV_{param_name}"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
++                delay_name = (
++                    f"dtime_{param_name}_delay"
++                    if k == "sonoff_ron"
++                    else f"dsoft_{param_name}_delay"
++                )
++                states["synapses"]["Dynamic"][k][delay_name] = torch.zeros_like(states["synapses"]["Dynamic"][k][delay_name])
++        if k == "sonoff_ron":
++            for source_name in ("on_sonoff", "off_sonoff"):
++                trace_name = f"{source_name}_gSYN"
++                for state_name in (
++                    f"dPSC_F_{trace_name}",
++                    f"dPSC_P_{trace_name}",
++                    f"dPSC_x_{trace_name}",
++                    f"dPSC_s_{trace_name}",
++                    f"dV_{trace_name}",
++                    f"dtime_{trace_name}_delay",
++                ):
++                    states["synapses"]["Dynamic"][k][state_name] = torch.zeros_like(states["synapses"]["Dynamic"][k][state_name])
+         states["synapses"]["Learnable"][k]["gSYN_accum"] = torch.zeros((states["synapses"]["Learnable"][k]["gSYN"].shape), device=device, dtype=torch.float32)
+         states["synapses"]["Learnable"][k]["gSYN_grad"] = torch.zeros((states["synapses"]["Learnable"][k]["gSYN"].shape), device=device, dtype=torch.float32)
+ 
+-    return states
+\ No newline at end of file
++    return states
+diff --git a/Simulation/Simulation_Handler.py b/Simulation/Simulation_Handler.py
+index 1fc00bd689f1eba34c3a7706b1a8ab63acb8ba77..81ae02eb165467ea1091ddfc329cb68e3702abea 100644
+--- a/Simulation/Simulation_Handler.py
++++ b/Simulation/Simulation_Handler.py
+@@ -1,8 +1,10 @@
+ import torch
+ import time
++import numpy as np
+ 
+ from Pre_Processing import preprocess_handler
+-from Simulation import Architecture_Declaration,ode_handler,Eligibility_handler,conditional_handler, Loss_handler, update_handler, Reset_handler
++from Simulation import Architecture_Declaration,ode_handler,Eligibility_handler,conditional_handler, Loss_handler, update_handler, Reset_handler, debug_plot_handler
++from Simulation.initialize_from_mat import maybe_restore_adam_from_mat
+ 
+ def handle_sim(args, params,gt_data):
+ 
+@@ -12,27 +14,54 @@ def handle_sim(args, params,gt_data):
+ 
+ def run_optimization(args, params, gt_data):
+ 
++    if bool(args.get("optimization", {}).get("train_refractory", False)):
++        raise NotImplementedError(
++            "End-to-end refractory training is disabled: the existing CV "
++            "multiplier is not d(CV)/d(parameter) for discrete spike times. "
++            "Fit refractory recovery with "
++            "Archive/Debugging/fit_refractory_hazard.py, or implement an "
++            "explicit score-function/renewal objective before enabling it."
++        )
++
+     start_time = time.time()
++
++    seed = args.get('simulation', {}).get('seed')
++    if seed is not None:
++        np.random.seed(int(seed))
++        torch.manual_seed(int(seed))
++        if torch.cuda.is_available():
++            torch.cuda.manual_seed_all(int(seed))
+     
+-    states = Architecture_Declaration.build_network(args, torch.device(args['simulation']['device']), params['params'])
++    device = torch.device(args['simulation']['device'])
++    states = Architecture_Declaration.build_network(args, device, params['params'])
++    states = maybe_restore_adam_from_mat(args, states, device)
+ 
+     for epoch in range(args['simulation']['epochs']):
+         with torch.no_grad():
+             
+-            pre_processed_object = preprocess_handler.preprocess(args,states,torch.device(args['simulation']['device']))
++            pre_processed_object = preprocess_handler.preprocess(args,states,device)
++            debug_plot_handler.plot_input_rates(args, pre_processed_object['onset_offset_rates'], epoch)
+ 
+             for timestep in range(args['simulation']['sim_len']):
+ 
+                 states = ode_handler.run_odes(args, states, pre_processed_object['spks'],timestep)
+                 states = Eligibility_handler.update_eligibility(args, states, pre_processed_object['onset_offset_rates'],timestep)
+                 states = conditional_handler.run_conditionals(args, states,timestep)
+-                states = Loss_handler.handle_loss(args, states, gt_data,timestep)
++                states = Loss_handler.handle_loss(args, states, gt_data,timestep, epoch)
+ 
+-            states = update_handler.run_adam(states, args, params['lrs'])
++            states = update_handler.run_adam(states, args, params['lrs'],epoch)
+             print(f"Epoch {epoch} -- Average SSE: {states['neurons']['Dynamic']['ron']['mean_sse_loss']} -- Average CV: {states['neurons']['Dynamic']['ron']['mean_CV_loss']}")
++            firing_rate_hz = states['neurons']['Dynamic']['ron']['spikes_holder'].sum().item()/(args['simulation']['batch_size']*10*len(args['simulation']['cell_targets'])*(args['simulation']['sim_len']*args['simulation']['dt']/1000))
++            print(f"Epoch {epoch} -- Average firing rate: {firing_rate_hz:.3f} Hz")
++            debug_plot_handler.plot_epoch_summary(args, states, gt_data, epoch)
+             states["neurons"]["BookKeeping"].append(states['neurons']['Dynamic']['ron']['mean_sse_loss'])
++            states["neurons"].setdefault("FiringRateBookKeeping", []).append(firing_rate_hz)
++            cv_value = states['neurons']['Dynamic']['ron']['mean_CV_loss']
++            if isinstance(cv_value, torch.Tensor):
++                cv_value = float(cv_value.detach().cpu())
++            states["neurons"].setdefault("CVBookKeeping", []).append(float(cv_value))
+             if epoch < args['simulation']['epochs'] - 1: #Don't do reset the last epoch because we will save the output
+-                states = Reset_handler.reset_dyanmics(states, args, torch.device(args['simulation']['device']))
++                states = Reset_handler.reset_dyanmics(states, args, device)
+ 
+     final_time = time.time() - start_time
+     print(f"Simulation completed in {final_time:.2f} seconds.")
+diff --git a/Simulation/conditional_handler.py b/Simulation/conditional_handler.py
+index 50fba02dca1346c65fedf49e6375b58ffd19df65..a42214ef62fac6d5d52ce5bd808f49170e969420 100644
+--- a/Simulation/conditional_handler.py
++++ b/Simulation/conditional_handler.py
+@@ -1,5 +1,215 @@
+ import torch
+ 
++
++def _valid_spike_times(dynamic):
++    """Return the spike-time ring buffer and its valid-entry mask.
++
++    Negative values are initialization sentinels, not biological spikes.  Theyrefractory_state
++    must never trigger delayed synapses or refractory clamps.
++    """
++    spike_times = dynamic["tspike"]
++    return spike_times, spike_times >= 0
++
++
++def refractory_state(states, timestep):
++    """Return elapsed time and the output neuron's relative-ref hazard.
++
++    A neuron with no previous spike starts fully recovered.  ``raw_probability``
++    and ``clamp_active`` are exposed so eligibility code can differentiate the
++    exact same clamped forward hazard.
++    """
++    dynamic = states["neurons"]["Dynamic"]["ron"]
++    learnable = states["neurons"]["Learnable"]["ron"]
++    spike_times, valid = _valid_spike_times(dynamic)
++    has_previous_spike = torch.any(valid, dim=-1)
++    last_spike = spike_times.max(dim=-1).values
++    elapsed_steps = timestep - last_spike
++
++    a = learnable["rel_ref_a"][:, None, :]
++    b = learnable["rel_ref_b"][:, None, :]
++    c = learnable["rel_ref_c"][:, None, :]
++    raw_probability = c * (torch.tanh(a * elapsed_steps - b) + 1.0)
++    clamp_active = has_previous_spike & (raw_probability > 0.0) & (raw_probability < 1.0)
++    probability = torch.where(
++        has_previous_spike,
++        torch.clamp(raw_probability, min=0.0, max=1.0),
++        torch.ones_like(raw_probability),
++    )
++    return {
++        "last_spike": last_spike,
++        "elapsed_steps": elapsed_steps,
++        "has_previous_spike": has_previous_spike,
++        "raw_probability": raw_probability,
++        "clamp_active": clamp_active,
++        "probability": probability,
++    }
++
++
++def absolute_refractory_mask(args, states, neuron_name, timestep):
++    """Return the exact mask that condition1 will clamp this timestep."""
++    spike_times, valid = _valid_spike_times(states['neurons']['Dynamic'][neuron_name])
++    if states['neurons']['Static'][neuron_name]['output'] == 1:
++        refractory_duration = (
++            states['neurons']['Learnable'][neuron_name]['abs_ref'][:, None, :, None]
++            / args['simulation']['dt']
++        )
++    else:
++        refractory_duration = (
++            states['neurons']['Static'][neuron_name]['t_ref']
++            / args['simulation']['dt']
++        )
++    return torch.any(valid & (timestep <= spike_times + refractory_duration), dim=-1)
++
++
++def _zero_trace_at_indices(trace, previous_indices, current_indices):
++    """Reset one trace using indices computed once by the caller."""
++    trace[previous_indices] = trace[current_indices]
++    trace[current_indices] = 0
++
++
++def reset_voltage_sensitivities(states, neuron_name, indices):
++    """Apply one reset index tuple to every voltage-sensitivity trace.
++
++    The enclosing conditional has already established that the mask is
++    non-empty and called ``torch.where``.  Reusing those indices avoids a
++    blocking GPU ``.item()`` and another ``torch.where`` for every trace.
++    """
++    previous_indices = indices + (-2,)
++    current_indices = indices + (-1,)
++
++    if neuron_name == "ron":
++        for syn_name in ("on_ron", "off_ron", "sonoff_ron"):
++            dynamic = states['synapses']['Dynamic'][syn_name]
++            for trace_name in ("dV_gain", "dV_alpha", "dV_gSYN"):
++                if trace_name in dynamic:
++                    _zero_trace_at_indices(
++                        dynamic[trace_name], previous_indices, current_indices
++                    )
++
++        indirect_dynamic = states['synapses']['Dynamic']['sonoff_ron']
++        for source_name in ("on_sonoff", "off_sonoff"):
++            _zero_trace_at_indices(
++                indirect_dynamic[f"dV_{source_name}_gSYN"],
++                previous_indices,
++                current_indices,
++            )
++
++        _zero_trace_at_indices(
++            states['neurons']['Dynamic']['ron']['dV_output_ad'],
++            previous_indices,
++            current_indices,
++        )
++
++    elif neuron_name == "sonoff":
++        for syn_name in ("on_sonoff", "off_sonoff"):
++            dynamic = states['synapses']['Dynamic'][syn_name]
++            for trace_name in ("dV_gain", "dV_alpha", "dV_gSYN"):
++                if trace_name in dynamic:
++                    _zero_trace_at_indices(
++                        dynamic[trace_name], previous_indices, current_indices
++                    )
++
++    elif neuron_name in ("on", "off"):
++        dynamic = states['neurons']['Dynamic'][neuron_name]
++        for param_name in ("gain", "alpha"):
++            _zero_trace_at_indices(
++                dynamic[f"dV_STRF_{param_name}"],
++                previous_indices,
++                current_indices,
++            )
++
++
++def soft_event_stp_tangent(
++    forward_F,
++    forward_P,
++    old_dF,
++    old_dP,
++    old_dx,
++    old_ds,
++    event_mask,
++    event_strength_derivative,
++    synapse_static,
++):
++    """Differentiate a fixed-grid soft event-strength relaxation.
++
++    ``event_mask`` is the hard forward event u in {0, 1}, while
++    ``event_strength_derivative`` is the straight-through du/dtheta.  There is
++    no event-time saltation in this estimator, so s remains continuous.
++    """
++    u = event_mask.to(forward_F.dtype)
++    w = event_strength_derivative.to(forward_F.dtype)
++    event_q = forward_F * forward_P
++    d_event_q = forward_P * old_dF + forward_F * old_dP
++    facilitation = synapse_static['PSC_fF']
++    depression = synapse_static['PSC_fP']
++
++    new_dF = (
++        (1.0 - u * facilitation) * old_dF
++        + facilitation * (synapse_static['PSC_maxF'] - forward_F) * w
++    )
++    new_dP = (
++        (1.0 - u * depression) * old_dP
++        - depression * forward_P * w
++    )
++    new_dx = old_dx + u * d_event_q + event_q * w
++    return new_dF, new_dP, new_dx, old_ds, d_event_q
++
++
++def time_shift_stp_tangent(
++    forward_F,
++    forward_P,
++    old_dF,
++    old_dP,
++    old_dx,
++    old_ds,
++    event_mask,
++    event_time_derivative,
++    synapse_static,
++):
++    """Apply the exact saltation for a parameter-dependent event time.
++
++    ``event_time_derivative`` is raw dt_event/dtheta in milliseconds per
++    parameter.  Static axonal delay does not alter it.
++    """
++    u = event_mask.to(forward_F.dtype)
++    zeta = event_time_derivative.to(forward_F.dtype) * u
++    event_q = forward_F * forward_P
++    recovery_F = (1.0 - forward_F) / synapse_static['tauF']
++    recovery_P = (1.0 - forward_P) / synapse_static['tauP']
++    d_event_q = (
++        u * (forward_P * old_dF + forward_F * old_dP)
++        + (forward_P * recovery_F + forward_F * recovery_P) * zeta
++    )
++    facilitation = synapse_static['PSC_fF']
++    depression = synapse_static['PSC_fP']
++
++    new_dF = (
++        (1.0 - u * facilitation) * old_dF
++        + facilitation
++        * (synapse_static['PSC_maxF'] - 1.0)
++        * zeta
++        / synapse_static['tauF']
++    )
++    new_dP = (
++        (1.0 - u * depression) * old_dP
++        - depression * zeta / synapse_static['tauP']
++    )
++    new_dx = old_dx + d_event_q + event_q * zeta / synapse_static['tauD']
++    new_ds = (
++        old_ds
++        - synapse_static['scale'] * event_q * zeta / synapse_static['tauR']
++    )
++    return new_dF, new_dP, new_dx, new_ds, d_event_q
++
++
++def _write_stp_tangent(dynamic, trace_name, tangent):
++    new_dF, new_dP, new_dx, new_ds, _ = tangent
++    dynamic[f"dPSC_F_{trace_name}"][:,:,:,-1] = new_dF
++    dynamic[f"dPSC_P_{trace_name}"][:,:,:,-1] = new_dP
++    dynamic[f"dPSC_x_{trace_name}"][:,:,:,-1] = new_dx
++    dynamic[f"dPSC_s_{trace_name}"][:,:,:,-1] = new_ds
++
++
+ def run_conditionals(args, states,timestep):
+     
+     states = condtion1(args, states,timestep) #Previously condition 2b   (Absolute refractory period)
+@@ -11,24 +221,39 @@ def run_conditionals(args, states,timestep):
+ 
+ def condtion1(args, states,timestep):
+     for k in list(states['neurons']['Static']):
+-        if states['neurons']['Static'][k]['output'] == 1:
+-            mask = torch.any((timestep <= (states['neurons']['Dynamic'][k]['tspike'] + states['neurons']['Learnable'][k]['abs_ref'][:,None,:,None]/args['simulation']['dt'])),axis=-1)
+-        else:
+-            mask = torch.any((timestep <= (states['neurons']['Dynamic'][k]['tspike'] + states['neurons']['Static'][k]['t_ref']/args['simulation']['dt'])),axis=-1)
++        mask = absolute_refractory_mask(args, states, k, timestep)
+         if  torch.any(mask).item():
+             spikers = torch.where(mask)
+             states['neurons']['Dynamic'][k]['V'][spikers + (-2,)] = states['neurons']['Dynamic'][k]['V'][spikers + (-1,)] 
+             states['neurons']['Dynamic'][k]['V'][spikers + (-1,)] = states['neurons']['Static'][k]['V_reset']
++            reset_voltage_sensitivities(states, k, spikers)
+     return states
+ 
+ def condtion2(args, states,timestep):
++    # A time-ring slot is reused after delay_steps + 1 timesteps.  Clear it
++    # before recording any sonoff spike-time derivatives for this timestep.
++    sonoff_ron_dynamic = states['synapses']['Dynamic']['sonoff_ron']
++    sonoff_ron_static = states['synapses']['Static']['sonoff_ron']
++    sonoff_delay_steps = int(
++        sonoff_ron_static['PSC_delay'] / args['simulation']['dt']
++    )
++    sonoff_write_idx = timestep % (sonoff_delay_steps + 1)
++    for trace_name in (
++        "gain",
++        "alpha",
++        "on_sonoff_gSYN",
++        "off_sonoff_gSYN",
++    ):
++        sonoff_ron_dynamic[f"dtime_{trace_name}_delay"][:,:,:,sonoff_write_idx] = 0
++
+     for k in list(states['neurons']['Static']):
+         if states['neurons']['Static'][k]['output'] == 1:
+-            last_spike = states['neurons']['Dynamic'][k]["tspike"].max(dim=-1).values
+-            mask = ((states['neurons']['Dynamic'][k]['V'][:,:,:,-1] >= states['neurons']['Static'][k]['V_thresh']) & (torch.rand(last_spike.shape,device=torch.device(args['simulation']['device']))<states['neurons']['Learnable']['ron']['rel_ref_c'][:,None,:]*torch.tanh(states['neurons']['Learnable']['ron']['rel_ref_a'][:,None,:]*(timestep-last_spike) - states['neurons']['Learnable']['ron']['rel_ref_b'][:,None,:]) + states['neurons']['Learnable']['ron']['rel_ref_c'][:,None,:])).to(torch.int64)
++            relative_ref = refractory_state(states, timestep)
++            mask = ((states['neurons']['Dynamic'][k]['V'][:,:,:,-1] >= states['neurons']['Static'][k]['V_thresh']) & (torch.rand(relative_ref["probability"].shape,device=torch.device(args['simulation']['device'])) < relative_ref["probability"])).to(torch.int64)
+             states['neurons']['Dynamic'][k]["spikes_holder"][:,:,:,timestep] = mask
+         else:
+             mask = ((states['neurons']['Dynamic'][k]['V'][:,:,:,-1] >= states['neurons']['Static'][k]['V_thresh'])).to(torch.int64)
++        states['neurons']['Dynamic'][k]['spike_mask'].copy_(mask.bool())
+         if torch.any(mask).item():
+             spikers = torch.where(mask)
+             states['neurons']['Dynamic'][k]['tspike'][spikers + (states['neurons']['Dynamic'][k]['buffer_index'][spikers].to(torch.int64)-1,)] = timestep
+@@ -38,7 +263,33 @@ def condtion2(args, states,timestep):
+             states['neurons']['Dynamic'][k]['g_ad'][spikers + (-2,)] = states['neurons']['Dynamic'][k]['g_ad'][spikers + (-1,)]
+             if states['neurons']['Static'][k]['output'] == 1:
+                 states['neurons']['Dynamic'][k]['g_ad'][spikers + (-1,)] = states['neurons']['Dynamic'][k]['g_ad'][spikers + (-1,)] + states['neurons']['Learnable'][k]["output_ad"][spikers[0],None,spikers[2]].T
++                output_ad_sensitivity = states['neurons']['Dynamic'][k]['dg_ad_output_ad']
++                output_ad_sensitivity[spikers + (-2,)] = output_ad_sensitivity[spikers + (-1,)]
++                output_ad_sensitivity[spikers + (-1,)] = output_ad_sensitivity[spikers + (-1,)] + 1
++                reset_voltage_sensitivities(states, k, spikers)
+             else:
++                if k == "sonoff":
++                    v_slope = states['neurons']['Dynamic'][k].get('V_slope', (states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Dynamic'][k]['V'][:,:,:,-2]) / args['simulation']['dt'])[spikers]
++                    v_slope_sign = torch.where(v_slope < 0, -torch.ones_like(v_slope), torch.ones_like(v_slope))
++                    v_slope = torch.where(torch.abs(v_slope) < 1e-6, v_slope_sign * 1e-6, v_slope)
++                    sonoff_ron_dynamic = states['synapses']['Dynamic']['sonoff_ron']
++                    sonoff_ron_static = states['synapses']['Static']['sonoff_ron']
++                    delay_steps = int(sonoff_ron_static['PSC_delay']/args['simulation']['dt'])
++                    delay_idx = timestep % (delay_steps + 1)
++                    for param_name in ("gain", "alpha"):
++                        dV_param = states['synapses']['Dynamic']['on_sonoff'][f"dV_{param_name}"][spikers + (-1,)] + states['synapses']['Dynamic']['off_sonoff'][f"dV_{param_name}"][spikers + (-1,)]
++                        spike_time_deriv = -dV_param / v_slope
++                        sonoff_ron_dynamic[f"dtime_{param_name}_delay"][spikers + (delay_idx,)] += spike_time_deriv
++
++                    for source_name in ("on_sonoff", "off_sonoff"):
++                        trace_name = f"{source_name}_gSYN"
++                        dV_param = states['synapses']['Dynamic'][source_name]['dV_gSYN'][spikers + (-1,)]
++                        spike_time_deriv = -dV_param / v_slope
++                        sonoff_ron_dynamic[f"dtime_{trace_name}_delay"][spikers + (delay_idx,)] += spike_time_deriv
++
++                    reset_voltage_sensitivities(states, k, spikers)
++                else:
++                    reset_voltage_sensitivities(states, k, spikers)
+                 states['neurons']['Dynamic'][k]['g_ad'][spikers + (-1,)] = states['neurons']['Dynamic'][k]['g_ad'][spikers + (-1,)] + states['neurons']['Static'][k]['g_inc']
+     
+     return states
+@@ -46,15 +297,75 @@ def condtion2(args, states,timestep):
+ def condtion3(args, states,timestep):
+     for k in list(states['synapses']['Static']):
+         pre_neuron_dynamic = states['neurons']['Dynamic'][k.split("_")[0]]
+-        mask = torch.any((timestep == ((pre_neuron_dynamic['tspike'] + int(states['synapses']['Static'][k]['PSC_delay']/args['simulation']['dt']))).to(torch.int64)),axis=-1)
++        synapse_static = states['synapses']['Static'][k]
++        synapse_dynamic = states['synapses']['Dynamic'][k]
++        delay_steps = int(synapse_static['PSC_delay']/args['simulation']['dt'])
++        spike_queue = synapse_dynamic['spike_delay_queue']
++        queue_size = delay_steps + 1
++        write_idx = timestep % queue_size
++        spike_queue[:,:,:,write_idx] = pre_neuron_dynamic['spike_mask']
++
++        read_idx = (timestep - delay_steps) % (delay_steps + 1)
++        mask = (
++            spike_queue[:,:,:,read_idx].clone()
++            if timestep >= delay_steps
++            else torch.zeros_like(pre_neuron_dynamic['spike_mask'])
++        )
++        if k == "sonoff_ron":
++            for trace_name in (
++                "gain",
++                "alpha",
++                "on_sonoff_gSYN",
++                "off_sonoff_gSYN",
++            ):
++                zeta = (
++                    synapse_dynamic[f"dtime_{trace_name}_delay"][:,:,:,read_idx]
++                    if timestep >= delay_steps
++                    else torch.zeros_like(synapse_dynamic['PSC_F'][:,:,:,-1])
++                )
++                tangent = time_shift_stp_tangent(
++                    synapse_dynamic['PSC_F'][:,:,:,-1],
++                    synapse_dynamic['PSC_P'][:,:,:,-1],
++                    synapse_dynamic[f"dPSC_F_{trace_name}"][:,:,:,-1],
++                    synapse_dynamic[f"dPSC_P_{trace_name}"][:,:,:,-1],
++                    synapse_dynamic[f"dPSC_x_{trace_name}"][:,:,:,-1],
++                    synapse_dynamic[f"dPSC_s_{trace_name}"][:,:,:,-1],
++                    mask,
++                    zeta,
++                    synapse_static,
++                )
++                _write_stp_tangent(synapse_dynamic, trace_name, tangent)
++        else:
++            for trace_name in ("gain", "alpha"):
++                event_strength_derivative = (
++                    synapse_dynamic[f"dsoft_{trace_name}_delay"][:,:,:,read_idx]
++                    if timestep >= delay_steps
++                    else torch.zeros_like(synapse_dynamic['PSC_F'][:,:,:,-1])
++                )
++                tangent = soft_event_stp_tangent(
++                    synapse_dynamic['PSC_F'][:,:,:,-1],
++                    synapse_dynamic['PSC_P'][:,:,:,-1],
++                    synapse_dynamic[f"dPSC_F_{trace_name}"][:,:,:,-1],
++                    synapse_dynamic[f"dPSC_P_{trace_name}"][:,:,:,-1],
++                    synapse_dynamic[f"dPSC_x_{trace_name}"][:,:,:,-1],
++                    synapse_dynamic[f"dPSC_s_{trace_name}"][:,:,:,-1],
++                    mask,
++                    event_strength_derivative,
++                    synapse_static,
++                )
++                _write_stp_tangent(synapse_dynamic, trace_name, tangent)
++
+         if torch.any(mask).item():
+             spikers = torch.where(mask)
+-            states['synapses']['Dynamic'][k]['PSC_x'][spikers + (-2,)] = states['synapses']['Dynamic'][k]['PSC_x'][spikers + (-1,)]
+-            states['synapses']['Dynamic'][k]['PSC_q'][spikers + (-2,)] = states['synapses']['Dynamic'][k]['PSC_q'][spikers + (-1,)]
+-            states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-2,)] = states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)]
+-            states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-2,)] = states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)]
+-            states['synapses']['Dynamic'][k]['PSC_x'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_x'][spikers + (-1,)] + states['synapses']['Dynamic'][k]['PSC_q'][spikers + (-1,)]
+-            states['synapses']['Dynamic'][k]['PSC_q'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)]
+-            states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)] + states['synapses']['Static'][k]['PSC_fF']*(states['synapses']['Static'][k]['PSC_maxF']-states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)])
+-            states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)] * (1-states['synapses']['Static'][k]['PSC_fP'])
+-    return states
+\ No newline at end of file
++            synapse_dynamic['PSC_x'][spikers + (-2,)] = synapse_dynamic['PSC_x'][spikers + (-1,)]
++            synapse_dynamic['PSC_q'][spikers + (-2,)] = synapse_dynamic['PSC_q'][spikers + (-1,)]
++            synapse_dynamic['PSC_F'][spikers + (-2,)] = synapse_dynamic['PSC_F'][spikers + (-1,)]
++            synapse_dynamic['PSC_P'][spikers + (-2,)] = synapse_dynamic['PSC_P'][spikers + (-1,)]
++            # Use the recovered F/P state for this event.  PSC_q otherwise
++            # retains the previous event's amplitude and is one spike stale.
++            event_q = synapse_dynamic['PSC_F'][spikers + (-1,)] * synapse_dynamic['PSC_P'][spikers + (-1,)]
++            synapse_dynamic['PSC_x'][spikers + (-1,)] = synapse_dynamic['PSC_x'][spikers + (-1,)] + event_q
++            synapse_dynamic['PSC_q'][spikers + (-1,)] = event_q
++            synapse_dynamic['PSC_F'][spikers + (-1,)] = synapse_dynamic['PSC_F'][spikers + (-1,)] + synapse_static['PSC_fF']*(synapse_static['PSC_maxF']-synapse_dynamic['PSC_F'][spikers + (-1,)])
++            synapse_dynamic['PSC_P'][spikers + (-1,)] = synapse_dynamic['PSC_P'][spikers + (-1,)] * (1-synapse_static['PSC_fP'])
++    return states
+diff --git a/Simulation/ode_handler.py b/Simulation/ode_handler.py
+index 0d07f71dc32b0a54c5ab7a01b89e11795f2290a8..bedb21034ed197e931cce21dc8757a729003f0a4 100644
+--- a/Simulation/ode_handler.py
++++ b/Simulation/ode_handler.py
+@@ -1,5 +1,86 @@
+ import torch
+ 
++
++def advance_voltage_sensitivity(old_sensitivity, voltage_jacobian, source, dt):
++    """Euler step for a voltage sensitivity using the forward step's old state."""
++    return old_sensitivity + dt * (voltage_jacobian * old_sensitivity + source)
++
++
++def conductance_voltage_source(neuron_static, synapse_static, psc_s, voltage):
++    """d(dV/dt)/d(gSYN) at fixed voltage and PSC state."""
++    return (
++        -neuron_static['R']
++        * psc_s
++        * (voltage - synapse_static['ESYN'])
++        / neuron_static['tau']
++    )
++
++
++def adaptation_voltage_source(neuron_static, voltage, adaptation_sensitivity):
++    """Voltage-RHS source induced by d(g_ad)/d(output_ad)."""
++    return (
++        -neuron_static['R']
++        * (voltage - neuron_static['E_k'])
++        * adaptation_sensitivity
++        / neuron_static['tau']
++    )
++
++def abs_ref_voltage_source(neuron_static, voltage, abs_ref_sensitivity):
++
++
++def advance_decay_sensitivity(old_sensitivity, tau, dt):
++    """Euler decay shared by g_ad and its parameter sensitivity."""
++    return old_sensitivity + dt * (-old_sensitivity / tau)
++
++
++def advance_stp_sensitivities(
++    old_dF,
++    old_dP,
++    old_dx,
++    old_ds,
++    synapse_static,
++    dt,
++):
++    """Advance fixed-time STP tangents between presynaptic events.
++
++    The update uses exactly the old tangent state, matching the forward Euler
++    ordering for F, P, x, and s in ``run_odes``.
++    """
++    new_dF = old_dF + dt * (-old_dF / synapse_static['tauF'])
++    new_dP = old_dP + dt * (-old_dP / synapse_static['tauP'])
++    new_dx = old_dx + dt * (-old_dx / synapse_static['tauD'])
++    new_ds = old_ds + dt * (
++        synapse_static['scale'] * old_dx - old_ds
++    ) / synapse_static['tauR']
++    return new_dF, new_dP, new_dx, new_ds
++
++
++def input_voltage_jacobian(neuron_static, g_ad, input_spikes):
++    """d(dV/dt)/dV for an input neuron, evaluated at the old Euler state."""
++    return (
++        -1.0
++        - neuron_static['R'] * g_ad
++        - neuron_static['R'] * neuron_static['g_postIC'] * input_spikes
++    ) / neuron_static['tau']
++
++
++def input_rate_voltage_source(neuron_static, voltage, rate_derivative, dt):
++    """Voltage-RHS source from d Bernoulli input probability / d parameter.
++
++    ``rate_derivative`` is in Hz per parameter.  The sampled input spike is
++    held fixed in the forward pass while its straight-through sensitivity is
++    ``dt / 1000 * rate_derivative``.
++    """
++    return (
++        -neuron_static['R']
++        * neuron_static['g_postIC']
++        * (voltage - neuron_static['E_exc'])
++        * (dt / 1000.0)
++        * rate_derivative
++        / neuron_static['tau']
++    )
++
++
+ def run_odes(args, states, pre_processed_spike_object,timestep):
+     
+     #Run Neuron ODES
+@@ -15,11 +96,11 @@ def run_odes(args, states, pre_processed_spike_object,timestep):
+ 
+         shared_update_V = ((cur_static['E_L'] - cur_dynamic['V'][:,:,:,-1]) - cur_static['R']*cur_dynamic['g_ad'][:,:,:,-1]*(cur_dynamic['V'][:,:,:,-1]-cur_static['E_k']))/ cur_static['tau']
+ 
+-
+-
+         if states['neurons']['Static'][k]['input'] == 1:
+             spks_string = f"{k}set_spks"    
+-            update_holder = shared_update_V - (cur_static['R']*cur_static['g_postIC']*pre_processed_spike_object['onset_offset_spks'][spks_string][:,:,:,timestep]*(cur_dynamic['V'][:,:,:,-1]-cur_static['E_exc'])) / cur_static['tau']
++            input_spikes = pre_processed_spike_object['onset_offset_spks'][spks_string][:,:,:,timestep]
++            cur_dynamic['input_V_jacobian'] = input_voltage_jacobian(cur_static,cur_dynamic['g_ad'][:,:,:,-1],input_spikes) #Calculates the d/dV of update holder
++            update_holder = shared_update_V - (cur_static['R']*cur_static['g_postIC']*input_spikes*(cur_dynamic['V'][:,:,:,-1]-cur_static['E_exc'])) / cur_static['tau']
+ 
+         if len(states['neurons']['Static'][k]['projections'])>0:
+ 
+@@ -39,6 +120,125 @@ def run_odes(args, states, pre_processed_spike_object,timestep):
+                 cur_dynamic['noise_sn'][:,:,:,-1] = cur_dynamic['noise_sn'][:,:,:,-1] +noise_holder_sn*args['simulation']['dt']
+                 cur_dynamic['noise_xn'][:,:,:,-1] = cur_dynamic['noise_xn'][:,:,:,-1] +noise_holder_xn*args['simulation']['dt']
+ 
++            if k == "ron":
++                ron_dV_dV = (-1 - cur_static['R']*cur_dynamic['g_ad'][:,:,:,-1])/cur_static['tau']
++                for m in states['neurons']['Static'][k]['projections']:
++                    ron_dV_dV = ron_dV_dV - cur_static['R']*states['synapses']['Dynamic'][m]['PSC_s'][:,:,:,-1]*states['synapses']['Learnable'][m]['gSYN'][:,None,:]/cur_static['tau']
++                if states['neurons']['Static'][k]['noise'] == 1:
++                    # noise_sn[-1] has already been advanced above; the voltage
++                    # Euler step used the snapshot retained in [-2].
++                    ron_dV_dV = ron_dV_dV - cur_static['R']*cur_static['nSYN']*cur_dynamic['noise_sn'][:,:,:,-2]/cur_static['tau']
++                for m in ("on_ron", "off_ron", "sonoff_ron"):
++                    for param_name in ("gain", "alpha"):
++                        syn_dynamic = states['synapses']['Dynamic'][m]
++                        syn_static = states['synapses']['Static'][m]
++                        syn_dynamic[f"dV_{param_name}"][:,:,:,-2] = syn_dynamic[f"dV_{param_name}"][:,:,:,-1]
++                        syn_dynamic[f"dV_{param_name}"][:,:,:,-1] = syn_dynamic[f"dV_{param_name}"][:,:,:,-1] + args['simulation']['dt']*(ron_dV_dV*syn_dynamic[f"dV_{param_name}"][:,:,:,-1] - cur_static['R']*states['synapses']['Learnable'][m]['gSYN'][:,None,:]*(cur_dynamic['V'][:,:,:,-1]-syn_static['ESYN'])*syn_dynamic[f"dPSC_s_{param_name}"][:,:,:,-1]/cur_static['tau'])
++
++                # Exact old-state recursive sensitivities for conductances that
++                # project directly to ron.
++                for m in ("on_ron", "off_ron", "sonoff_ron"):
++                    syn_dynamic = states['synapses']['Dynamic'][m]
++                    old_dv = syn_dynamic['dV_gSYN'][:,:,:,-1]
++                    direct_source = conductance_voltage_source(
++                        cur_static,
++                        states['synapses']['Static'][m],
++                        syn_dynamic['PSC_s'][:,:,:,-1],
++                        cur_dynamic['V'][:,:,:,-1],
++                    )
++                    syn_dynamic['dV_gSYN'][:,:,:,-2] = old_dv
++                    syn_dynamic['dV_gSYN'][:,:,:,-1] = advance_voltage_sensitivity(
++                        old_dv, ron_dV_dV, direct_source, args['simulation']['dt']
++                    )
++
++                # Carry on/off -> sonoff conductance sensitivities through the
++                # sonoff -> ron inhibitory PSC.
++                indirect_dynamic = states['synapses']['Dynamic']['sonoff_ron']
++                indirect_static = states['synapses']['Static']['sonoff_ron']
++                indirect_gsyn = states['synapses']['Learnable']['sonoff_ron']['gSYN'][:,None,:]
++                for source_name in ("on_sonoff", "off_sonoff"):
++                    trace_name = f"{source_name}_gSYN"
++                    old_dv = indirect_dynamic[f"dV_{trace_name}"][:,:,:,-1]
++                    psc_source = (
++                        -cur_static['R']
++                        * indirect_gsyn
++                        * (cur_dynamic['V'][:,:,:,-1] - indirect_static['ESYN'])
++                        * indirect_dynamic[f"dPSC_s_{trace_name}"][:,:,:,-1]
++                        / cur_static['tau']
++                    )
++                    indirect_dynamic[f"dV_{trace_name}"][:,:,:,-2] = old_dv
++                    indirect_dynamic[f"dV_{trace_name}"][:,:,:,-1] = advance_voltage_sensitivity(
++                        old_dv, ron_dV_dV, psc_source, args['simulation']['dt']
++                    )
++
++                # Causal output-adaptation sensitivity.  The +1 event term is
++                # applied later, only if condition2 accepts an output spike.
++                old_dv_output_ad = cur_dynamic['dV_output_ad'][:,:,:,-1]
++                old_dgad_output_ad = cur_dynamic['dg_ad_output_ad'][:,:,:,-1]
++                cur_dynamic['dV_output_ad'][:,:,:,-2] = old_dv_output_ad
++                cur_dynamic['dg_ad_output_ad'][:,:,:,-2] = old_dgad_output_ad
++                cur_dynamic['dV_output_ad'][:,:,:,-1] = advance_voltage_sensitivity(
++                    old_dv_output_ad,
++                    ron_dV_dV,
++                    adaptation_voltage_source(
++                        cur_static,
++                        cur_dynamic['V'][:,:,:,-1],
++                        old_dgad_output_ad,
++                    ),
++                    args['simulation']['dt'],
++                )
++                cur_dynamic['dg_ad_output_ad'][:,:,:,-1] = advance_decay_sensitivity(
++                    old_dgad_output_ad, cur_static['tau_ad'], args['simulation']['dt']
++                )
++
++
++                # Section for the refractoriness sensitivity terms.
++                old_dv_abs_ref = cur_dynamic['dV_abs_ref'][:,:,:,-1]
++                old_dv_rel_ref_a = cur_dynamic['dV_rel_ref_a'][:,:,:,-1]
++                old_dv_rel_ref_b = cur_dynamic['dV_rel_ref_b'][:,:,:,-1]
++                old_dv_rel_ref_c = cur_dynamic['dV_rel_ref_c'][:,:,:,-1]
++
++                cur_dynamic['dV_abs_ref'][:,:,:,-2] = old_dv_abs_ref
++                cur_dynamic['dV_rel_ref_a'][:,:,:,-2] = old_dv_rel_ref_a
++                cur_dynamic['dV_rel_ref_b'][:,:,:,-2] = old_dv_rel_ref_b
++                cur_dynamic['dV_rel_ref_c'][:,:,:,-2] = old_dv_rel_ref_c
++
++                cur_dynamic['dV_abs_ref'][:,:,:,-1] = advance_voltage_sensitivity(
++                    old_dv_abs_ref,
++                    ron_dV_dV,
++                    ??,
++                    args['simulation']['dt'],
++                )
++
++
++            if k == "sonoff":
++                sonoff_dV_dV = (-1 - cur_static['R']*cur_dynamic['g_ad'][:,:,:,-1])/cur_static['tau']
++                for m in states['neurons']['Static'][k]['projections']:
++                    sonoff_dV_dV = sonoff_dV_dV - cur_static['R']*states['synapses']['Dynamic'][m]['PSC_s'][:,:,:,-1]*states['synapses']['Learnable'][m]['gSYN'][:,None,:]/cur_static['tau']
++                for m in ("on_sonoff", "off_sonoff"):
++                    for param_name in ("gain", "alpha"):
++                        syn_dynamic = states['synapses']['Dynamic'][m]
++                        syn_static = states['synapses']['Static'][m]
++                        syn_dynamic[f"dV_{param_name}"][:,:,:,-2] = syn_dynamic[f"dV_{param_name}"][:,:,:,-1]
++                        syn_dynamic[f"dV_{param_name}"][:,:,:,-1] = syn_dynamic[f"dV_{param_name}"][:,:,:,-1] + args['simulation']['dt']*(sonoff_dV_dV*syn_dynamic[f"dV_{param_name}"][:,:,:,-1] - cur_static['R']*states['synapses']['Learnable'][m]['gSYN'][:,None,:]*(cur_dynamic['V'][:,:,:,-1]-syn_static['ESYN'])*syn_dynamic[f"dPSC_s_{param_name}"][:,:,:,-1]/cur_static['tau'])
++
++                for m in ("on_sonoff", "off_sonoff"):
++                    syn_dynamic = states['synapses']['Dynamic'][m]
++                    old_dv = syn_dynamic['dV_gSYN'][:,:,:,-1]
++                    direct_source = conductance_voltage_source(
++                        cur_static,
++                        states['synapses']['Static'][m],
++                        syn_dynamic['PSC_s'][:,:,:,-1],
++                        cur_dynamic['V'][:,:,:,-1],
++                    )
++                    syn_dynamic['dV_gSYN'][:,:,:,-2] = old_dv
++                    syn_dynamic['dV_gSYN'][:,:,:,-1] = advance_voltage_sensitivity(
++                        old_dv, sonoff_dV_dV, direct_source, args['simulation']['dt']
++                    )
++
++
++
++        cur_dynamic['V_slope'] = update_holder
+         cur_dynamic['V'][:,:,:,-2] = cur_dynamic['V'][:,:,:,-1]
+         cur_dynamic['V'][:,:,:,-1] = cur_dynamic['V'][:,:,:,-1] + update_holder*args['simulation']['dt']
+         
+@@ -63,6 +263,32 @@ def run_odes(args, states, pre_processed_spike_object,timestep):
+         cur_syn_dynamic['PSC_F'][:,:,:,-1] = cur_syn_dynamic['PSC_F'][:,:,:,-1] + args['simulation']['dt']*(1 - cur_syn_dynamic['PSC_F'][:,:,:,-1])/cur_syn_static['tauF']
+         cur_syn_dynamic['PSC_P'][:,:,:,-1] = cur_syn_dynamic['PSC_P'][:,:,:,-1] + args['simulation']['dt']*(1 - cur_syn_dynamic['PSC_P'][:,:,:,-1])/cur_syn_static['tauP']
+         cur_syn_dynamic['PSC_q'][:,:,:,-1] = cur_syn_dynamic['PSC_q'][:,:,:,-1] + args['simulation']['dt']*0
++        sensitivity_names = ["gain", "alpha"]
++        if k == "sonoff_ron":
++            sensitivity_names.extend(("on_sonoff_gSYN", "off_sonoff_gSYN"))
++        for param_name in sensitivity_names:
++            if f"dPSC_x_{param_name}" in cur_syn_dynamic:
++                old_dPSC_F = cur_syn_dynamic[f"dPSC_F_{param_name}"][:,:,:,-1]
++                old_dPSC_P = cur_syn_dynamic[f"dPSC_P_{param_name}"][:,:,:,-1]
++                old_dPSC_s = cur_syn_dynamic[f"dPSC_s_{param_name}"][:,:,:,-1]
++                old_dPSC_x = cur_syn_dynamic[f"dPSC_x_{param_name}"][:,:,:,-1]
++                cur_syn_dynamic[f"dPSC_F_{param_name}"][:,:,:,-2] = old_dPSC_F
++                cur_syn_dynamic[f"dPSC_P_{param_name}"][:,:,:,-2] = old_dPSC_P
++                cur_syn_dynamic[f"dPSC_s_{param_name}"][:,:,:,-2] = old_dPSC_s
++                cur_syn_dynamic[f"dPSC_x_{param_name}"][:,:,:,-2] = old_dPSC_x
++                (
++                    cur_syn_dynamic[f"dPSC_F_{param_name}"][:,:,:,-1],
++                    cur_syn_dynamic[f"dPSC_P_{param_name}"][:,:,:,-1],
++                    cur_syn_dynamic[f"dPSC_x_{param_name}"][:,:,:,-1],
++                    cur_syn_dynamic[f"dPSC_s_{param_name}"][:,:,:,-1],
++                ) = advance_stp_sensitivities(
++                    old_dPSC_F,
++                    old_dPSC_P,
++                    old_dPSC_x,
++                    old_dPSC_s,
++                    cur_syn_static,
++                    args['simulation']['dt'],
++                )
+ 
+     return states
+ 
+@@ -74,4 +300,4 @@ def caluclate_projections(states,k):
+         if m.split('_',-1)[-1] == k:
+             projections.append(m)
+ 
+-    return projections
+\ No newline at end of file
++    return projections
+diff --git a/Simulation/output_handler.py b/Simulation/output_handler.py
+index 02cc8561b69e3e8e8d0f0993a0aa48adaa18c8e3..8ac184f71c732e2ff4d441ecbe42c9f0469ceb92 100644
+--- a/Simulation/output_handler.py
++++ b/Simulation/output_handler.py
+@@ -1,8 +1,70 @@
+-from scipy.io import savemat
+ from pathlib import Path
+-import torch
++
+ import numpy as np
++from scipy.io import savemat
++
++
++def to_numpy(value):
++    if hasattr(value, "detach"):
++        return value.detach().cpu().numpy()
++    return np.asarray(value)
++
++
++def tracked_params(output):
++    return {
++        "strf_gain": to_numpy(output["neurons"]["Learnable"]["STRF_gain_tracker"]),
++        "strf_alpha": to_numpy(output["neurons"]["Learnable"]["STRF_alpha_tracker"]),
++        "output_ad": to_numpy(output["neurons"]["Learnable"]["ron"]["output_ad_tracker"]),
++        "abs_ref": to_numpy(output["neurons"]["Learnable"]["ron"]["abs_ref_tracker"]),
++        "rel_ref_a": to_numpy(output["neurons"]["Learnable"]["ron"]["rel_ref_a_tracker"]),
++        "rel_ref_b": to_numpy(output["neurons"]["Learnable"]["ron"]["rel_ref_b_tracker"]),
++        "rel_ref_c": to_numpy(output["neurons"]["Learnable"]["ron"]["rel_ref_c_tracker"]),
++        "on_ron_gsyn": to_numpy(output["synapses"]["Learnable"]["on_ron"]["gSYN_tracker"]),
++        "off_ron_gsyn": to_numpy(output["synapses"]["Learnable"]["off_ron"]["gSYN_tracker"]),
++        "sonoff_ron_gsyn": to_numpy(output["synapses"]["Learnable"]["sonoff_ron"]["gSYN_tracker"]),
++        "on_sonoff_gsyn": to_numpy(output["synapses"]["Learnable"]["on_sonoff"]["gSYN_tracker"]),
++        "off_sonoff_gsyn": to_numpy(output["synapses"]["Learnable"]["off_sonoff"]["gSYN_tracker"]),
++    }
++
++
++def checkpoint_params(output):
++    return {
++        "strf_gain": to_numpy(output["neurons"]["Learnable"]["STRF_gain"]),
++        "strf_alpha": to_numpy(output["neurons"]["Learnable"]["STRF_alpha"]),
++        "output_ad": to_numpy(output["neurons"]["Learnable"]["ron"]["output_ad"]),
++        "abs_ref": to_numpy(output["neurons"]["Learnable"]["ron"]["abs_ref"]),
++        "rel_ref_a": to_numpy(output["neurons"]["Learnable"]["ron"]["rel_ref_a"]),
++        "rel_ref_b": to_numpy(output["neurons"]["Learnable"]["ron"]["rel_ref_b"]),
++        "rel_ref_c": to_numpy(output["neurons"]["Learnable"]["ron"]["rel_ref_c"]),
++        "on_ron_gsyn": to_numpy(output["synapses"]["Learnable"]["on_ron"]["gSYN"]),
++        "off_ron_gsyn": to_numpy(output["synapses"]["Learnable"]["off_ron"]["gSYN"]),
++        "sonoff_ron_gsyn": to_numpy(output["synapses"]["Learnable"]["sonoff_ron"]["gSYN"]),
++        "on_sonoff_gsyn": to_numpy(output["synapses"]["Learnable"]["on_sonoff"]["gSYN"]),
++        "off_sonoff_gsyn": to_numpy(output["synapses"]["Learnable"]["off_sonoff"]["gSYN"]),
++    }
++
++
++def adam_state(output):
++    adam = output["neurons"]["Adam"]
++    return {
++        "m": to_numpy(adam["m"]),
++        "v": to_numpy(adam["v"]),
++        "t": np.array([[adam["t"]]], dtype=np.int64),
++    }
++
+ 
+ def save_output(output):
+     save_path = Path("simulation_output.mat")
+-    savemat(save_path, {"output": output["neurons"]["Dynamic"]["ron"]["spikes_holder"].detach().cpu().numpy().astype(np.uint8),"losses": output["neurons"]["BookKeeping"],'params': {'strf_gain': output["neurons"]["Learnable"]["STRF_gain"].detach().cpu().numpy(), 'strf_alpha': output["neurons"]["Learnable"]["STRF_alpha"].detach().cpu().numpy(),'output_ad': output["neurons"]["Learnable"]["ron"]["output_ad"].detach().cpu().numpy(),'abs_ref': output["neurons"]["Learnable"]["ron"]["abs_ref"].detach().cpu().numpy(),'rel_ref_a': output["neurons"]["Learnable"]["ron"]["rel_ref_a"].detach().cpu().numpy(),'rel_ref_b': output["neurons"]["Learnable"]["ron"]["rel_ref_b"].detach().cpu().numpy(),'rel_ref_c': output["neurons"]["Learnable"]["ron"]["rel_ref_c"].detach().cpu().numpy(),'on_ron_gsyn': output["synapses"]["Learnable"]["on_ron"]["gSYN"].detach().cpu().numpy(),'off_ron_gsyn': output["synapses"]["Learnable"]["off_ron"]["gSYN"].detach().cpu().numpy(),'sonoff_ron_gsyn': output["synapses"]["Learnable"]["sonoff_ron"]["gSYN"].detach().cpu().numpy(),'on_sonoff_gsyn': output["synapses"]["Learnable"]["on_sonoff"]["gSYN"].detach().cpu().numpy(),'off_sonoff_gsyn': output["synapses"]["Learnable"]["off_sonoff"]["gSYN"].detach().cpu().numpy()}}, do_compression=True)
++    savemat(
++        save_path,
++        {
++            "output": to_numpy(output["neurons"]["Dynamic"]["ron"]["spikes_holder"]).astype(np.uint8),
++            "losses": output["neurons"]["BookKeeping"],
++            "firing_rates_hz": np.asarray(output["neurons"].get("FiringRateBookKeeping", []), dtype=np.float32),
++            "cv_losses": np.asarray(output["neurons"].get("CVBookKeeping", []), dtype=np.float32),
++            "params": tracked_params(output),
++            "checkpoint_params": checkpoint_params(output),
++            "adam": adam_state(output),
++        },
++        do_compression=True,
++    )
+diff --git a/Simulation/update_handler.py b/Simulation/update_handler.py
+index 24d8f3aa3137df83647bd3bba88194c57c8cdce9..346c9b9f1e6c8bdf3e4469952ea60ee087dcaeb9 100644
+--- a/Simulation/update_handler.py
++++ b/Simulation/update_handler.py
+@@ -1,6 +1,16 @@
+ import torch 
+ 
+-def run_adam(states, args, lrs):
++def run_adam(states, args, lrs, epoch):
++
++    states["neurons"]["Learnable"]["STRF_gain_tracker"][:,:,epoch] = states["neurons"]["Learnable"]["STRF_gain"]
++    states["neurons"]["Learnable"]["STRF_alpha_tracker"][:,:,epoch] = states["neurons"]["Learnable"]["STRF_alpha"]
++    states["neurons"]["Learnable"]["ron"]["output_ad_tracker"][:,:,epoch] = states["neurons"]["Learnable"]["ron"]["output_ad"]
++    states["neurons"]["Learnable"]["ron"]["abs_ref_tracker"][:,:,epoch] = states["neurons"]["Learnable"]["ron"]["abs_ref"]
++    states["neurons"]["Learnable"]["ron"]["rel_ref_a_tracker"][:,:,epoch] = states["neurons"]["Learnable"]["ron"]["rel_ref_a"]
++    states["neurons"]["Learnable"]["ron"]["rel_ref_b_tracker"][:,:,epoch] = states["neurons"]["Learnable"]["ron"]["rel_ref_b"]
++    states["neurons"]["Learnable"]["ron"]["rel_ref_c_tracker"][:,:,epoch] = states["neurons"]["Learnable"]["ron"]["rel_ref_c"]
++    for val,k in enumerate(list(states["synapses"]["Static"].keys())):
++        states["synapses"]["Learnable"][k]["gSYN_tracker"][:,:,epoch] = states["synapses"]["Learnable"][k]["gSYN"]
+ 
+     eps = 1e-8
+ 
+@@ -14,10 +24,12 @@ def run_adam(states, args, lrs):
+     for val,k in enumerate(list(states["synapses"]["Static"].keys())):
+         states["neurons"]["Adam"]["m"][:,:,val+3] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,val+3] + (1-args['Adam']['beta1'])*states["synapses"]["Learnable"][k]["gSYN_grad"]
+     
+-    states["neurons"]["Adam"]["m"][:,:,8] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,8] + (1-args['Adam']['beta1'])*states["neurons"]["Learnable"]["ron"]["abs_ref_grad"]
+-    states["neurons"]["Adam"]["m"][:,:,9] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,9] + (1-args['Adam']['beta1'])*states["neurons"]["Learnable"]["ron"]["rel_ref_a_grad"]
+-    states["neurons"]["Adam"]["m"][:,:,10] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,10] + (1-args['Adam']['beta1'])*states["neurons"]["Learnable"]["ron"]["rel_ref_b_grad"]
+-    states["neurons"]["Adam"]["m"][:,:,11] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,11] + (1-args['Adam']['beta1'])*states["neurons"]["Learnable"]["ron"]["rel_ref_c_grad"]
++    train_refractory = bool(args.get("optimization", {}).get("train_refractory", False))
++    if train_refractory:
++        states["neurons"]["Adam"]["m"][:,:,8] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,8] + (1-args['Adam']['beta1'])*states["neurons"]["Learnable"]["ron"]["abs_ref_grad"]
++        states["neurons"]["Adam"]["m"][:,:,9] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,9] + (1-args['Adam']['beta1'])*states["neurons"]["Learnable"]["ron"]["rel_ref_a_grad"]
++        states["neurons"]["Adam"]["m"][:,:,10] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,10] + (1-args['Adam']['beta1'])*states["neurons"]["Learnable"]["ron"]["rel_ref_b_grad"]
++        states["neurons"]["Adam"]["m"][:,:,11] = args['Adam']['beta1']*states["neurons"]["Adam"]["m"][:,:,11] + (1-args['Adam']['beta1'])*states["neurons"]["Learnable"]["ron"]["rel_ref_c_grad"]
+ 
+     #Update v
+     states["neurons"]["Adam"]["v"][:,:,0] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,0] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["STRF_gain_grad"]**2)
+@@ -26,10 +38,11 @@ def run_adam(states, args, lrs):
+     for val,k in enumerate(list(states["synapses"]["Static"].keys())):
+         states["neurons"]["Adam"]["v"][:,:,val+3] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,val+3] + (1-args['Adam']['beta2'])*(states["synapses"]["Learnable"][k]["gSYN_grad"]**2)
+ 
+-    states["neurons"]["Adam"]["v"][:,:,8] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,8] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["ron"]["abs_ref_grad"]**2)
+-    states["neurons"]["Adam"]["v"][:,:,9] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,9] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["ron"]["rel_ref_a_grad"]**2)
+-    states["neurons"]["Adam"]["v"][:,:,10] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,10] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["ron"]["rel_ref_b_grad"]**2)
+-    states["neurons"]["Adam"]["v"][:,:,11] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,11] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["ron"]["rel_ref_c_grad"]**2)
++    if train_refractory:
++        states["neurons"]["Adam"]["v"][:,:,8] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,8] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["ron"]["abs_ref_grad"]**2)
++        states["neurons"]["Adam"]["v"][:,:,9] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,9] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["ron"]["rel_ref_a_grad"]**2)
++        states["neurons"]["Adam"]["v"][:,:,10] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,10] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["ron"]["rel_ref_b_grad"]**2)
++        states["neurons"]["Adam"]["v"][:,:,11] = args['Adam']['beta2']*states["neurons"]["Adam"]["v"][:,:,11] + (1-args['Adam']['beta2'])*(states["neurons"]["Learnable"]["ron"]["rel_ref_c_grad"]**2)
+ 
+     m_hat = states["neurons"]["Adam"]["m"]/(1-args['Adam']['beta1']**states["neurons"]["Adam"]["t"])
+     v_hat = states["neurons"]["Adam"]["v"]/(1-args['Adam']['beta2']**states["neurons"]["Adam"]["t"])
+@@ -41,19 +54,26 @@ def run_adam(states, args, lrs):
+     for val,k in enumerate(list(states["synapses"]["Static"].keys())):
+         states["synapses"]["Learnable"][k]["gSYN"] = states["synapses"]["Learnable"][k]["gSYN"] - (lrs[f'{k}_gSYN']*m_hat[:,:,val+3])/(torch.sqrt(v_hat[:,:,val+3]) + eps)
+ 
+-    states["neurons"]["Learnable"]["ron"]["abs_ref"] = states["neurons"]["Learnable"]["ron"]["abs_ref"] - (lrs['abs_ref']*m_hat[:,:,8])/(torch.sqrt(v_hat[:,:,8]) + eps)
+-    states["neurons"]["Learnable"]["ron"]["rel_ref_a"] = states["neurons"]["Learnable"]["ron"]["rel_ref_a"] - (lrs['rel_ref_a']*m_hat[:,:,9])/(torch.sqrt(v_hat[:,:,9]) + eps)
+-    states["neurons"]["Learnable"]["ron"]["rel_ref_b"] = states["neurons"]["Learnable"]["ron"]["rel_ref_b"] - (lrs['rel_ref_b']*m_hat[:,:,10])/(torch.sqrt(v_hat[:,:,10]) + eps)
+-    states["neurons"]["Learnable"]["ron"]["rel_ref_c"] = states["neurons"]["Learnable"]["ron"]["rel_ref_c"] - (lrs['rel_ref_c']*m_hat[:,:,11])/(torch.sqrt(v_hat[:,:,11]) + eps)
++    #states["synapses"]["Learnable"]["on_ron"]["gSYN"] = states["synapses"]["Learnable"]["on_ron"]["gSYN"] - (lrs['on_ron_gSYN']*m_hat[:,:,3])/(torch.sqrt(v_hat[:,:,3]) + eps)
++    #states["synapses"]["Learnable"]["off_ron"]["gSYN"] = states["synapses"]["Learnable"]["off_ron"]["gSYN"] - (lrs['off_ron_gSYN']*m_hat[:,:,4])/(torch.sqrt(v_hat[:,:,4]) + eps)
++    #states["synapses"]["Learnable"]["on_sonoff"]["gSYN"] = states["synapses"]["Learnable"]["on_sonoff"]["gSYN"] - (lrs['on_sonoff_gSYN']*m_hat[:,:,5])/(torch.sqrt(v_hat[:,:,5]) + eps)
++    #states["synapses"]["Learnable"]["off_sonoff"]["gSYN"] = states["synapses"]["Learnable"]["off_sonoff"]["gSYN"] - (lrs['off_sonoff_gSYN']*m_hat[:,:,6])/(torch.sqrt(v_hat[:,:,6]) + eps)
++    #states["synapses"]["Learnable"]["sonoff_ron"]["gSYN"] = states["synapses"]["Learnable"]["sonoff_ron"]["gSYN"] - (lrs['sonoff_ron_gSYN']*m_hat[:,:,7])/(torch.sqrt(v_hat[:,:,7]) + eps)
++
++    if train_refractory:
++        states["neurons"]["Learnable"]["ron"]["abs_ref"] = states["neurons"]["Learnable"]["ron"]["abs_ref"] - (lrs['abs_ref']*m_hat[:,:,8])/(torch.sqrt(v_hat[:,:,8]) + eps)
++        states["neurons"]["Learnable"]["ron"]["rel_ref_a"] = states["neurons"]["Learnable"]["ron"]["rel_ref_a"] - (lrs['rel_ref_a']*m_hat[:,:,9])/(torch.sqrt(v_hat[:,:,9]) + eps)
++        states["neurons"]["Learnable"]["ron"]["rel_ref_b"] = states["neurons"]["Learnable"]["ron"]["rel_ref_b"] - (lrs['rel_ref_b']*m_hat[:,:,10])/(torch.sqrt(v_hat[:,:,10]) + eps)
++        states["neurons"]["Learnable"]["ron"]["rel_ref_c"] = states["neurons"]["Learnable"]["ron"]["rel_ref_c"] - (lrs['rel_ref_c']*m_hat[:,:,11])/(torch.sqrt(v_hat[:,:,11]) + eps)
+ 
+-    states["neurons"]["Learnable"]["STRF_gain"] = torch.clamp(states["neurons"]["Learnable"]["STRF_gain"],min=0)
+-    states["neurons"]["Learnable"]["STRF_alpha"] = torch.clamp(states["neurons"]["Learnable"]["STRF_alpha"],min=5,max=250)
++    states["neurons"]["Learnable"]["STRF_gain"] = torch.clamp(states["neurons"]["Learnable"]["STRF_gain"],min=0.001)
++    states["neurons"]["Learnable"]["STRF_alpha"] = torch.clamp(states["neurons"]["Learnable"]["STRF_alpha"],min=0.1,max=250)
+     states["neurons"]["Learnable"]["ron"]["output_ad"] = torch.clamp(states["neurons"]["Learnable"]["ron"]["output_ad"],min=0)
+     for val,k in enumerate(list(states["synapses"]["Static"].keys())):
+-        states["synapses"]["Learnable"][k]["gSYN"] = torch.clamp(states["synapses"]["Learnable"][k]["gSYN"],min=0)
++        states["synapses"]["Learnable"][k]["gSYN"] = torch.clamp(states["synapses"]["Learnable"][k]["gSYN"],min=0.001)
+     states["neurons"]["Learnable"]["ron"]["abs_ref"] = torch.clamp(states["neurons"]["Learnable"]["ron"]["abs_ref"],min=0)
+-    states["neurons"]["Learnable"]["ron"]["rel_ref_a"] = torch.clamp(states["neurons"]["Learnable"]["ron"]["rel_ref_a"],min=0)
++    states["neurons"]["Learnable"]["ron"]["rel_ref_a"] = torch.clamp(states["neurons"]["Learnable"]["ron"]["rel_ref_a"],min=0.001)
+     states["neurons"]["Learnable"]["ron"]["rel_ref_b"] = torch.clamp(states["neurons"]["Learnable"]["ron"]["rel_ref_b"],min=0)
+     states["neurons"]["Learnable"]["ron"]["rel_ref_c"] = torch.clamp(states["neurons"]["Learnable"]["ron"]["rel_ref_c"],min=0.2,max=1)
+ 
+-    return states
+\ No newline at end of file
++    return states
+diff --git a/simulation_config.yaml b/simulation_config.yaml
+index 4157c0a9c84e3bb142f1566948af2f15fb3f2f34..fde5dcc56f4c0368d7f08c34e150216dd19311df 100644
+--- a/simulation_config.yaml
++++ b/simulation_config.yaml
+@@ -3,6 +3,10 @@ paths:
+   data: "Data/Data/all_units_info_with_polished_criteria_modified_perf.mat"
+   spontaneous_activity: "Data/Data/silent_activity_matrix.npy"
+ 
++preprocessing:
++  pre_cortical_handler: "current" # "current" or "legacy_match"
++  offset_mode: "causal_running_max" # avoids the noncausal pre-stimulus global-max plateau
++
+ strf:
+   fft_parms:
+     nstd : 6            #Shape of Gaussian window for spectrogram
+@@ -21,21 +25,66 @@ strf:
+     BSM: 5.00E-05       #1/Hz=s best spectral modulation
+     f0: 4300            #~strf.f(30)
+ 
++  rate_params:
++    stimGain: 0.5       # Legacy stimulus gain applied before STRF convolution
++    mean_rate: 0.1      # Legacy post-convolution rate scale
++
++  legacy_match:
++    alpha_derivative_units: "milliseconds" # Current loop stores STRF_alpha in ms; old code stored seconds.
++
+ simulation:
+   dt: 0.1               #step time in ms   
+-  batch_size: 15         #number of simulations to run in parallel
++  batch_size: 12        #number of simulations to run in parallel
+   data_target: "peak"   #Modes for training: "peak" look at only the angle with the max response, "all" look at all angles.
+-  #cell_targets: [1,2]  
++  #cell_targets: [7]
+   cell_targets: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220] #List of cell indices to train on. 1-220 for all cells.
+   sim_len : 29801
+   device : "cuda"
+-  epochs : 10
++  seed : 123             # reproducible controlled continuation
++  epochs : 80            # controlled continuation after objective/trace changes
+   PSTH_granularity : 100 #Number of entires in each bin. 
+   num_params : 12
+   lr : 0.05
+ 
+ Adam:
+-  beta1 : 0.9
+-  beta2 : 0.999
++  beta1 : 0.01
++  beta2 : 0.9995
++
++loss:
++  # Correct the leading 0.5-count downward bias of sampled-count MSE.
++  psth_count_bias_correction: 0.5
++
++eligibility:
++  # Width of the normalized conditional-mean threshold surrogate
++  # 0.5*(1+tanh((V-V_thresh)/width)). Recurrent hard spike/reset events are
++  # treated as frozen; output voltage eligibilities marginalize the relative-
++  # refractory Bernoulli gate, while input eligibilities do not use that gate.
++  # Five mV also avoids an exactly-zero float32 derivative at resting voltage.
++  surrogate_width_mv: 5.0
++
++optimization:
++  # The current CV multiplier is not d(CV)/d(parameter). Keep these four
++  # parameters fixed until a differentiable CV/renewal objective is selected.
++  # Setting this true intentionally fails closed in Simulation_Handler.
++  train_refractory: false
+ 
++parameter_initialization:
++  from_mat:
++    enabled: true
++    path: "C:/Users/ipboy/Documents/GitHub/LearningSpikingDynamics/40_epoch_checkpoint_strffix4.mat"
++    # Eligibility and count-gradient definitions changed; old moments are not
++    # commensurate with the corrected gradients.
++    load_adam: true
+ 
++debug_plots:
++  enabled: false
++  batch_index: 0
++  cell_index: 0
++  live: true
++  save: true
++  output_dir: "Archive/Debugging/live_loss_debug"
++  plot_input_rates: true
++  plot_epoch_summary: true
++  plot_every_n_loss_updates: 1
++  pause_seconds: 0.001
++  dpi: 120

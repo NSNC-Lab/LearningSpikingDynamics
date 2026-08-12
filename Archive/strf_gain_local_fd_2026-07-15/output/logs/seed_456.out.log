@@ -1,0 +1,8 @@
+Seed 456: preprocessing 112 rows took 4.1 s
+Seed 456: timestep 5000/29800, elapsed 61.3 s, ETA 304.0 s
+Seed 456: timestep 10000/29800, elapsed 122.2 s, ETA 242.0 s
+Seed 456: timestep 15000/29800, elapsed 184.3 s, ETA 181.9 s
+Seed 456: timestep 20000/29800, elapsed 244.6 s, ETA 119.9 s
+Seed 456: timestep 25000/29800, elapsed 304.9 s, ETA 58.5 s
+Seed 456: complete in 367.7 s
+Seed 456: saved validated seed file C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Archive\strf_gain_local_fd_2026-07-15\output\data\raw_seed_456.csv

@@ -1,0 +1,44 @@
+{
+  "best_psth": {
+    "cell_target": 206,
+    "batch_zero_based": 11,
+    "batch_one_based": 12,
+    "psth_mse": 0.09060402684563758,
+    "cv_loss": 0.000137605884568342,
+    "sim_cv": 0.8457696611167271,
+    "data_cv": 0.8340391076528729,
+    "psth_rank": 1,
+    "cv_rank": 52,
+    "combined_score": 53.0,
+    "combined_rank": 1,
+    "total_candidates": 3300
+  },
+  "best_cv": {
+    "cell_target": 140,
+    "batch_zero_based": 9,
+    "batch_one_based": 10,
+    "psth_mse": 1.929530201342282,
+    "cv_loss": 8.073598158437184e-09,
+    "sim_cv": 1.047905036716616,
+    "data_cv": 1.0478151835132317,
+    "psth_rank": 1206,
+    "cv_rank": 1,
+    "combined_score": 1207.0,
+    "combined_rank": 71,
+    "total_candidates": 3300
+  },
+  "best_combined": {
+    "cell_target": 206,
+    "batch_zero_based": 11,
+    "batch_one_based": 12,
+    "psth_mse": 0.09060402684563758,
+    "cv_loss": 0.000137605884568342,
+    "sim_cv": 0.8457696611167271,
+    "data_cv": 0.8340391076528729,
+    "psth_rank": 1,
+    "cv_rank": 52,
+    "combined_score": 53.0,
+    "combined_rank": 1,
+    "total_candidates": 3300
+  }
+}

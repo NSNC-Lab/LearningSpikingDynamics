@@ -1,0 +1,152 @@
+{
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 1001,
+  "seed": 123,
+  "baseline_bins": [
+    0.0,
+    1.0,
+    0.0,
+    5.0,
+    5.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0
+  ],
+  "data_bins": [
+    2.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "target": {
+    "STRF_gain": {
+      "epsilon": 0.00040227142162621023,
+      "psth_fd": [
+        0.0,
+        -1242.941887292702,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "STRF_alpha": {
+      "epsilon": 0.6059138774871826,
+      "psth_fd": [
+        0.0,
+        0.0,
+        0.0,
+        1.6503995652767565,
+        -0.8251997826383782,
+        0.0,
+        0.0,
+        0.0,
+        1.6503995652767565,
+        0.0
+      ]
+    }
+  },
+  "results": [
+    {
+      "name": "full_dv_psi1_norel_reset",
+      "settings": {
+        "name": "full_dv_psi1_norel_reset",
+        "psi_scale": 1.0,
+        "output_relprob": false,
+        "reset_dv": true,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": -2485.883774585404,
+          "surrogate_grad_from_bins": -77807570.76464844,
+          "same_sign": true,
+          "metrics": {
+            "n": 10,
+            "rmse": 2573649.190576693,
+            "relative_rmse": 6547.8470262178225,
+            "correlation": -0.15378457931866715,
+            "slope_fd_on_analytic": -5.7046377542941506e-08,
+            "sign_agreement": 0.0,
+            "analytic_rms": 2573649.0137454527,
+            "finite_difference_rms": 393.0527363073235
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 9.90239739166054,
+          "surrogate_grad_from_bins": -85812.17053365707,
+          "same_sign": false,
+          "metrics": {
+            "n": 10,
+            "rmse": 2838.2896915667375,
+            "relative_rmse": 3625.5705481078976,
+            "correlation": 0.34306774861789413,
+            "slope_fd_on_analytic": 4.5096419957213796e-05,
+            "sign_agreement": 0.1111111111111111,
+            "analytic_rms": 2838.4175889619323,
+            "finite_difference_rms": 0.7828532513439438
+          }
+        }
+      },
+      "score": 5086.70878716286,
+      "mean_correlation": 0.09464158464961349
+    },
+    {
+      "name": "full_dv_psi1_norel_noreset",
+      "settings": {
+        "name": "full_dv_psi1_norel_noreset",
+        "psi_scale": 1.0,
+        "output_relprob": false,
+        "reset_dv": false,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": -2485.883774585404,
+          "surrogate_grad_from_bins": -1240058832.453125,
+          "same_sign": true,
+          "metrics": {
+            "n": 10,
+            "rmse": 40414045.235492535,
+            "relative_rmse": 102820.92325619415,
+            "correlation": -0.1593852466238857,
+            "slope_fd_on_analytic": 7.628745414835358e-09,
+            "sign_agreement": 0.1111111111111111,
+            "analytic_rms": 40414045.54188966,
+            "finite_difference_rms": 393.0527363073235
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 9.90239739166054,
+          "surrogate_grad_from_bins": -1367633.0205535889,
+          "same_sign": false,
+          "metrics": {
+            "n": 10,
+            "rmse": 44571.62568064593,
+            "relative_rmse": 56934.841369147754,
+            "correlation": 0.33548148479664996,
+            "slope_fd_on_analytic": 2.6305486837033966e-06,
+            "sign_agreement": 0.1111111111111111,
+            "analytic_rms": 44571.74292206483,
+            "finite_difference_rms": 0.7828532513439438
+          }
+        }
+      },
+      "score": 79877.88231267095,
+      "mean_correlation": 0.08804811908638213
+    }
+  ]
+}

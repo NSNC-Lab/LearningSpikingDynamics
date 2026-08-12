@@ -1,0 +1,73 @@
+{
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 10000,
+  "seed": 123,
+  "epsilon": 8.045428432524205e-05,
+  "summary": {
+    "on": {
+      "exact_pre_voltage": {
+        "n": 10000,
+        "rmse": 1.5721708117369955e-05,
+        "relative_rmse": 3.445104820758504e-06,
+        "correlation": 0.9999999999970991,
+        "slope_fd_on_analytic": 0.9999974696586371,
+        "sign_agreement": 1.0,
+        "analytic_rms": 4.563503497478813,
+        "finite_difference_rms": 4.563491950269624
+      },
+      "current_post_voltage_no_bk": {
+        "n": 10000,
+        "rmse": 0.5349032523363478,
+        "relative_rmse": 0.11721358515919526,
+        "correlation": 0.9962538252280371,
+        "slope_fd_on_analytic": 1.0899381134958273,
+        "sign_agreement": 1.0,
+        "analytic_rms": 4.172294813916091,
+        "finite_difference_rms": 4.563491950269624
+      },
+      "live_one_plus_bk": {
+        "n": 10000,
+        "rmse": 6.586566914250185,
+        "relative_rmse": 1.4433173074534709,
+        "correlation": -0.9962538252280371,
+        "slope_fd_on_analytic": -2.2423962689552055,
+        "sign_agreement": 0.0,
+        "analytic_rms": 2.027983724993867,
+        "finite_difference_rms": 4.563491950269624
+      }
+    },
+    "off": {
+      "exact_pre_voltage": {
+        "n": 10000,
+        "rmse": 5.0965654157494426e-05,
+        "relative_rmse": 4.5658563168715996e-06,
+        "correlation": 0.9999999999960482,
+        "slope_fd_on_analytic": 0.9999962549269156,
+        "sign_agreement": 1.0,
+        "analytic_rms": 11.162384773213997,
+        "finite_difference_rms": 11.162342969305293
+      },
+      "current_post_voltage_no_bk": {
+        "n": 10000,
+        "rmse": 1.4242243174224998,
+        "relative_rmse": 0.12759187935174252,
+        "correlation": 0.996056609409785,
+        "slope_fd_on_analytic": 1.1102546733053977,
+        "sign_agreement": 1.0,
+        "analytic_rms": 10.021220705138152,
+        "finite_difference_rms": 11.162342969305293
+      },
+      "live_one_plus_bk": {
+        "n": 10000,
+        "rmse": 16.022240710026228,
+        "relative_rmse": 1.4353833020615352,
+        "correlation": -0.9960566094097852,
+        "slope_fd_on_analytic": -2.2841947686598036,
+        "sign_agreement": 0.0,
+        "analytic_rms": 4.870909991021658,
+        "finite_difference_rms": 11.162342969305293
+      }
+    }
+  }
+}

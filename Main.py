@@ -24,7 +24,6 @@ def main():
 
     #Save output
     output_handler.save_output(output)
-
     return output
 
 if __name__ == "__main__":

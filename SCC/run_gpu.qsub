@@ -1,0 +1,43 @@
+#!/bin/bash -l
+#$ -N lif_acx
+#$ -cwd
+#$ -j y
+#$ -l h_rt=48:00:00
+#$ -pe omp 4
+#$ -l mem_per_core=8G
+#$ -l gpus=1
+#$ -l gpu_c=7.0
+#$ -l gpu_memory=24G
+
+set -euo pipefail
+
+PROJECT_ROOT="${SCC_PROJECT_ROOT:-${SGE_O_WORKDIR:-$PWD}}"
+cd "$PROJECT_ROOT"
+test -f Main.py || { echo "Main.py was not found in $PROJECT_ROOT" >&2; exit 2; }
+
+module purge
+module load miniconda
+module load academic-ml/spring-2026
+conda activate spring-2026-pyt
+
+export OMP_NUM_THREADS="${NSLOTS:-1}"
+export MKL_NUM_THREADS="${NSLOTS:-1}"
+export OPENBLAS_NUM_THREADS="${NSLOTS:-1}"
+export NUMEXPR_NUM_THREADS="${NSLOTS:-1}"
+export MPLBACKEND=Agg
+export PYTHONUNBUFFERED=1
+
+echo "============================================================"
+echo "Started:       $(date)"
+echo "Job:           ${JOB_NAME:-interactive} ${JOB_ID:-none}"
+echo "Host:          $(hostname)"
+echo "Project root:  $PROJECT_ROOT"
+echo "CPU slots:     ${NSLOTS:-1}"
+echo "Visible GPUs:  ${CUDA_VISIBLE_DEVICES:-not set}"
+echo "============================================================"
+git rev-parse --short HEAD 2>/dev/null || true
+git status --short 2>/dev/null || true
+nvidia-smi
+python -u SCC/check_scc_environment.py
+python -u Main.py
+echo "Finished: $(date)"

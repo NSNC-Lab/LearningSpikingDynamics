@@ -1,0 +1,540 @@
+{
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 3001,
+  "seed": 123,
+  "baseline_bins": [
+    0.0,
+    1.0,
+    0.0,
+    5.0,
+    5.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    3.0,
+    0.0,
+    19.0,
+    2.0,
+    10.0,
+    10.0,
+    18.0,
+    5.0,
+    2.0,
+    8.0,
+    2.0,
+    6.0,
+    7.0,
+    5.0,
+    2.0,
+    5.0,
+    3.0,
+    0.0,
+    1.0
+  ],
+  "data_bins": [
+    2.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    2.0,
+    4.0,
+    1.0,
+    1.0,
+    2.0,
+    0.0,
+    3.0,
+    2.0,
+    5.0,
+    2.0,
+    5.0,
+    15.0,
+    13.0,
+    6.0,
+    11.0,
+    3.0,
+    2.0,
+    1.0,
+    3.0,
+    1.0
+  ],
+  "target": {
+    "STRF_gain": {
+      "epsilon": 0.00040227142162621023,
+      "psth_fd": [
+        0.0,
+        -1242.941887292702,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1242.941887292702,
+        0.0,
+        1242.941887292702,
+        1242.941887292702,
+        0.0,
+        0.0,
+        11186.476985634317,
+        -1242.941887292702,
+        -1242.941887292702,
+        0.0,
+        1242.941887292702,
+        -3728.825661878106,
+        -1242.941887292702,
+        1242.941887292702,
+        1242.941887292702,
+        -2485.883774585404,
+        -3728.825661878106,
+        0.0,
+        0.0,
+        1242.941887292702
+      ]
+    },
+    "STRF_alpha": {
+      "epsilon": 0.6059138774871826,
+      "psth_fd": [
+        0.0,
+        0.0,
+        0.0,
+        1.6503995652767565,
+        -0.8251997826383782,
+        0.0,
+        0.0,
+        0.0,
+        1.6503995652767565,
+        0.0,
+        0.0,
+        -0.8251997826383782,
+        0.8251997826383782,
+        0.8251997826383782,
+        0.0,
+        1.6503995652767565,
+        4.125998913191891,
+        2.4755993479151344,
+        -1.6503995652767565,
+        0.8251997826383782,
+        1.6503995652767565,
+        -2.4755993479151344,
+        1.6503995652767565,
+        0.8251997826383782,
+        -1.6503995652767565,
+        -0.8251997826383782,
+        -2.4755993479151344,
+        0.8251997826383782,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "results": [
+    {
+      "name": "full_dv_psi0.5_relprob_reset",
+      "settings": {
+        "name": "full_dv_psi0.5_relprob_reset",
+        "psi_scale": 0.5,
+        "output_relprob": true,
+        "reset_dv": true,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -15089873.117675781,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 216405.50429338723,
+            "relative_rmse": 89.31526282402959,
+            "correlation": -0.24885195582309882,
+            "slope_fd_on_analytic": -0.002881089008581514,
+            "sign_agreement": 0.20689655172413793,
+            "analytic_rms": 215771.1768805327,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -14735.160771846771,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 205.04195466854327,
+            "relative_rmse": 145.07845425122423,
+            "correlation": 0.0937576403995279,
+            "slope_fd_on_analytic": 0.00018362527909798095,
+            "sign_agreement": 0.3103448275862069,
+            "analytic_rms": 205.07474410179125,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 117.19685853762691,
+      "mean_correlation": -0.07754715771178547
+    },
+    {
+      "name": "full_dv_psi0.5_norel_reset",
+      "settings": {
+        "name": "full_dv_psi0.5_norel_reset",
+        "psi_scale": 0.5,
+        "output_relprob": false,
+        "reset_dv": true,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -15454988.291015625,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 221625.90036427847,
+            "relative_rmse": 91.46983393181925,
+            "correlation": -0.24885229745787163,
+            "slope_fd_on_analytic": -0.002813029912718934,
+            "sign_agreement": 0.20689655172413793,
+            "analytic_rms": 220991.87066969895,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -15091.756412506104,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 210.00374701814107,
+            "relative_rmse": 148.58919509233093,
+            "correlation": 0.09375759632562791,
+            "slope_fd_on_analytic": 0.00017928688256313812,
+            "sign_agreement": 0.3103448275862069,
+            "analytic_rms": 210.03665136792213,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 120.02951451207508,
+      "mean_correlation": -0.07754735056612186
+    },
+    {
+      "name": "full_dv_psi1_relprob_reset",
+      "settings": {
+        "name": "full_dv_psi1_relprob_reset",
+        "psi_scale": 1.0,
+        "output_relprob": true,
+        "reset_dv": true,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -239233664.13378906,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 1979226.8532139165,
+            "relative_rmse": 816.8700105867861,
+            "correlation": -0.29280080164735195,
+            "slope_fd_on_analytic": -0.00035651922101733927,
+            "sign_agreement": 0.2413793103448276,
+            "analytic_rms": 1978520.1153958344,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -168549.53674316406,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 1905.6280435424042,
+            "relative_rmse": 1348.3365947317068,
+            "correlation": 0.07748442098289737,
+            "slope_fd_on_analytic": -1.8373988350731355e-07,
+            "sign_agreement": 0.3448275862068966,
+            "analytic_rms": 1905.6271693058645,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 1082.6033026592463,
+      "mean_correlation": -0.10765819033222729
+    },
+    {
+      "name": "full_dv_psi1_norel_reset",
+      "settings": {
+        "name": "full_dv_psi1_norel_reset",
+        "psi_scale": 1.0,
+        "output_relprob": false,
+        "reset_dv": true,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -245022339.88183594,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 2027098.1427547731,
+            "relative_rmse": 836.6275339502871,
+            "correlation": -0.2928008828433272,
+            "slope_fd_on_analytic": -0.0003480969149159173,
+            "sign_agreement": 0.2413793103448276,
+            "analytic_rms": 2026391.436834656,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -172628.38668584824,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 1951.7356640864145,
+            "relative_rmse": 1380.9602708400446,
+            "correlation": 0.0774842438206515,
+            "slope_fd_on_analytic": -1.7955072477557918e-07,
+            "sign_agreement": 0.3448275862068966,
+            "analytic_rms": 1951.7348019354083,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 1108.7939023951658,
+      "mean_correlation": -0.10765831951133786
+    },
+    {
+      "name": "full_dv_psi0.5_relprob_noreset",
+      "settings": {
+        "name": "full_dv_psi0.5_relprob_noreset",
+        "psi_scale": 0.5,
+        "output_relprob": true,
+        "reset_dv": false,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -886166766.5976562,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 4342980.223195084,
+            "relative_rmse": 1792.4424858822072,
+            "correlation": -0.32519055236507177,
+            "slope_fd_on_analytic": -0.00017579034780393986,
+            "sign_agreement": 0.27586206896551724,
+            "analytic_rms": 4342216.294686097,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -355868.9234676361,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 3340.957067782938,
+            "relative_rmse": 2363.910780587248,
+            "correlation": 0.028289542328212104,
+            "slope_fd_on_analytic": -2.3439277499988314e-05,
+            "sign_agreement": 0.3103448275862069,
+            "analytic_rms": 3340.8784619869207,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 2078.176633234728,
+      "mean_correlation": -0.14845050501842982
+    },
+    {
+      "name": "full_dv_psi0.5_norel_noreset",
+      "settings": {
+        "name": "full_dv_psi0.5_norel_noreset",
+        "psi_scale": 0.5,
+        "output_relprob": false,
+        "reset_dv": false,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -907611777.0546875,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 4448050.064155259,
+            "relative_rmse": 1835.8070966432826,
+            "correlation": -0.3251919794991801,
+            "slope_fd_on_analytic": -0.00017163783887575508,
+            "sign_agreement": 0.27586206896551724,
+            "analytic_rms": 4447286.147157002,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -364482.38865947723,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 3421.7969441911355,
+            "relative_rmse": 2421.1094369798884,
+            "correlation": 0.028288531237960365,
+            "slope_fd_on_analytic": -2.2885922767382655e-05,
+            "sign_agreement": 0.3103448275862069,
+            "analytic_rms": 3421.718344031447,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 2128.4582668115854,
+      "mean_correlation": -0.14845172413060986
+    },
+    {
+      "name": "full_dv_psi1_relprob_noreset",
+      "settings": {
+        "name": "full_dv_psi1_relprob_noreset",
+        "psi_scale": 1.0,
+        "output_relprob": true,
+        "reset_dv": false,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -7345703449.859375,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 35972809.605051614,
+            "relative_rmse": 14846.761661099483,
+            "correlation": -0.32117193243468944,
+            "slope_fd_on_analytic": -2.0956897913625564e-05,
+            "sign_agreement": 0.27586206896551724,
+            "analytic_rms": 35972055.66865411,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -2952560.8106689453,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 27659.248040550072,
+            "relative_rmse": 19570.43844007906,
+            "correlation": 0.02937213518810284,
+            "slope_fd_on_analytic": -2.8310346722147873e-06,
+            "sign_agreement": 0.3103448275862069,
+            "analytic_rms": 27659.169700484,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 17208.60005058927,
+      "mean_correlation": -0.1458998986232933
+    },
+    {
+      "name": "full_dv_psi1_norel_noreset",
+      "settings": {
+        "name": "full_dv_psi1_norel_noreset",
+        "psi_scale": 1.0,
+        "output_relprob": false,
+        "reset_dv": false,
+        "output_source": "spike"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -7523478030.203125,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 36843263.97502377,
+            "relative_rmse": 15206.01712959712,
+            "correlation": -0.321172597557649,
+            "slope_fd_on_analytic": -2.0461798354490084e-05,
+            "sign_agreement": 0.27586206896551724,
+            "analytic_rms": 36842510.03905461,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -3024029.5660858154,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 28328.525423833245,
+            "relative_rmse": 20043.98897947471,
+            "correlation": 0.02937085512093721,
+            "slope_fd_on_analytic": -2.7642132493472516e-06,
+            "sign_agreement": 0.3103448275862069,
+            "analytic_rms": 28328.447082817314,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 17625.003054535915,
+      "mean_correlation": -0.14590087121835588
+    },
+    {
+      "name": "full_dv_voltage_output",
+      "settings": {
+        "name": "full_dv_voltage_output",
+        "psi_scale": 1.0,
+        "output_relprob": false,
+        "reset_dv": true,
+        "output_source": "voltage"
+      },
+      "params": {
+        "STRF_gain": {
+          "loss_fd_grad_from_bins": 243616.60990936952,
+          "surrogate_grad_from_bins": -2332562411.5,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 43674630.310509,
+            "relative_rmse": 18025.47073681175,
+            "correlation": -0.11900817356473002,
+            "slope_fd_on_analytic": -7.0661145805033704e-06,
+            "sign_agreement": 0.2,
+            "analytic_rms": 43674321.63662963,
+            "finite_difference_rms": 2422.9397915981376
+          }
+        },
+        "STRF_alpha": {
+          "loss_fd_grad_from_bins": 272.3159282706648,
+          "surrogate_grad_from_bins": -2378179.1484375,
+          "same_sign": false,
+          "metrics": {
+            "n": 30,
+            "rmse": 48028.72266479255,
+            "relative_rmse": 33982.96146333917,
+            "correlation": 0.06587862012209308,
+            "slope_fd_on_analytic": -2.748375689876486e-06,
+            "sign_agreement": 0.26666666666666666,
+            "analytic_rms": 48028.590643568496,
+            "finite_difference_rms": 1.4133177509138504
+          }
+        }
+      },
+      "score": 26004.216100075457,
+      "mean_correlation": -0.02656477672131847
+    }
+  ]
+}

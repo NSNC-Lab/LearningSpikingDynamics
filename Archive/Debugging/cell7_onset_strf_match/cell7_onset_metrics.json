@@ -1,0 +1,19 @@
+{
+  "samples": 29801,
+  "corr_zero_lag": NaN,
+  "best_lag_samples_positive_candidate_lags": 0,
+  "best_lag_ms_positive_candidate_lags": 0.0,
+  "best_lag_corr": -Infinity,
+  "nrmse": NaN,
+  "mae": 110.43959537453777,
+  "reference_peak": 0.0,
+  "candidate_peak": 730.0386406222447,
+  "peak_ratio_candidate_over_reference": Infinity,
+  "reference_peak_index": 0,
+  "candidate_peak_index": 1168,
+  "reference_area": 0.0,
+  "candidate_area": 3291210.3817566,
+  "area_ratio_candidate_over_reference": Infinity,
+  "reference_first_nonzero_index": null,
+  "candidate_first_nonzero_index": 659
+}

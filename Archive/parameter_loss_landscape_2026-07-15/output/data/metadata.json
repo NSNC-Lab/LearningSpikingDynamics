@@ -1,0 +1,287 @@
+{
+  "analysis_created": "2026-07-15 15:55:46",
+  "snapshot_root": "C:\\Users\\ipboy\\Documents\\GitHub\\LearningSpikingDynamics\\Archive\\pre_dpsc_local_eligibility_snapshot_2026-07-09_1439",
+  "checkpoint": "C:\\Users\\ipboy\\Documents\\GitHub\\LearningSpikingDynamics\\100_epoch_post_strf_fix_4.mat",
+  "cells": [
+    1,
+    2,
+    7
+  ],
+  "checkpoint_batches_zero_based": [
+    6,
+    3,
+    3
+  ],
+  "seeds": [
+    123,
+    456,
+    789
+  ],
+  "sim_len": 29801,
+  "dt_ms": 0.1,
+  "psth_granularity_steps": 100,
+  "sweep_rows": 159,
+  "classification": "Every retained plotted point has the requested raw face color: green only when the mean archived eligibility-based update signal and mean adjacent-point sampled loss slope have the same nonzero sign, red otherwise. A qualified stable-green or stable-red point must be interior, have nonzero same-direction left/right secants, have a valid CV stencil when applicable, and have unanimous update-signal signs and unanimous slope signs across every seed. Other points are excluded from the qualified headline.",
+  "common_random_numbers": "Within each seed, onset, offset, spontaneous, and output-gate random draws are shared across all parameter values.",
+  "objective_mapping": {
+    "Strf_gain": "PSTH SSE",
+    "Strf_alpha": "PSTH SSE",
+    "output_ad": "PSTH SSE",
+    "on_ron_gSYN": "PSTH SSE",
+    "off_ron_gSYN": "PSTH SSE",
+    "on_sonoff_gSYN": "PSTH SSE",
+    "off_sonoff_gSYN": "PSTH SSE",
+    "sonoff_ron_gSYN": "PSTH SSE",
+    "abs_ref": "CV squared error",
+    "rel_ref_a": "CV squared error",
+    "rel_ref_b": "CV squared error",
+    "rel_ref_c": "CV squared error"
+  },
+  "baseline": {
+    "Strf_gain": [
+      0.015168705955147743,
+      0.014653658494353294,
+      0.006921572145074606
+    ],
+    "Strf_alpha": [
+      25.937660217285156,
+      29.200740814208984,
+      18.431663513183594
+    ],
+    "output_ad": [
+      0.005254278425127268,
+      0.0037855682894587517,
+      0.004300237167626619
+    ],
+    "on_ron_gSYN": [
+      0.016436368227005005,
+      0.004957615397870541,
+      0.011607290245592594
+    ],
+    "off_ron_gSYN": [
+      0.0010000000474974513,
+      0.0013098177732899785,
+      0.0034952524583786726
+    ],
+    "on_sonoff_gSYN": [
+      0.0052709621377289295,
+      0.00100049062166363,
+      0.028810489922761917
+    ],
+    "off_sonoff_gSYN": [
+      0.0010000000474974513,
+      0.0010000000474974513,
+      0.002133022528141737
+    ],
+    "sonoff_ron_gSYN": [
+      0.05735066160559654,
+      0.03088780865073204,
+      0.035883836448192596
+    ],
+    "abs_ref": [
+      0.0,
+      3.6539320945739746,
+      0.0
+    ],
+    "rel_ref_a": [
+      8.795970916748047,
+      3.2449843883514404,
+      8.140619277954102
+    ],
+    "rel_ref_b": [
+      0.0,
+      8.554961204528809,
+      1.1436665058135986
+    ],
+    "rel_ref_c": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "grid": {
+    "Strf_gain": [
+      0.001,
+      0.0015182417792741364,
+      0.0023050581003334933,
+      0.0034996355115805835,
+      0.005313292845913057,
+      0.00806686318418358,
+      0.012247448713915893,
+      0.018594588326984397,
+      0.028231080866430863,
+      0.042861606445482,
+      0.06507428163233639,
+      0.0987984931304646,
+      0.15
+    ],
+    "Strf_alpha": [
+      0.1,
+      0.19193831036664843,
+      0.36840314986403866,
+      0.7071067811865475,
+      1.3572088082974532,
+      2.6050036547934563,
+      4.999999999999999,
+      9.596915518332422,
+      18.42015749320193,
+      35.35533905932737,
+      67.86044041487266,
+      130.2501827396728,
+      250.0
+    ],
+    "output_ad": [
+      0.0,
+      0.00025,
+      0.0005,
+      0.001,
+      0.002,
+      0.0035,
+      0.005,
+      0.0075,
+      0.01,
+      0.015,
+      0.025
+    ],
+    "on_ron_gSYN": [
+      0.001,
+      0.0015182417792741364,
+      0.0023050581003334933,
+      0.0034996355115805835,
+      0.005313292845913057,
+      0.00806686318418358,
+      0.012247448713915893,
+      0.018594588326984397,
+      0.028231080866430863,
+      0.042861606445482,
+      0.06507428163233639,
+      0.0987984931304646,
+      0.15
+    ],
+    "off_ron_gSYN": [
+      0.001,
+      0.0015182417792741364,
+      0.0023050581003334933,
+      0.0034996355115805835,
+      0.005313292845913057,
+      0.00806686318418358,
+      0.012247448713915893,
+      0.018594588326984397,
+      0.028231080866430863,
+      0.042861606445482,
+      0.06507428163233639,
+      0.0987984931304646,
+      0.15
+    ],
+    "on_sonoff_gSYN": [
+      0.001,
+      0.0015182417792741364,
+      0.0023050581003334933,
+      0.0034996355115805835,
+      0.005313292845913057,
+      0.00806686318418358,
+      0.012247448713915893,
+      0.018594588326984397,
+      0.028231080866430863,
+      0.042861606445482,
+      0.06507428163233639,
+      0.0987984931304646,
+      0.15
+    ],
+    "off_sonoff_gSYN": [
+      0.001,
+      0.0015182417792741364,
+      0.0023050581003334933,
+      0.0034996355115805835,
+      0.005313292845913057,
+      0.00806686318418358,
+      0.012247448713915893,
+      0.018594588326984397,
+      0.028231080866430863,
+      0.042861606445482,
+      0.06507428163233639,
+      0.0987984931304646,
+      0.15
+    ],
+    "sonoff_ron_gSYN": [
+      0.001,
+      0.0015182417792741364,
+      0.0023050581003334933,
+      0.0034996355115805835,
+      0.005313292845913057,
+      0.00806686318418358,
+      0.012247448713915893,
+      0.018594588326984397,
+      0.028231080866430863,
+      0.042861606445482,
+      0.06507428163233639,
+      0.0987984931304646,
+      0.15
+    ],
+    "abs_ref": [
+      0.0,
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      7.5,
+      10.0,
+      15.0,
+      25.0
+    ],
+    "rel_ref_a": [
+      0.001,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1.0,
+      2.0,
+      4.0,
+      6.0,
+      8.0,
+      10.0,
+      15.0
+    ],
+    "rel_ref_b": [
+      0.0,
+      0.25,
+      0.5,
+      1.0,
+      2.0,
+      4.0,
+      6.0,
+      8.0,
+      10.0,
+      15.0,
+      25.0
+    ],
+    "rel_ref_c": [
+      0.2,
+      0.28,
+      0.36,
+      0.44,
+      0.52,
+      0.6000000000000001,
+      0.6799999999999999,
+      0.76,
+      0.8400000000000001,
+      0.9199999999999999,
+      1.0
+    ]
+  },
+  "elapsed_seconds": 6.784182600000349,
+  "torch_version": "2.7.0+cu118",
+  "numpy_version": "2.2.6",
+  "notes": [
+    "No Adam or other parameter update was applied.",
+    "Each non-baseline sweep changes at most one parameter; all other parameters remain at the selected final-tracker values.",
+    "The archived ordering and PSTH-bin convention are preserved, including that eligibility is updated at the bin-closing timestep while the sampled spike count excludes that timestep.",
+    "Refractory parameters are compared with the archived CV squared-error objective; all other parameters use summed PSTH SSE.",
+    "When the archived CV code considers a simulation too sparse for a CV, both its CV loss contribution and eligibility-based update signal are recorded as zero.",
+    "This is an exploratory consistency check of a surrogate update signal against a coarse sampled hard-spike loss curve, not a proof of an exact derivative.",
+    "Best batches were selected in-sample by saved PSTH SSE; this report makes no held-out or generalization claim."
+  ]
+}

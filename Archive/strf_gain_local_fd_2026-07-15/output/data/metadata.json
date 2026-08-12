@@ -1,0 +1,99 @@
+{
+  "analysis": "Archived STRF-gain local finite-difference pilot",
+  "snapshot": "C:\\Users\\ipboy\\Documents\\GitHub\\LearningSpikingDynamics\\Archive\\pre_dpsc_local_eligibility_snapshot_2026-07-09_1439",
+  "source_harness": "C:\\Users\\ipboy\\Documents\\GitHub\\LearningSpikingDynamics\\Archive\\parameter_loss_landscape_2026-07-15\\run_landscape.py",
+  "cells": [
+    1,
+    2,
+    7
+  ],
+  "seeds": [
+    123,
+    456,
+    789,
+    1011,
+    1213,
+    1415,
+    1617,
+    1819
+  ],
+  "trials_per_seed": 10,
+  "num_initialization_batches": 8,
+  "cell_specific_parameter_contexts": 24,
+  "initialization_method": "Separate stratified scrambled Latin-hypercube designs per cell over the archived linear-uniform initialization ranges, except that gain centers are lower-truncated so the -10% log probe remains above 0.001. The +10% probe may extend above the initialization support but remains inside the model's admissible domain.",
+  "initialization_seed": 20260715,
+  "parameter_ranges": {
+    "Strf_gain": [
+      0.001,
+      0.02
+    ],
+    "Strf_alpha": [
+      1.0,
+      100.0
+    ],
+    "output_ad": [
+      0.0001,
+      0.005
+    ],
+    "on_ron_gSYN": [
+      0.01,
+      0.05
+    ],
+    "off_ron_gSYN": [
+      0.01,
+      0.05
+    ],
+    "on_sonoff_gSYN": [
+      0.01,
+      0.05
+    ],
+    "off_sonoff_gSYN": [
+      0.01,
+      0.05
+    ],
+    "sonoff_ron_gSYN": [
+      0.01,
+      0.05
+    ],
+    "abs_ref": [
+      0.1,
+      10.0
+    ],
+    "rel_ref_a": [
+      0.001,
+      10.0
+    ],
+    "rel_ref_b": [
+      0.0,
+      10.0
+    ],
+    "rel_ref_c": [
+      0.2,
+      1.0
+    ]
+  },
+  "gain_center_lower_bound_after_probe_guard": 0.0011051709180756478,
+  "log_gain_epsilons": [
+    0.0025,
+    0.005,
+    0.01,
+    0.02,
+    0.05,
+    0.1
+  ],
+  "batch_rows": 112,
+  "sim_len": 29801,
+  "dt_ms": 0.1,
+  "predeclared_primary_log_epsilon": 0.02,
+  "primary_counts": {
+    "contexts": 24,
+    "green": 21,
+    "red": 0,
+    "gray": 3
+  },
+  "classification": "Green/red requires the eligibility nominal 95% t interval to exclude zero and the numerical FD direction to belong to at least one run of three adjacent epsilons whose nominal 95% t intervals all exclude zero with the same sign. Green means matching signs; red means opposing signs; all other comparisons are gray. This is a stable-sign rule, not a magnitude-convergence criterion. Magnitude stability is reported separately when three adjacent resolved FD intervals share a common intersection. Intervals are exploratory and are not corrected for multiple testing.",
+  "common_random_numbers": "Torch onset, offset, and output-gate draws are identical across all gain probes within a center but independent across initialization groups. Archived numpy spontaneous input has no batch axis and is therefore shared across centers within a seed.",
+  "interpretation": "The central finite difference estimates the slope of expected sampled PSTH SSE under paired Monte Carlo draws. It is not the ordinary derivative of one discontinuous hard-spike trajectory.",
+  "elapsed_seconds_this_invocation": 7.204374799999641,
+  "generated_at": "2026-07-15 17:07:57 -0400"
+}

@@ -1,0 +1,332 @@
+{
+  "terms": {
+    "gain": {
+      "on_ron": 3440.1184636784874,
+      "off_ron": 2724.8673915444497,
+      "sonoff_ron": -23413.546688134025,
+      "total_grad": 0.0,
+      "mean_accum": -21172.279961374672,
+      "weighted_accum": -10502025.954547763,
+      "positive_loss_bins": 39.0,
+      "negative_loss_bins": 43.0,
+      "stored_total_grad": -10502025.0,
+      "n_bins": 99
+    },
+    "alpha": {
+      "on_ron": 3.1628250924356722,
+      "off_ron": 4.899745548925166,
+      "sonoff_ron": 13.303007243925322,
+      "total_grad": 0.0,
+      "mean_accum": -22.122260301810325,
+      "weighted_accum": -9349.029052705848,
+      "positive_loss_bins": 39.0,
+      "negative_loss_bins": 43.0,
+      "stored_total_grad": -9349.029296875,
+      "n_bins": 99
+    }
+  },
+  "first_10_records": [
+    {
+      "timestep": 100,
+      "sim": 0.0,
+      "data": 2.0,
+      "loss_grad": -4.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 0.0,
+        "sonoff_ron": 0.0,
+        "accum": 0.0,
+        "grad_contrib": -0.0
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.0,
+        "sonoff_ron": 0.0,
+        "accum": 0.0,
+        "grad_contrib": -0.0
+      }
+    },
+    {
+      "timestep": 200,
+      "sim": 1.0,
+      "data": 0.0,
+      "loss_grad": 2.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 0.0,
+        "sonoff_ron": 0.0,
+        "accum": -1280.0052490234375,
+        "grad_contrib": -2560.010498046875
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.0,
+        "sonoff_ron": 0.0,
+        "accum": -1.4116884469985962,
+        "grad_contrib": -2.8233768939971924
+      }
+    },
+    {
+      "timestep": 300,
+      "sim": 0.0,
+      "data": 0.0,
+      "loss_grad": 0.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 0.007753956131637096,
+        "sonoff_ron": -0.04174366965889931,
+        "accum": -0.1842053234577179,
+        "grad_contrib": -0.0
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 8.551659448130522e-06,
+        "sonoff_ron": -4.6038163418415934e-05,
+        "accum": -0.00020315597066655755,
+        "grad_contrib": -0.0
+      }
+    },
+    {
+      "timestep": 400,
+      "sim": 5.0,
+      "data": 1.0,
+      "loss_grad": 8.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 195.81378173828125,
+        "sonoff_ron": -2201.136474609375,
+        "accum": -84167.84375,
+        "grad_contrib": -673342.75
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.21595855057239532,
+        "sonoff_ron": -2.4275825023651123,
+        "accum": -92.82681274414062,
+        "grad_contrib": -742.614501953125
+      }
+    },
+    {
+      "timestep": 500,
+      "sim": 5.0,
+      "data": 1.0,
+      "loss_grad": 8.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 2.7258636951446533,
+        "sonoff_ron": -18.947402954101562,
+        "accum": -326571.84375,
+        "grad_contrib": -2612574.75
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.0030062939040362835,
+        "sonoff_ron": -0.020896675065159798,
+        "accum": -360.1686706542969,
+        "grad_contrib": -2881.349365234375
+      }
+    },
+    {
+      "timestep": 600,
+      "sim": 0.0,
+      "data": 1.0,
+      "loss_grad": -2.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 35.96498489379883,
+        "sonoff_ron": -580.0925903320312,
+        "accum": -27607.314453125,
+        "grad_contrib": 55214.62890625
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.039664968848228455,
+        "sonoff_ron": -0.6397709846496582,
+        "accum": -30.44748306274414,
+        "grad_contrib": 60.89496612548828
+      }
+    },
+    {
+      "timestep": 700,
+      "sim": 1.0,
+      "data": 0.0,
+      "loss_grad": 2.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 0.0018167397938668728,
+        "sonoff_ron": -0.02587239444255829,
+        "accum": -26394.60546875,
+        "grad_contrib": -52789.2109375
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 2.0036416117363842e-06,
+        "sonoff_ron": -2.8534064767882228e-05,
+        "accum": -29.110000610351562,
+        "grad_contrib": -58.220001220703125
+      }
+    },
+    {
+      "timestep": 800,
+      "sim": 0.0,
+      "data": 0.0,
+      "loss_grad": 0.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 0.0,
+        "sonoff_ron": 0.0,
+        "accum": -392.4443054199219,
+        "grad_contrib": -0.0
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.0,
+        "sonoff_ron": 0.0,
+        "accum": -0.4328177571296692,
+        "grad_contrib": -0.0
+      }
+    },
+    {
+      "timestep": 900,
+      "sim": 1.0,
+      "data": 0.0,
+      "loss_grad": 2.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 13.792712211608887,
+        "sonoff_ron": -112.3549575805664,
+        "accum": -5147.1474609375,
+        "grad_contrib": -10294.294921875
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.015212025493383408,
+        "sonoff_ron": -0.12391640990972519,
+        "accum": -5.676726818084717,
+        "grad_contrib": -11.353453636169434
+      }
+    },
+    {
+      "timestep": 1000,
+      "sim": 0.0,
+      "data": 0.0,
+      "loss_grad": 0.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 4.848312854766846,
+        "sonoff_ron": -44.648521423339844,
+        "accum": -375.3009033203125,
+        "grad_contrib": -0.0
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.005347246769815683,
+        "sonoff_ron": -0.04924248903989792,
+        "accum": -0.41391685605049133,
+        "grad_contrib": -0.0
+      }
+    }
+  ],
+  "last_5_records": [
+    {
+      "timestep": 9500,
+      "sim": 2.0,
+      "data": 0.0,
+      "loss_grad": 4.0,
+      "gain": {
+        "on_ron": 23.05678939819336,
+        "off_ron": 17.65254020690918,
+        "sonoff_ron": -326.95098876953125,
+        "accum": -18121.62890625,
+        "grad_contrib": -72486.515625
+      },
+      "alpha": {
+        "on_ron": 0.026387909427285194,
+        "off_ron": 0.01661563478410244,
+        "sonoff_ron": -0.30319613218307495,
+        "accum": -15.174315452575684,
+        "grad_contrib": -60.697261810302734
+      }
+    },
+    {
+      "timestep": 9600,
+      "sim": 8.0,
+      "data": 9.0,
+      "loss_grad": -2.0,
+      "gain": {
+        "on_ron": 23.764339447021484,
+        "off_ron": 312.7283020019531,
+        "sonoff_ron": -1462.0164794921875,
+        "accum": -9673.216796875,
+        "grad_contrib": 19346.43359375
+      },
+      "alpha": {
+        "on_ron": 0.03296392410993576,
+        "off_ron": 0.23969945311546326,
+        "sonoff_ron": -1.2720534801483154,
+        "accum": -8.1549072265625,
+        "grad_contrib": 16.309814453125
+      }
+    },
+    {
+      "timestep": 9700,
+      "sim": 4.0,
+      "data": 7.0,
+      "loss_grad": -6.0,
+      "gain": {
+        "on_ron": 3.161620156788558e-07,
+        "off_ron": 6.008030686643906e-05,
+        "sonoff_ron": -0.0005221976898610592,
+        "accum": -9145.9228515625,
+        "grad_contrib": 54875.5390625
+      },
+      "alpha": {
+        "on_ron": 3.511746726747589e-10,
+        "off_ron": 3.8871291963005206e-08,
+        "sonoff_ron": -3.902350158568879e-07,
+        "accum": -7.220272541046143,
+        "grad_contrib": 43.32163619995117
+      }
+    },
+    {
+      "timestep": 9800,
+      "sim": 4.0,
+      "data": 3.0,
+      "loss_grad": 2.0,
+      "gain": {
+        "on_ron": 0.0,
+        "off_ron": 0.0,
+        "sonoff_ron": 0.0,
+        "accum": 855.9834594726562,
+        "grad_contrib": 1711.9669189453125
+      },
+      "alpha": {
+        "on_ron": 0.0,
+        "off_ron": 0.0,
+        "sonoff_ron": 0.0,
+        "accum": 2.9886796474456787,
+        "grad_contrib": 5.977359294891357
+      }
+    },
+    {
+      "timestep": 9900,
+      "sim": 1.0,
+      "data": 6.0,
+      "loss_grad": -10.0,
+      "gain": {
+        "on_ron": 6.945075511932373,
+        "off_ron": 19.308029174804688,
+        "sonoff_ron": -17.720651626586914,
+        "accum": 463.46685791015625,
+        "grad_contrib": -4634.66845703125
+      },
+      "alpha": {
+        "on_ron": 0.015255404636263847,
+        "off_ron": 0.013850877061486244,
+        "sonoff_ron": -0.023668702691793442,
+        "accum": 0.6832127571105957,
+        "grad_contrib": -6.832127571105957
+      }
+    }
+  ]
+}

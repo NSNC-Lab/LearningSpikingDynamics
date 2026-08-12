@@ -1,0 +1,52 @@
+{
+  "cell": 7,
+  "batch": 0,
+  "sim_len": 10000,
+  "seed": 123,
+  "summary": {
+    "STRF_gain": {
+      "live_vs_stateful": {
+        "n": 10000,
+        "rmse": 1.708119520249733,
+        "relative_rmse": 0.0016614028645741065,
+        "correlation": 0.999998535093328,
+        "slope_fd_on_analytic": 0.9999535225436151,
+        "sign_agreement": 1.0,
+        "analytic_rms": 1028.165169159922,
+        "finite_difference_rms": 1028.1188004858777
+      },
+      "neg_live_vs_stateful": {
+        "n": 10000,
+        "rmse": 2056.2832607158107,
+        "relative_rmse": 2.000044410961099,
+        "correlation": -0.999998535093328,
+        "slope_fd_on_analytic": -0.9999535225436151,
+        "sign_agreement": 0.0,
+        "analytic_rms": 1028.165169159922,
+        "finite_difference_rms": 1028.1188004858777
+      }
+    },
+    "STRF_alpha": {
+      "live_vs_stateful": {
+        "n": 10000,
+        "rmse": 0.0019598168196816785,
+        "relative_rmse": 0.0016927194837110667,
+        "correlation": 0.9999984962290516,
+        "slope_fd_on_analytic": 0.9999764578701476,
+        "sign_agreement": 1.0,
+        "analytic_rms": 1.1578174473869178,
+        "finite_difference_rms": 1.1577918482886147
+      },
+      "neg_live_vs_stateful": {
+        "n": 10000,
+        "rmse": 2.3156084664710233,
+        "relative_rmse": 2.000021394080318,
+        "correlation": -0.9999984962290516,
+        "slope_fd_on_analytic": -0.9999764578701476,
+        "sign_agreement": 0.0,
+        "analytic_rms": 1.1578174473869178,
+        "finite_difference_rms": 1.1577918482886147
+      }
+    }
+  }
+}
