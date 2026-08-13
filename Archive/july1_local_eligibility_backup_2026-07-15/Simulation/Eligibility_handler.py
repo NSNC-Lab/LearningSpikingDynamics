@@ -4,7 +4,8 @@ def update_eligibility(args, states, rate_object, timestep):
     
     #Calculate Psis
     for k in list(states['neurons']['Static']):
-        states['neurons']['Static'][k]['psi'] = (1 - torch.tanh(states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Static'][k]['V_thresh'])**2)
+        w = 5
+        states['neurons']['Static'][k]['psi'] = (1 - torch.tanh((states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Static'][k]['V_thresh'])/w)**2)/(2*w)
 
     #Calculate conducatance eligibilities
     for k in list(states['synapses']['Static']):

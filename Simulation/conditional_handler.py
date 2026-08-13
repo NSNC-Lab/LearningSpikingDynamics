@@ -49,8 +49,11 @@ def condtion2(args, states,timestep):
     for k in list(states['neurons']['Static']):
 
         #Calculate Psis
-        states['neurons']['Static'][k]['psi'] = (1 - torch.tanh(states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Static'][k]['V_thresh'])**2) #Moved phi calculation here so that it would be done before V_reset can be applied.
-        spike_score_weights = (1 + torch.tanh(states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Static'][k]['V_thresh']))
+        w = 5
+        xt = (states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Static'][k]['V_thresh'])/w
+        qt = (1+torch.tanh(xt))/2
+        states['neurons']['Static'][k]['psi'] = (1 - torch.tanh(xt)**2)/(2*w) #Moved phi calculation here so that it would be done before V_reset can be applied.
+        spike_score_weights = qt
         time_offsets = torch.arange(-10,1,device=torch.device(args['simulation']['device']))
         time_tensor = (timestep + time_offsets) * args['simulation']['dt']
 
@@ -88,10 +91,10 @@ def condtion2(args, states,timestep):
 
             #Populate the buffer with the "spike score" for condition 2 (relative refractoriness)
             #Note 8-7. Expanding width of surrogate for stability.
-            width = 5 #In mv
-            x_val = (states['neurons']['Dynamic'][k]['V'][:,:,:,-1] - states['neurons']['Static'][k]['V_thresh'])/width
-            q_rel = (1 + torch.tanh(x_val))/2
-            psi_rel = (1/(2*width))*(1-torch.tanh(x_val)**2)
+            #width = 5 #In mv
+            #x_val = xt
+            q_rel = qt
+            psi_rel = states['neurons']['Static'][k]['psi']
             states['neurons']["Running_grads"][k]["Circular_window_buffer_rel"][:,:,:,:-1] = states['neurons']["Running_grads"][k]["Circular_window_buffer_rel"][:,:,:,1:].clone()
             states['neurons']["Running_grads"][k]["Circular_window_buffer_rel"][:,:,:,-1] = q_rel*probability*states['neurons']['Static'][k]['abs_indicator']
 

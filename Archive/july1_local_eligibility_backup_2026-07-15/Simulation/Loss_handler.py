@@ -3,7 +3,7 @@ import numpy as np
 
 def handle_loss(args, states, gt_data, timestep):
 
-    if timestep % args['simulation']['PSTH_granularity'] == 0 and timestep > 0:
+    if (timestep + 1) % args['simulation']['PSTH_granularity'] == 0 and timestep > 0:
         loss = calculate_loss(states, gt_data['psth_holder'], args, timestep)
         states = update_grad(states, loss['gradient'])
 
@@ -17,7 +17,10 @@ def calculate_loss(states,gt_data,args,timestep):
 
     #Caluclate simulation PSTHs
     #Trim 
-    holder = states["neurons"]["Dynamic"]['ron']['spikes_holder'][:,:,:,timestep-args["simulation"]["PSTH_granularity"]:timestep]
+    bin_end = timestep + 1
+    bin_start = bin_end - args["simulation"]["PSTH_granularity"]
+    target_index = bin_end // args["simulation"]["PSTH_granularity"] - 1
+    holder = states["neurons"]["Dynamic"]['ron']['spikes_holder'][:,:,:,bin_start:bin_end]
     #Sums across trial dim
     holder = torch.sum(holder, dim = 1,keepdim = False)
     #Reshape in order to sum across bins
@@ -26,11 +29,11 @@ def calculate_loss(states,gt_data,args,timestep):
 
     #Calculate Loss and gradient
     #Average SSE
-    loss = (sim_psth - gt_data[None,:,int(timestep/args["simulation"]["PSTH_granularity"])-1])**2
+    loss = (sim_psth - gt_data[None,:,target_index])**2
     states["neurons"]["Dynamic"]['ron']['mean_sse_loss'] += torch.mean(loss.flatten()).cpu()
 
     #Associated SSE gradient
-    gradient = 2*(sim_psth - gt_data[None,:,int(timestep/args["simulation"]["PSTH_granularity"])-1] )
+    gradient = 2*(sim_psth - gt_data[None,:,int(timestep/args["simulation"]["PSTH_granularity"])-1] - 0.5)
     return {'loss': loss, 'gradient': gradient}
 
 def calculate_CV_loss(states,gt_data,args,timestep):

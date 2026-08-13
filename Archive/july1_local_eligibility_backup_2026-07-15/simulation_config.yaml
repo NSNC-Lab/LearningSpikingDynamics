@@ -8,7 +8,7 @@ strf:
     nstd : 6            #Shape of Gaussian window for spectrogram
     dbnoise: 80         #cutoff in dB for log spectrogram, ignore anything below this
     fband: 125          #Frequency resolution 
-    high_freq: 8000     #max frequency
+    high_freq: 8000     #max frequency 
     low_freq: 500       #Min frequency
 
   strf_params:

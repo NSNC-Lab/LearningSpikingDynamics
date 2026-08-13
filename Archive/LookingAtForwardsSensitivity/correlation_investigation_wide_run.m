@@ -1,7 +1,7 @@
 close all
 clear all
 
-load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\20_epoch_wide_eprop_cell_7_V2.mat") %Latest Forward
+load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_eprop_cell_7.mat") %Latest Forward
 
 %% Construct the experimental PSTHs
 data_object = load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat");
@@ -172,7 +172,7 @@ r_vals = sum((PSTHs_data(7,:) - sim_PSTHs(:,:)).^2,2);
 
 figure;
 boxplot(r_vals)
-ylim([0,12000])
+ylim([2000,5000])
 
 %% Parameter plots
 
@@ -203,6 +203,34 @@ for k = 1:12
     plot(mean(diff(transpose(squeeze(params.(pram)(:,cell,:)))).^2,2),'LineWidth',3); hold on
     title(pram)
 end
+
+% %% Look at parameter bar graphs
+% correlations1 = [];
+% for k = 1:n_batches
+%     %correlations = [correlations, max(xcorr(PSTHs_data(cell,:), sim_PSTHs(k,:),'normalized'))];
+%     %corr_val = corr(transpose([PSTHs_data(cell,:);sim_PSTHs(k,:)]));
+%     %correlations = [correlations, corr_val(1,2)];
+% 
+%     result = linCCC(PSTHs_data(7,:),sim_PSTHs(k,:));
+%     ccc_val = result.ccc;
+%     correlations1 = [correlations1, ccc_val];
+% end
+% [vals1,idx1] = sort(correlations1,'descend');
+% topx = 20;
+% pram_store = ones(1,12);
+% for k = 1:12
+%     pram = params_names{k};
+%     pram_store(k) = mean(params.(pram)(idx(1:topx),1,:));
+% end
+% 
+% figure;
+% subplot(2,1,1)
+% bar(pram_store)
+% subplot(2,1,2)
+
+
+
+
 
 
 

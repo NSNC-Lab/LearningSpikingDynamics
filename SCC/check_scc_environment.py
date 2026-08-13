@@ -82,7 +82,7 @@ def main() -> None:
     smoke_args.setdefault("parameter_initialization", {}).setdefault("from_mat", {})["enabled"] = False
     params = Parameter_initialization.init_params(smoke_args)
     states = Architecture_Declaration.build_network(smoke_args, device, params["params"])
-    assert states["neurons"]["Learnable"]["STRF_gain"].device == device
+    assert states["neurons"]["Learnable"]["STRF_gain"].device.type == device.type
     del states
     if device.type == "cuda":
         torch.cuda.empty_cache()
