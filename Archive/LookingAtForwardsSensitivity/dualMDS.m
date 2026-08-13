@@ -174,7 +174,7 @@ disp(sum(sum(sum(output))))
 disp(sum(sum(sum(output(idx1(1:20),:,:,:))))/(sum(sum(Rasters_data(7,:,:)))*20))
 disp(sum(sum(sum(output(idx1(1:20),:,:,:)))))
 figure;
-topx = 20;
+topx = 1200;
 pram_store1 = ones(1,12);
 for k = 1:12
     pram = params_names{k};

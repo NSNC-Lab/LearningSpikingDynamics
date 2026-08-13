@@ -9,6 +9,7 @@ def handle_loss(args, states, gt_data, timestep,epoch):
 
     if timestep == args['simulation']['sim_len'] - 1:
         loss_cv = calculate_CV_loss(states, gt_data['raster_holder'], args, timestep,epoch)
+        states = update_grad_rate(states, gt_data['psth_holder'], args, timestep,args["simulation"]["PSTH_granularity"],epoch)
         #states = update_grad_CV(states, loss_cv['gradient'])
 
         #Firing rate loss
@@ -17,8 +18,39 @@ def handle_loss(args, states, gt_data, timestep,epoch):
         #states = update_grad(states, loss['gradient']*100)
 
 
+    return states
 
+def update_grad_rate(states, gt_data, args, timestep, granularity, epoch):
+    # Calculate the gradient according to rate
+    lamda = 0.1
+    full_len = gt_data.shape[-1] * granularity
+    exposure = 10 * full_len * args["simulation"]["dt"] / 1000
 
+    sim_count = states["neurons"]["Dynamic"]["ron"]["spikes_holder"][..., :full_len].sum((1,3))
+    target_count = gt_data.sum(-1)[None,:]
+
+    sim_rate = sim_count / exposure
+    target_rate = target_count / exposure
+    gradient = 2 * lamda * (sim_rate-target_rate) / exposure
+
+    #Update the parameters
+
+    for k in list(states['synapses']['Static'].keys()): 
+        if k.rsplit("_")[1] == "ron":
+            states["synapses"]["Learnable"][k]["gSYN_grad"] += gradient*states["synapses"]["Learnable"][k]["gSYN_accum_rate"]
+        else:
+            states["synapses"]["Learnable"][k]["gSYN_grad"] += gradient*states["synapses"]["Learnable"][k]["gSYN_accum_rate"]
+        states["synapses"]["Learnable"][k]["gSYN_accum_rate"].zero_()
+
+    states["neurons"]["Learnable"]["ron"]["output_ad_grad"]+= gradient*states["neurons"]["Learnable"]["ron"]["output_ad_accum_rate"]
+    states["neurons"]["Learnable"]["ron"]["output_ad_accum_rate"].zero_()
+
+    states["neurons"]["Learnable"]["STRF_alpha_grad"] += gradient*states["neurons"]["Learnable"]["STRF_alpha_accum_rate"]
+    states["neurons"]["Learnable"]["STRF_alpha_accum_rate"].zero_()
+
+    states["neurons"]["Learnable"]["STRF_gain_grad"] += gradient*states["neurons"]["Learnable"]["STRF_gain_accum_rate"]
+    states["neurons"]["Learnable"]["STRF_gain_accum_rate"].zero_()
+    
     return states
 
 def calculate_loss(states,gt_data,args,timestep, granularity,epoch):
@@ -42,7 +74,7 @@ def calculate_loss(states,gt_data,args,timestep, granularity,epoch):
     states["neurons"]["Dynamic"]['ron']['mean_sse_loss'] += torch.mean(loss.flatten()).cpu()
 
     #Associated SSE gradient
-    gradient = 2*(sim_psth - gt_data[None,:,int(timestep/args["simulation"]["PSTH_granularity"])-1] - 0.5)
+    gradient = 2*(sim_psth - gt_data[None,:,target_index] - 0.5)
     return {'loss': loss, 'gradient': gradient}
 
 def calculate_CV_loss(states,gt_data,args,timestep,epoch):
@@ -165,17 +197,22 @@ def update_grad(states,gradient):
     for k in list(states['synapses']['Static'].keys()): 
         if k.rsplit("_")[1] == "ron":
             states["synapses"]["Learnable"][k]["gSYN_grad"] += gradient*states["synapses"]["Learnable"][k]["gSYN_accum"]
+            states["synapses"]["Learnable"][k]["gSYN_accum_rate"] += states["synapses"]["Learnable"][k]["gSYN_accum"]
         else:
             states["synapses"]["Learnable"][k]["gSYN_grad"] += gradient*states["synapses"]["Learnable"][k]["gSYN_accum"]
+            states["synapses"]["Learnable"][k]["gSYN_accum_rate"] += states["synapses"]["Learnable"][k]["gSYN_accum"]
         states["synapses"]["Learnable"][k]["gSYN_accum"].zero_()
 
     states["neurons"]["Learnable"]["ron"]["output_ad_grad"]+= gradient*states["neurons"]["Learnable"]["ron"]["output_ad_accum"]
+    states["neurons"]["Learnable"]["ron"]["output_ad_accum_rate"] += states["neurons"]["Learnable"]["ron"]["output_ad_accum"]
     states["neurons"]["Learnable"]["ron"]["output_ad_accum"].zero_()
 
     states["neurons"]["Learnable"]["STRF_alpha_grad"] += gradient*states["neurons"]["Learnable"]["STRF_alpha_accum"]
+    states["neurons"]["Learnable"]["STRF_alpha_accum_rate"] += states["neurons"]["Learnable"]["STRF_alpha_accum"]
     states["neurons"]["Learnable"]["STRF_alpha_accum"].zero_()
 
     states["neurons"]["Learnable"]["STRF_gain_grad"] += gradient*states["neurons"]["Learnable"]["STRF_gain_accum"]
+    states["neurons"]["Learnable"]["STRF_gain_accum_rate"] += states["neurons"]["Learnable"]["STRF_gain_accum"]
     states["neurons"]["Learnable"]["STRF_gain_accum"].zero_()
 
     return states

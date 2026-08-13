@@ -22,9 +22,11 @@ def build_network(args, device, params):
     neuron_init["Learnable"]["STRF_alpha"] = torch.nn.Parameter(torch.tensor((params['Strf_alpha']), device=device, dtype=torch.float32)) 
 
     neuron_init["Learnable"]["STRF_gain_accum"] = torch.zeros((params['Strf_gain'].shape), device=device, dtype=torch.float32)
+    neuron_init["Learnable"]["STRF_gain_accum_rate"] = torch.zeros((params['Strf_gain'].shape), device=device, dtype=torch.float32)
     neuron_init["Learnable"]["STRF_gain_grad"] = torch.zeros((params['Strf_gain'].shape), device=device, dtype=torch.float32) 
     
     neuron_init["Learnable"]["STRF_alpha_accum"] = torch.zeros((params['Strf_alpha'].shape), device=device, dtype=torch.float32)
+    neuron_init["Learnable"]["STRF_alpha_accum_rate"] = torch.zeros((params['Strf_alpha'].shape), device=device, dtype=torch.float32)
     neuron_init["Learnable"]["STRF_alpha_grad"] = torch.zeros((params['Strf_alpha'].shape), device=device, dtype=torch.float32)  
 
     neuron_init["Learnable"]["STRF_gain_tracker"] = torch.zeros((*params['Strf_gain'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
@@ -106,6 +108,7 @@ def declare_neuron_properties(args, device, params, this_neuron_init, name, C = 
         this_neuron_init["Learnable"][name] = {}
         this_neuron_init["Learnable"][name]["output_ad"] = torch.nn.Parameter(torch.tensor((params['output_ad']), device=device, dtype=torch.float32)) 
         this_neuron_init["Learnable"][name]["output_ad_accum"] = torch.zeros((params['output_ad'].shape), device=device, dtype=torch.float32)
+        this_neuron_init["Learnable"][name]["output_ad_accum_rate"] = torch.zeros((params['output_ad'].shape), device=device, dtype=torch.float32)
         this_neuron_init["Learnable"][name]["output_ad_grad"] = torch.zeros((params['output_ad'].shape), device=device, dtype=torch.float32)
         this_neuron_init["Learnable"][name]["output_ad_tracker"] = torch.zeros((*params['output_ad'].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
 
@@ -190,6 +193,7 @@ def declare_synapse_properties(args, device, params, this_synapse_init, name, ES
     this_synapse_init["Learnable"][name] = {}
     this_synapse_init["Learnable"][name]["gSYN"] = torch.nn.Parameter(torch.tensor((params[f"{name}_gSYN"]), device=device, dtype=torch.float32))
     this_synapse_init["Learnable"][name]["gSYN_accum"] = torch.zeros((params[f"{name}_gSYN"].shape), device=device, dtype=torch.float32)
+    this_synapse_init["Learnable"][name]["gSYN_accum_rate"] = torch.zeros((params[f"{name}_gSYN"].shape), device=device, dtype=torch.float32)
     this_synapse_init["Learnable"][name]["gSYN_grad"] = torch.zeros((params[f"{name}_gSYN"].shape), device=device, dtype=torch.float32)
     this_synapse_init["Learnable"][name]["gSYN_tracker"] = torch.zeros((*params[f"{name}_gSYN"].shape,args['simulation']['epochs']), device=device, dtype=torch.float32)
 
