@@ -16,7 +16,7 @@ def handle_loss(args, states, gt_data, timestep):
 
 def update_grad_rate(states, gt_data, args, timestep, granularity):
     # Calculate the gradient according to rate
-    lamda = 0.1
+    lamda = 10
     full_len = gt_data.shape[-1] * granularity
     exposure = 10 * full_len * args["simulation"]["dt"] / 1000
 
@@ -109,7 +109,7 @@ def update_grad(states,gradient):
             states["synapses"]["Learnable"][k]["gSYN_accum_rate"] += states["synapses"]["Learnable"][k]["gSYN_accum"]
         else:
             states["synapses"]["Learnable"][k]["gSYN_grad"] += gradient*states["synapses"]["Learnable"][k]["gSYN_accum"]*states['neurons']['Learnable']['Bk']
-            states["synapses"]["Learnable"][k]["gSYN_accum_rate"] += states["synapses"]["Learnable"][k]["gSYN_accum"]
+            states["synapses"]["Learnable"][k]["gSYN_accum_rate"] += states["synapses"]["Learnable"][k]["gSYN_accum"]*states['neurons']['Learnable']['Bk']
         states["synapses"]["Learnable"][k]["gSYN_accum"].zero_()
 
     states["neurons"]["Learnable"]["ron"]["output_ad_grad"]+= gradient*states["neurons"]["Learnable"]["ron"]["output_ad_accum"]

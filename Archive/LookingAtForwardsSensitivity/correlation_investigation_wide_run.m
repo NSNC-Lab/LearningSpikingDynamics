@@ -1,5 +1,5 @@
-close all
-clear all
+%close all
+%clear all
 
 load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_eprop_cell_7.mat") %Latest Forward
 

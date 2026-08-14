@@ -22,7 +22,7 @@ def handle_loss(args, states, gt_data, timestep,epoch):
 
 def update_grad_rate(states, gt_data, args, timestep, granularity, epoch):
     # Calculate the gradient according to rate
-    lamda = 0.1
+    lamda = 10
     full_len = gt_data.shape[-1] * granularity
     exposure = 10 * full_len * args["simulation"]["dt"] / 1000
 

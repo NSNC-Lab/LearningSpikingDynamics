@@ -1,4 +1,4 @@
-load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_eprop_cell_7.mat") %Latest Forward
+load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_eprop_cell_7_fr_corrections_lamda_0.1.mat") %Latest Forward
 
 %% Construct the experimental PSTHs
 data_object = load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat");
@@ -157,8 +157,8 @@ end
 figure;
 topx = 20;
 %scatter(Y(:,1),Y(:,2),10,mds_corr,'filled')
-%scatter(Y(1:1200,1),Y(1:1200,2),10,[1,0,0],'filled'); hold on
-%scatter(Y(1200:2400,1),Y(1200:2400,2),10,[0,0,1],'filled'); hold on
+scatter(Y(1:1200,1),Y(1:1200,2),10,[0,0,0],'filled'); hold on
+scatter(Y(1200:2400,1),Y(1200:2400,2),10,[0.5,0.5,0.5],'filled'); hold on
 scatter(Y(idx1(1:topx),1),Y(idx1(1:topx),2),20,[0,1,1],'filled'); hold on
 scatter(Y(idx2(1:topx)+1200,1),Y(idx2(1:topx)+1200,2),20,[1,0,1],'filled'); hold on
 title(['Dual MDS space ' , 'Top: ' , num2str(topx)])
@@ -169,7 +169,7 @@ legend({'Eprop','BPTT',['Top ' , num2str(topx),' Eprop'],['Top ' , num2str(topx)
 
 
 %% Look at parameter bar graphs
-load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_eprop_cell_7.mat") %Latest Forward
+load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_forwards_sensitivity_cell_7_fr_corrections_lamda_0.1.mat") %Latest Forward
 disp(sum(sum(sum(output))))
 disp(sum(sum(sum(output(idx1(1:20),:,:,:))))/(sum(sum(Rasters_data(7,:,:)))*20))
 disp(sum(sum(sum(output(idx1(1:20),:,:,:)))))

@@ -40,6 +40,7 @@ def run_optimization(args, params, gt_data):
             parameter_saving.record(states,epoch)
             states = update_handler.run_adam(states, args, params['lrs'])
             print(f"Epoch {start_epoch+epoch} -- Average SSE: {states['neurons']['Dynamic']['ron']['mean_sse_loss']} -- Average CV: {states['neurons']['Dynamic']['ron']['mean_CV_loss']}")
+            print(f"Epoch {start_epoch+epoch} -- Average firing rate: {states['neurons']['Dynamic']['ron']['spikes_holder'].sum().item()/(args['simulation']['batch_size']*10*len(args['simulation']['cell_targets'])*(args['simulation']['sim_len']*args['simulation']['dt']/1000)):.3f} Hz")
             states["neurons"]["BookKeeping"].append(states['neurons']['Dynamic']['ron']['mean_sse_loss'])
             parameter_saving.save(states,raster_dir / f"rasters_epoch_{start_epoch+epoch+1:03d}.mat",checkpoint=True)
             if epoch < args['simulation']['epochs'] - 1: #Don't do reset the last epoch because we will save the output
