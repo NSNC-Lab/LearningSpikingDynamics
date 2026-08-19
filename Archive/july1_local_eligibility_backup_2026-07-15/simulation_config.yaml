@@ -33,7 +33,7 @@ simulation:
   PSTH_granularity : 100 #Number of entires in each bin. 
   num_params : 12
   lr : 0.05
-  checkpoint: ""
+  checkpoint: "C:\\Users\\ipboy\\Documents\\GitHub\\LearningSpikingDynamics\\Archive\\july1_local_eligibility_backup_2026-07-15\\Epoch_Rasters_Eprop\\rasters_epoch_200.mat"
 
 Adam:
   beta1 : 0.01

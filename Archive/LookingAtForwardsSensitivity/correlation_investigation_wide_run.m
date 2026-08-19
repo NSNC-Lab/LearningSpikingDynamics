@@ -1,7 +1,7 @@
 %close all
 %clear all
 
-load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_eprop_cell_7.mat") %Latest Forward
+load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_eprop_cell_7_fr_corrections_lamda_10.mat") %Latest Forward
 
 %% Construct the experimental PSTHs
 data_object = load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat");
@@ -59,8 +59,15 @@ sim_PSTHs = squeeze(sum(sum(reshape( ...
 %%
 
 
+InitializecSPIKE;
+addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
 
+file_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Model_Outputs\lamda10BPTT_rasters_lr_0.01';
+data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
+data_cell = 7;
 correlations = [];
+
+
 for k = 1:n_batches
     %correlations = [correlations, max(xcorr(PSTHs_data(cell,:), sim_PSTHs(k,:),'normalized'))];
     %corr_val = corr(transpose([PSTHs_data(cell,:);sim_PSTHs(k,:)]));
@@ -69,7 +76,15 @@ for k = 1:n_batches
     result = linCCC(PSTHs_data(cell,:),sim_PSTHs(k,:));
     ccc_val = result.ccc;
     correlations = [correlations, ccc_val];
+    
+    %target_batch = k;
+    %sim_raster_object = Extract_Sim_Raster(file_location,target_batch);
+    %spike_times = calc_spike_times(sim_raster_object,data_location,data_cell);
+    %correlations = [correlations, 1-calculate_spike_distance(spike_times)];%Here I am using 1- as like a surrogate instead of taking min. We can extrapolate the actual spike distance from this, however this just makes it so that spike distance which is a dissimilrity measure bounded between 0 and 1 becomes a similiarity measure of the same bounds.
+    %disp(k)
 end
+
+
 
 [val,idx] = max(correlations);
 
@@ -228,9 +243,49 @@ end
 % bar(pram_store)
 % subplot(2,1,2)
 
+%% Looking at concordance
+
+organized_output = output(idx,:,:,:);
+figure('Position',[0,0,500,1000])
+spy(reshape(permute(organized_output,[2,1,3,4]),[12000,29801]))
+axis fill
+
+%%
+
+function spike_times = calc_spike_times(spike_object,data_location,data_cell)
+    data_object = load(data_location);
+    tuning = lower(char(string(data_object.all_data(data_cell).tuning_type)));
+    if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+    %Bring in the data spike times
+    spike_times = data_object.all_data(data_cell).ctrl_tar1_timestamps(:,focus);
+    %Append a simulations spike times
+    for k = 1:10
+        spike_times{k+10} = (find(squeeze(spike_object(k,:)))-1)/10000; %Putting this in real time. The - 1 accounts for find being matlab indexing and the /10000 converts it into seconds
+    end
+    %Transpose things so they work with cSPIKE
+    for k = 1:10
+        spike_times{k} = transpose(spike_times{k});
+    end
+    spike_times = transpose(spike_times);
+end
+
+function spike_distance = calculate_spike_distance(spike_times)
+    STS = SpikeTrainSet(spike_times,0,3);
+    dist_mat = STS.SPIKEdistanceMatrix();
+    %Currently going to use the average over all pairwise comparisons
+    %between data-sim spike trains. SPIKE-dist is calculated per spike
+    %train pair in SPIKEdistanceMatrix.
+    spike_distance = mean(mean(dist_mat(1:10,11:20)));
+end
 
 
+function raster_holder = Extract_Sim_Raster(f_loc,target_batch)
+    raster_holder = zeros([10,29801]);
 
+    saved_epoch_object = load([f_loc, '\rasters_epoch_100.mat']);
+    raster_object = squeeze(saved_epoch_object.output);
+    raster_holder(:,:) = squeeze(raster_object(target_batch,:,:));
+end
 
 
 

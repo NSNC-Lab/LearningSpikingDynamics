@@ -9,11 +9,11 @@ def init_params(args):
     lrs = {}
 
     ###
-    Strf_alpha_mag = 100
-    Strf_gain_mag = 0.02
+    #Strf_alpha_mag = 100
+    #Strf_gain_mag = 0.02
     output_ad_mag = 0.005
-    on_ron_gSYN_mag = 0.05
-    off_ron_gSYN_mag = 0.05
+    #on_ron_gSYN_mag = 0.05
+    #off_ron_gSYN_mag = 0.05
     on_sonoff_gSYN_mag = 0.05
     off_sonoff_gSYN_mag = 0.05
     sonoff_ron_gSYN_mag = 0.05
@@ -23,11 +23,11 @@ def init_params(args):
     rel_ref_c_mag = 1
 
     ###
-    Strf_alpha_min = 1
-    Strf_gain_min = 0.001
+    #Strf_alpha_min = 1
+    #Strf_gain_min = 0.001
     output_ad_min = 0.0001
-    on_ron_gSYN_min = 0.01
-    off_ron_gSYN_min = 0.01
+    #on_ron_gSYN_min = 0.01
+    #off_ron_gSYN_min = 0.01
     on_sonoff_gSYN_min = 0.01
     off_sonoff_gSYN_min = 0.01
     sonoff_ron_gSYN_min = 0.01
@@ -35,6 +35,21 @@ def init_params(args):
     rel_ref_a_min = 0.01
     rel_ref_b_min = 5
     rel_ref_c_min = 0.2
+
+    #Contrained initialization
+    Strf_alpha_mag = 40
+    Strf_alpha_min = 20
+
+    Strf_gain_mag = 0.02
+    Strf_gain_min = 0.012
+
+    on_ron_gSYN_mag = 0.04
+    on_ron_gSYN_min = 0.03
+
+    off_ron_gSYN_mag = 0.015
+    off_ron_gSYN_min = 0.01
+
+
 
     params['Strf_alpha'] = (np.random.rand(args['simulation']['batch_size'],len(args['simulation']['cell_targets']))*(Strf_alpha_mag-Strf_alpha_min)+Strf_alpha_min)
     params['Strf_gain'] = (np.random.rand(args['simulation']['batch_size'],len(args['simulation']['cell_targets']))*(Strf_gain_mag-Strf_gain_min)+Strf_gain_min)

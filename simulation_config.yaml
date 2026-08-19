@@ -42,7 +42,7 @@ simulation:
   epochs : 20
   PSTH_granularity : 100 #Number of entires in each bin. 
   num_params : 12
-  lr : 0.05
+  lr : 0.01
 
 Adam:
   beta1 : 0.01
