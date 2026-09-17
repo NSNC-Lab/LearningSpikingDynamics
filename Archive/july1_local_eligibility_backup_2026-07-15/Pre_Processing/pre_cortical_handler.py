@@ -61,6 +61,8 @@ def create_strf(args,states,f):
     
     strf = {}
     strf_deriv = {}
+    strf_deriv_alpha = {}
+    strf_deriv_gain = {}
 
     #Temporal kernel -- Derivative is also calcualted here.
     strf['t'] = torch.linspace(0, args['strf']['strf_params']['maxdelay']*args['simulation']['dt'], int((args['strf']['strf_params']['maxdelay']*args['simulation']['dt'])/args['simulation']['dt']),device=torch.device(args['simulation']['device']))
@@ -72,38 +74,56 @@ def create_strf(args,states,f):
     #Frequency kernel
     strf['G'] = torch.exp(-0.5*((torch.tensor(f,device=torch.device(args['simulation']['device']))-args['strf']['strf_params']['f0'])/args['strf']['strf_params']['BW'])**2)* torch.cos(2*torch.pi*args['strf']['strf_params']['BSM']*(torch.tensor(f,device=torch.device(args['simulation']['device']))-args['strf']['strf_params']['f0']))
 
+    #Add gain.
+    strf_deriv_alpha['H'] = strf_deriv['H'] * states['neurons']['Learnable']['STRF_gain'][None,:,:]
+    strf_deriv_gain['H'] = strf['H']
+    strf['H'] = strf['H'] * states['neurons']['Learnable']['STRF_gain'][None,:,:]
+
     #Outer Product to get STRF
     strf['w1']=strf['G'][:,None,None,None]*strf['H'][None,:,:,:]
-    strf_deriv['w1'] = strf['G'][:,None,None,None]*strf_deriv['H'][None,:,:,:]
+    strf_deriv['w1'] = strf['G'][:,None,None,None]*strf_deriv['H'][None,:,:,:] 
 
-    return {'strf': strf, 'strf_deriv': strf_deriv}
+    return {'strf': strf, 'strf_deriv_alpha': strf_deriv_alpha, 'strf_deriv_gain': strf_deriv_gain}
 
 def compute_convolution(args, strf, target_fft):
 
-    drive = np.einsum("ft,f->t", target_fft["spec"], strf["strf"]["G"].detach().cpu().numpy())
+    rate_params = args["strf"].get("rate_params", {})
+    stim_gain = rate_params.get("stimGain", 0.5)
+    mean_rate = rate_params.get("mean_rate", 0.1)
+
+    drive = stim_gain * np.einsum("ft,f->t", target_fft["spec"], strf["strf"]["G"].detach().cpu().numpy())
     a = fftconvolve(drive[:, None, None], strf["strf"]["H"].detach().cpu().numpy(), mode="full", axes=0)
-    a = a[:len(target_fft["t"])]
+    a = mean_rate * a[:len(target_fft["t"])]
     a = a[2500:]
 
-    a_deriv = fftconvolve(drive[:, None, None], strf["strf_deriv"]["H"].detach().cpu().numpy(), mode="full", axes=0)
-    a_deriv = a_deriv[:len(target_fft["t"])]
-    a_deriv = a_deriv[2500:]
+    a_deriv_alpha = fftconvolve(drive[:, None, None], strf["strf_deriv_alpha"]["H"].detach().cpu().numpy(), mode="full", axes=0)
+    a_deriv_gain = fftconvolve(drive[:, None, None], strf["strf_deriv_gain"]["H"].detach().cpu().numpy(), mode="full", axes=0)
+    a_deriv_alpha = mean_rate * a_deriv_alpha[:len(target_fft["t"])]
+    a_deriv_gain = mean_rate * a_deriv_gain[:len(target_fft["t"])]
+    a_deriv_alpha = a_deriv_alpha[2500:]
+    a_deriv_gain = a_deriv_gain[2500:]
 
-    return {'a': a, 'a_deriv': a_deriv}
+    return {'a': a, 'a_deriv_alpha': a_deriv_alpha, 'a_deriv_gain': a_deriv_gain}
 
 def compute_rates(args, states, rates, device):
 
-    #Compute the onset and offset rates. Match the AUC by subtracting out the mean of the trace.
-    onset_rate = (rates['a'] - np.mean(rates['a'], axis=0)[None,:,:])*states['neurons']['Learnable']['STRF_gain'][None,:,:].cpu().numpy()
-    offset_rate = -onset_rate
-    onset_rate[onset_rate<0] = 0
-    offset_rate[offset_rate<0] = 0
-    onset_rate_deriv = rates['a_deriv'] - np.mean(rates['a_deriv'], axis=0)[None,:,:]
-    offset_rate_deriv = -onset_rate_deriv
-    onset_rate_deriv[onset_rate_deriv<0 ] = 0
-    offset_rate_deriv[offset_rate_deriv<0 ] = 0
+    onset_rate =  np.maximum(rates['a'], 0)
 
-    return {'onset_rate': torch.tensor(onset_rate, device=device), 'offset_rate': torch.tensor(offset_rate, device=device), 'onset_rate_deriv': torch.tensor(onset_rate_deriv, device=device), 'offset_rate_deriv': torch.tensor(offset_rate_deriv, device=device)}
+
+    offset_rate =  np.maximum(-rates['a'] + 2*np.mean(rates['a'][10000:20000,:,:], axis=0, keepdims=True), 0)
+
+    onset_rate_gain_deriv = rates['a_deriv_gain'] * (rates['a'] > 0)
+    offset_rate_gain_deriv = (-rates['a_deriv_gain'] + np.take_along_axis(rates['a_deriv_gain'], np.argmax(rates['a'], axis=0, keepdims=True), axis=0)) * ((-rates['a'] + np.max(rates['a'], axis=0, keepdims=True)) > 0)
+
+    onset_rate_deriv = rates['a_deriv_alpha'] * (rates['a'] > 0)
+    offset_rate_deriv = (-rates['a_deriv_alpha'] + np.take_along_axis(rates['a_deriv_alpha'], np.argmax(rates['a'], axis=0, keepdims=True), axis=0)) * ((-rates['a'] + np.max(rates['a'], axis=0, keepdims=True)) > 0)
+
+    return {'onset_rate': torch.tensor(onset_rate, device=device),
+            'offset_rate': torch.tensor(offset_rate, device=device),
+            'onset_rate_deriv': torch.tensor(onset_rate_deriv, device=device),
+            'offset_rate_deriv': torch.tensor(offset_rate_deriv, device=device),
+            'onset_rate_gain_deriv': torch.tensor(onset_rate_gain_deriv, device=device),
+            'offset_rate_gain_deriv': torch.tensor(offset_rate_gain_deriv, device=device)}
 
 
 

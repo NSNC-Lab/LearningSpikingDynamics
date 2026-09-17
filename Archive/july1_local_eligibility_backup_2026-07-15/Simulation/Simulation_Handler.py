@@ -3,6 +3,7 @@ import time
 
 from Pre_Processing import preprocess_handler
 from Simulation import Architecture_Declaration,ode_handler,Eligibility_handler,conditional_handler, Loss_handler, update_handler, Reset_handler, parameter_saving
+from Simulation.initialize_from_mat import maybe_restore_adam_from_mat
 
 from pathlib import Path
 
@@ -16,7 +17,9 @@ def run_optimization(args, params, gt_data):
 
     start_time = time.time()
     
-    states = Architecture_Declaration.build_network(args, torch.device(args['simulation']['device']), params['params'])
+    device = torch.device(args['simulation']['device'])
+    states = Architecture_Declaration.build_network(args, device, params['params'])
+    states = maybe_restore_adam_from_mat(args, states, device)
     checkpoint = args["simulation"].get("checkpoint")
     if checkpoint:
         parameter_saving.restore(states,checkpoint)

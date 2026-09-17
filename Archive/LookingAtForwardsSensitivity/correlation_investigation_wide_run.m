@@ -1,7 +1,7 @@
 %close all
 %clear all
 
-load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_wide_eprop_cell_7_fr_corrections_lamda_10.mat") %Latest Forward
+load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_constrained_start_forwards_sensitivity.mat") %Latest Forward
 
 %% Construct the experimental PSTHs
 data_object = load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat");
@@ -57,10 +57,9 @@ sim_PSTHs = squeeze(sum(sum(reshape( ...
     [n_cells,n_batches,n_trials,PSTH_gran,n_bins]),4),3));
 
 %%
-
-
-InitializecSPIKE;
+addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE")
 addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
+InitializecSPIKE;
 
 file_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Model_Outputs\lamda10BPTT_rasters_lr_0.01';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
@@ -204,6 +203,8 @@ for k = 1:12
     plot(squeeze(params.(pram)(idx(1),cell,:)),'Color',[0.7,0.2,0.5,0.5],'LineWidth',2); hold on
     plot(squeeze(mean(params.(pram)(:,cell,:),1)),'LineWidth',3); hold on
     title(pram)
+    disp(pram)
+    disp(params.(pram)(idx(1),cell,100))
 end
 %%
 %Looking at parameter change per epoch

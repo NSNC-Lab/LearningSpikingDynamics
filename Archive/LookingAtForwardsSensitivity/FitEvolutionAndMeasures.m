@@ -13,71 +13,71 @@
 % 2. scrollable plot
 % 3. animation
 % 4. All on one plot but change color by epoch
-clear all; close all;
+%clear all; close all;
 InitializecSPIKE;
 addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
 
-file_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Model_Outputs\lamda10EPROP_rasters';
+file_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Model_Outputs\constrained_BPTT_rasters';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
 data_cell = 7;
-for k = 1:10
-    disp(k)
-    target_batch = 1000+k;
-    %%
-    sim_raster_object = Extract_Sim_Raster(file_location,target_batch);
-    %%
-    spike_distances = [];
-    sse_distances = [];
-    for epoch = 1:200
-        spike_times = calc_spike_times(sim_raster_object,data_location,data_cell,epoch);
-        spike_distances = [spike_distances, calculate_spike_distance(spike_times)];
-        sse_distances = [sse_distances, calculate_sse_dist(spike_times)];
-    end
-    %% Trying 1: Giant spy plot
-    figure('Position',[0,0,1250,1250]);
-    subplot(1,5,1:3);
-    monolith_spy = reshape(permute(sim_raster_object,[2,1,3]),[2000,29801]);
-    spy(monolith_spy)
-    axis fill
-    title('evolution of raster')
-    %Plot measures per epoch
-    subplot(1,5,4)
-    plot(spike_distances,1:200); hold on
-    [best_SPIKE_dist_val,best_SPIKE_dist_idx] = min(spike_distances);
-    plot(best_SPIKE_dist_val,best_SPIKE_dist_idx,'kx','MarkerSize',15,'LineWidth',2)
-    title('evolution of spike distance')
-    ylabel('epoch')
-    set(gca, 'YDir', 'reverse');
-    ylim([1 200])
-    subplot(1,5,5)
-    plot(sse_distances,1:200); hold on
-    [best_sse_dist_val,best_sse_dist_idx] = min(sse_distances);
-    plot(best_sse_dist_val,best_sse_dist_idx,'kx','MarkerSize',15,'LineWidth',2)
-    set(gca, 'YDir', 'reverse');
-    title('evolution of sse distance')
-    ylabel('epoch')
-    ylim([1 200])
 
-    %Visualization plot
-    data_raster = get_data_raster(spike_times);
-    figure;
-    subplot(3,1,1);
-    spy(data_raster)
-    title('data Raster')
-    subplot(3,1,2);
-    spy(squeeze(sim_raster_object(best_SPIKE_dist_idx,:,:)))
-    title('Best Spike-Distance')
-    subplot(3,1,3);
-    spy(squeeze(sim_raster_object(best_sse_dist_idx,:,:)))
-    title('Best SSE distance')
+%disp(k)
+target_batch = 526;
+%%
+sim_raster_object = Extract_Sim_Raster(file_location,target_batch);
+%%
+spike_distances = [];
+sse_distances = [];
+for epoch = 1:100
+    spike_times = calc_spike_times(sim_raster_object,data_location,data_cell,epoch);
+    spike_distances = [spike_distances, calculate_spike_distance(spike_times)];
+    sse_distances = [sse_distances, calculate_sse_dist(spike_times)];
 end
+%% Trying 1: Giant spy plot
+figure('Position',[0,0,1250,1250]);
+subplot(1,5,1:3);
+monolith_spy = reshape(permute(sim_raster_object,[2,1,3]),[1000,29801]);
+spy(monolith_spy)
+axis fill
+title('evolution of raster')
+%Plot measures per epoch
+subplot(1,5,4)
+plot(spike_distances,1:100); hold on
+[best_SPIKE_dist_val,best_SPIKE_dist_idx] = min(spike_distances);
+plot(best_SPIKE_dist_val,best_SPIKE_dist_idx,'kx','MarkerSize',15,'LineWidth',2)
+title('evolution of spike distance')
+ylabel('epoch')
+set(gca, 'YDir', 'reverse');
+ylim([1 100])
+subplot(1,5,5)
+plot(sse_distances,1:100); hold on
+[best_sse_dist_val,best_sse_dist_idx] = min(sse_distances);
+plot(best_sse_dist_val,best_sse_dist_idx,'kx','MarkerSize',15,'LineWidth',2)
+set(gca, 'YDir', 'reverse');
+title('evolution of sse distance')
+ylabel('epoch')
+ylim([1 100])
+
+%Visualization plot
+data_raster = get_data_raster(spike_times);
+figure;
+subplot(3,1,1);
+spy(data_raster)
+title('data Raster')
+subplot(3,1,2);
+spy(squeeze(sim_raster_object(best_SPIKE_dist_idx,:,:)))
+title('Best Spike-Distance')
+subplot(3,1,3);
+spy(squeeze(sim_raster_object(best_sse_dist_idx,:,:)))
+title('Best SSE distance')
+
 
 
 %%
 
 function raster_holder = Extract_Sim_Raster(f_loc,target_batch)
-    raster_holder = zeros([200,10,29801]);
-    for k = 1:200
+    raster_holder = zeros([100,10,29801]);
+    for k = 1:100
         saved_epoch_object = load([f_loc, '\rasters_epoch_',sprintf( '%03d', k ),'.mat']);
         raster_object = squeeze(saved_epoch_object.output);
         raster_holder(k,:,:) = squeeze(raster_object(target_batch,:,:));

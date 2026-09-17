@@ -43,6 +43,8 @@ simulation:
   PSTH_granularity : 100 #Number of entires in each bin. 
   num_params : 12
   lr : 0.01
+  lamda1 : 10
+  lamda2 : 1
 
 Adam:
   beta1 : 0.01
