@@ -14,9 +14,9 @@ def generate_spike_trains(rates, args, device):
 def generate_model_inputs(rates,args,device):
 
     #P(spiking) is approximately rate*dt (/1000 to convert ms to s). I found 1* converts from bool to int.
-    onset_spks = 1 * ((rates['onset_rate']*args['simulation']['dt']/1000)[:,:,:,None] > torch.rand([rates['onset_rate'].shape[0],rates['onset_rate'].shape[1],rates['onset_rate'].shape[2],10], device=device))
+    onset_spks = ((rates['onset_rate']*args['simulation']['dt']/1000)[:,:,:,None] > torch.rand([rates['onset_rate'].shape[0],rates['onset_rate'].shape[1],rates['onset_rate'].shape[2],10], device=device))
     onset_spks = onset_spks.permute(1,3,2,0)
-    offset_spks = 1 * ((rates['offset_rate']*args['simulation']['dt']/1000)[:,:,:,None] > torch.rand([rates['offset_rate'].shape[0],rates['offset_rate'].shape[1],rates['offset_rate'].shape[2],10], device=device))
+    offset_spks = ((rates['offset_rate']*args['simulation']['dt']/1000)[:,:,:,None] > torch.rand([rates['offset_rate'].shape[0],rates['offset_rate'].shape[1],rates['offset_rate'].shape[2],10], device=device))
     offset_spks = offset_spks.permute(1,3,2,0)
 
     return {'onset_spks': onset_spks, 'offset_spks': offset_spks}

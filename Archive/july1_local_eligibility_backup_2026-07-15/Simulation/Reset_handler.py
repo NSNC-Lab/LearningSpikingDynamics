@@ -16,7 +16,7 @@ def reset_dyanmics(states,args,device):
             states["neurons"]["Dynamic"][name]["noise_sn"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
             states["neurons"]["Dynamic"][name]["noise_xn"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
         if states["neurons"]["Static"][name]["output"] == 1:
-            states["neurons"]["Dynamic"][name]["spikes_holder"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),args['simulation']['sim_len']), device=device, dtype=torch.int64)
+            states["neurons"]["Dynamic"][name]["spikes_holder"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),args['simulation']['sim_len']), device=device, dtype=torch.bool)
             states["neurons"]["Dynamic"][name]["mean_sse_loss"] = 0
             states["neurons"]["Learnable"][name]["output_ad_accum"] = torch.zeros((states["neurons"]["Learnable"][name]["output_ad"].shape), device=device, dtype=torch.float32)
             states["neurons"]["Learnable"][name]["output_ad_grad"] = torch.zeros((states["neurons"]["Learnable"][name]["output_ad"].shape), device=device, dtype=torch.float32)

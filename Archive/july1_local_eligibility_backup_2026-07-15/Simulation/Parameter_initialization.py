@@ -20,116 +20,118 @@ def init_params(args):
     # Broader Both
     # Tonic lower Firing
 
+    kz = 8
+
     #Sharp Onset
     params['Strf_alpha'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['Strf_alpha'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*5+2
+    params['Strf_alpha'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*5+2
     params['Strf_gain'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['Strf_gain'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['Strf_gain'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
     params['output_ad'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['output_ad'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.001+0.001
+    params['output_ad'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.001+0.001
     params['on_ron_gSYN'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['on_ron_gSYN'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.04+0.04
+    params['on_ron_gSYN'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.04+0.04
     params['off_ron_gSYN'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['off_ron_gSYN'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0+0
+    params['off_ron_gSYN'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0+0
     params['on_sonoff_gSYN'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['on_sonoff_gSYN'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['on_sonoff_gSYN'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
     params['off_sonoff_gSYN'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['off_sonoff_gSYN'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['off_sonoff_gSYN'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
     params['sonoff_ron_gSYN'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['sonoff_ron_gSYN'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['sonoff_ron_gSYN'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
     params['abs_ref'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['abs_ref'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*2+0.1
+    params['abs_ref'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*2+0.1
     params['rel_ref_a'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['rel_ref_a'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.01
+    params['rel_ref_a'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.01
     params['rel_ref_b'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['rel_ref_b'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*10+5
+    params['rel_ref_b'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*10+5
     params['rel_ref_c'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))
-    params['rel_ref_c'][0:3,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.5
+    params['rel_ref_c'][0:kz,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.5
 
     #Sharp Offset
-    params['Strf_alpha'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*5+2
-    params['Strf_gain'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['output_ad'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.001+0.001
-    params['on_ron_gSYN'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0+0
-    params['off_ron_gSYN'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.04+0.04
-    params['on_sonoff_gSYN'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.00+0.00
-    params['off_sonoff_gSYN'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.00+0.00
-    params['sonoff_ron_gSYN'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.00+0.00
-    params['abs_ref'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0+0.1
-    params['rel_ref_a'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.01
-    params['rel_ref_b'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*10+5
-    params['rel_ref_c'][3:6,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.5
+    params['Strf_alpha'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*5+2
+    params['Strf_gain'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['output_ad'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.001+0.001
+    params['on_ron_gSYN'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0+0
+    params['off_ron_gSYN'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.04+0.04
+    params['on_sonoff_gSYN'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.00+0.00
+    params['off_sonoff_gSYN'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.00+0.00
+    params['sonoff_ron_gSYN'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.00+0.00
+    params['abs_ref'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0+0.1
+    params['rel_ref_a'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.01
+    params['rel_ref_b'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*10+5
+    params['rel_ref_c'][kz:kz*2,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.5
 
     #Sharp Both
-    params['Strf_alpha'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*5+2
-    params['Strf_gain'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['output_ad'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.001+0.001
-    params['on_ron_gSYN'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.04+0.04
-    params['off_ron_gSYN'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.04+0.04
-    params['on_sonoff_gSYN'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['off_sonoff_gSYN'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['sonoff_ron_gSYN'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['abs_ref'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*2+0.1
-    params['rel_ref_a'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.01
-    params['rel_ref_b'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*10+5
-    params['rel_ref_c'][6:9,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.5
+    params['Strf_alpha'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*5+2
+    params['Strf_gain'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['output_ad'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.001+0.001
+    params['on_ron_gSYN'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.04+0.04
+    params['off_ron_gSYN'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.04+0.04
+    params['on_sonoff_gSYN'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['off_sonoff_gSYN'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['sonoff_ron_gSYN'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['abs_ref'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*2+0.1
+    params['rel_ref_a'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.01
+    params['rel_ref_b'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*10+5
+    params['rel_ref_c'][kz*2:kz*3,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.5
 
 
     #Broader Onset
-    params['Strf_alpha'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*30+10
-    params['Strf_gain'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['output_ad'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.001+0.001
-    params['on_ron_gSYN'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.04+0.04
-    params['off_ron_gSYN'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0+0
-    params['on_sonoff_gSYN'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['off_sonoff_gSYN'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['sonoff_ron_gSYN'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['abs_ref'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*2+0.1
-    params['rel_ref_a'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.01
-    params['rel_ref_b'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*10+5
-    params['rel_ref_c'][9:12,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.5
+    params['Strf_alpha'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*30+10
+    params['Strf_gain'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['output_ad'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.001+0.001
+    params['on_ron_gSYN'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.04+0.04
+    params['off_ron_gSYN'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0+0
+    params['on_sonoff_gSYN'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['off_sonoff_gSYN'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['sonoff_ron_gSYN'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['abs_ref'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*2+0.1
+    params['rel_ref_a'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.01
+    params['rel_ref_b'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*10+5
+    params['rel_ref_c'][kz*3:kz*4,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.5
 
     #Broader Offset
-    params['Strf_alpha'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*30+10
-    params['Strf_gain'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['output_ad'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.001+0.001
-    params['on_ron_gSYN'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0+0
-    params['off_ron_gSYN'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.04+0.04
-    params['on_sonoff_gSYN'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['off_sonoff_gSYN'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['sonoff_ron_gSYN'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['abs_ref'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*2+0.1
-    params['rel_ref_a'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.01
-    params['rel_ref_b'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*10+5
-    params['rel_ref_c'][12:15,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.5
+    params['Strf_alpha'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*30+10
+    params['Strf_gain'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['output_ad'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.001+0.001
+    params['on_ron_gSYN'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0+0
+    params['off_ron_gSYN'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.04+0.04
+    params['on_sonoff_gSYN'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['off_sonoff_gSYN'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['sonoff_ron_gSYN'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['abs_ref'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*2+0.1
+    params['rel_ref_a'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.01
+    params['rel_ref_b'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*10+5
+    params['rel_ref_c'][kz*4:kz*5,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.5
 
     #Broader Both
-    params['Strf_alpha'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*30+10
-    params['Strf_gain'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['output_ad'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.001+0.001
-    params['on_ron_gSYN'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.04+0.04
-    params['off_ron_gSYN'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.04+0.04
-    params['on_sonoff_gSYN'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['off_sonoff_gSYN'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['sonoff_ron_gSYN'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.03+0.03
-    params['abs_ref'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*2+0.1
-    params['rel_ref_a'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.01
-    params['rel_ref_b'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*10+5
-    params['rel_ref_c'][15:18,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.5
+    params['Strf_alpha'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*30+10
+    params['Strf_gain'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['output_ad'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.001+0.001
+    params['on_ron_gSYN'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.04+0.04
+    params['off_ron_gSYN'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.04+0.04
+    params['on_sonoff_gSYN'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['off_sonoff_gSYN'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['sonoff_ron_gSYN'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.03+0.03
+    params['abs_ref'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*2+0.1
+    params['rel_ref_a'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.01
+    params['rel_ref_b'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*10+5
+    params['rel_ref_c'][kz*5:kz*6,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.5
 
     #Tonic lower FR
-    params['Strf_alpha'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*30+10
-    params['Strf_gain'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.005+0.001
-    params['output_ad'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.001+0.001
-    params['on_ron_gSYN'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.02+0.02
-    params['off_ron_gSYN'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.02+0.02
-    params['on_sonoff_gSYN'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.01+0.01
-    params['off_sonoff_gSYN'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.01+0.01
-    params['sonoff_ron_gSYN'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*0.01+0.01
-    params['abs_ref'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*2+0.1
-    params['rel_ref_a'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.01
-    params['rel_ref_b'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*10+5
-    params['rel_ref_c'][18:21,:] = np.random.rand(3,len(args['simulation']['cell_targets']))*1+0.5
+    params['Strf_alpha'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*30+10
+    params['Strf_gain'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.005+0.001
+    params['output_ad'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.001+0.001
+    params['on_ron_gSYN'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.02+0.02
+    params['off_ron_gSYN'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.02+0.02
+    params['on_sonoff_gSYN'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.01+0.01
+    params['off_sonoff_gSYN'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.01+0.01
+    params['sonoff_ron_gSYN'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*0.01+0.01
+    params['abs_ref'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*2+0.1
+    params['rel_ref_a'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.01
+    params['rel_ref_b'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*10+5
+    params['rel_ref_c'][kz*6:kz*7,:] = np.random.rand(kz,len(args['simulation']['cell_targets']))*1+0.5
 
 
     # ###

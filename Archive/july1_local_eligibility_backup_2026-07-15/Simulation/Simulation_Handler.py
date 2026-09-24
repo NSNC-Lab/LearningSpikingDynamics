@@ -40,6 +40,8 @@ def run_optimization(args, params, gt_data):
                 states = Eligibility_handler.update_eligibility(args, states, pre_processed_object['onset_offset_rates'],timestep)
                 states = Loss_handler.handle_loss(args, states, gt_data,timestep)
 
+            del pre_processed_object
+
             parameter_saving.record(states,epoch)
             states = update_handler.run_adam(states, args, params['lrs'])
             print(f"Epoch {start_epoch+epoch} -- Average SSE: {states['neurons']['Dynamic']['ron']['mean_sse_loss']} -- Average CV: {states['neurons']['Dynamic']['ron']['mean_CV_loss']}")

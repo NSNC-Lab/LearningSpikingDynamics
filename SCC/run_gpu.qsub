@@ -2,18 +2,21 @@
 #$ -N lif_acx
 #$ -cwd
 #$ -j y
-#$ -l h_rt=48:00:00
+#$ -l h_rt=24:00:00
 #$ -pe omp 4
 #$ -l mem_per_core=8G
 #$ -l gpus=1
-#$ -l gpu_c=7.0
+#$ -l gpu_c=12.0
 #$ -l gpu_memory=24G
 
-set -euo pipefail
+set -Eeo pipefail
+PS4='+ line ${LINENO}: '
+set -x
+trap 'rc=$?; echo "FAILED: line $LINENO, status $rc: $BASH_COMMAND" >&2' ERR
 
 PROJECT_ROOT="${SCC_PROJECT_ROOT:-${SGE_O_WORKDIR:-$PWD}}"
 cd "$PROJECT_ROOT"
-test -f Main.py || { echo "Main.py was not found in $PROJECT_ROOT" >&2; exit 2; }
+test -f Archive/july1_local_eligibility_backup_2026-07-15/Main.py || { echo "Main.py was not found in $PROJECT_ROOT" >&2; exit 2; }
 
 module purge
 module load miniconda
@@ -39,5 +42,5 @@ git rev-parse --short HEAD 2>/dev/null || true
 git status --short 2>/dev/null || true
 nvidia-smi
 python -u SCC/check_scc_environment.py
-python -u Main.py
+python -u Archive/july1_local_eligibility_backup_2026-07-15/Main.py
 echo "Finished: $(date)"

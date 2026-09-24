@@ -98,7 +98,7 @@ def calculate_CV_loss(states,gt_data,args,timestep):
                 loss = (sim_cv - data_cv)**2
                 states["neurons"]["Dynamic"]['ron']['mean_CV_loss'] += loss
 
-                lamda2 = 10000
+                lamda2 = 2
                 gradient[k,m] = 2*(sim_cv - data_cv)*lamda2
 
     return {'loss': loss, 'gradient': gradient}    

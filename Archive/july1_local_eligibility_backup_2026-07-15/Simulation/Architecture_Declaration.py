@@ -81,7 +81,7 @@ def declare_neuron_properties(args, device, params, this_neuron_init, name, C = 
 
     #Output Specific
     if output == 1:
-        this_neuron_init["Dynamic"][name]["spikes_holder"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),args['simulation']['sim_len']), device=device, dtype=torch.int64)
+        this_neuron_init["Dynamic"][name]["spikes_holder"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),args['simulation']['sim_len']), device=device, dtype=torch.bool)
         this_neuron_init["Dynamic"][name]["mean_sse_loss"] = 0
         this_neuron_init["Dynamic"][name]["mean_CV_loss"] = 0
     #Learnable
