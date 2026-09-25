@@ -203,8 +203,10 @@ def condtion3(args, states,timestep):
             states['synapses']['Dynamic'][k]['PSC_x'][spikers + (-2,)] = states['synapses']['Dynamic'][k]['PSC_x'][spikers + (-1,)]
             states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-2,)] = states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)]
             states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-2,)] = states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)]
-            states['synapses']['Dynamic'][k]['PSC_q'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)]
+            # Match the July E-prop event ordering: x receives the previously
+            # stored release q, then q is refreshed from the current F and P.
             states['synapses']['Dynamic'][k]['PSC_x'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_x'][spikers + (-1,)] + states['synapses']['Dynamic'][k]['PSC_q'][spikers + (-1,)]
+            states['synapses']['Dynamic'][k]['PSC_q'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)]
             states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)] + states['synapses']['Static'][k]['PSC_fF']*(states['synapses']['Static'][k]['PSC_maxF']-states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-1,)])
             states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)] = states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-1,)] * (1-states['synapses']['Static'][k]['PSC_fP'])
 
@@ -220,8 +222,8 @@ def condtion3(args, states,timestep):
                     cur_running_grads[f'dPSCx{m}'][spikers + (-2,)] = cur_running_grads[f'dPSCx{m}'][spikers + (-1,)]
                     cur_running_grads[f'dPSCF{m}'][spikers + (-2,)] = cur_running_grads[f'dPSCF{m}'][spikers + (-1,)]
                     cur_running_grads[f'dPSCP{m}'][spikers + (-2,)] = cur_running_grads[f'dPSCP{m}'][spikers + (-1,)]
-                    cur_running_grads[f'dPSCq{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCF{m}'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-2,)] + cur_running_grads[f'dPSCP{m}'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-2,)]
                     cur_running_grads[f'dPSCx{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCx{m}'][spikers + (-1,)] + cur_running_grads[f'dPSCq{m}'][spikers + (-1,)]
+                    cur_running_grads[f'dPSCq{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCF{m}'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-2,)] + cur_running_grads[f'dPSCP{m}'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-2,)]
                     cur_running_grads[f'dPSCF{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCF{m}'][spikers + (-1,)] - cur_syn_static['PSC_fF']*cur_running_grads[f'dPSCF{m}'][spikers + (-1,)]
                     cur_running_grads[f'dPSCP{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCP{m}'][spikers + (-1,)] * (1-cur_syn_static['PSC_fP'])
 
@@ -234,8 +236,8 @@ def condtion3(args, states,timestep):
                 cur_running_grads[f'dPSCx{m}'][spikers + (-2,)] = cur_running_grads[f'dPSCx{m}'][spikers + (-1,)]
                 cur_running_grads[f'dPSCF{m}'][spikers + (-2,)] = cur_running_grads[f'dPSCF{m}'][spikers + (-1,)]
                 cur_running_grads[f'dPSCP{m}'][spikers + (-2,)] = cur_running_grads[f'dPSCP{m}'][spikers + (-1,)]
-                cur_running_grads[f'dPSCq{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCF{m}'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-2,)] + cur_running_grads[f'dPSCP{m}'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-2,)]
                 cur_running_grads[f'dPSCx{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCx{m}'][spikers + (-1,)] + cur_running_grads[f'dPSCq{m}'][spikers + (-1,)]
+                cur_running_grads[f'dPSCq{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCF{m}'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_P'][spikers + (-2,)] + cur_running_grads[f'dPSCP{m}'][spikers + (-1,)] * states['synapses']['Dynamic'][k]['PSC_F'][spikers + (-2,)]
                 cur_running_grads[f'dPSCF{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCF{m}'][spikers + (-1,)] - cur_syn_static['PSC_fF']*cur_running_grads[f'dPSCF{m}'][spikers + (-1,)]
                 cur_running_grads[f'dPSCP{m}'][spikers + (-1,)] = cur_running_grads[f'dPSCP{m}'][spikers + (-1,)] * (1-cur_syn_static['PSC_fP'])
 

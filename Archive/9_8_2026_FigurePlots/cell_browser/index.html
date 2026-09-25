@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive browser for classified auditory cell responses.">
+  <title>Cell response browser</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Learning Spiking Dynamics</p>
+      <h1>Cell response browser</h1>
+    </div>
+    <div class="top-count" aria-live="polite">
+      <strong id="match-count">0</strong>
+      <span>matching cells</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="filters" aria-label="Cell filters">
+      <label class="search-field">
+        <span>Cell or note</span>
+        <input id="search" type="search" placeholder="Search cell number or note">
+      </label>
+      <label>
+        <span>Response</span>
+        <select id="response-filter"><option value="">All responses</option></select>
+      </label>
+      <label>
+        <span>Classification</span>
+        <select id="quality-filter"><option value="">All classifications</option></select>
+      </label>
+      <label>
+        <span>Layer</span>
+        <select id="layer-filter"><option value="">All layers</option></select>
+      </label>
+      <label class="checkbox-field">
+        <input id="notes-only" type="checkbox">
+        <span>Has notes</span>
+      </label>
+      <button id="reset-filters" type="button">Reset</button>
+    </section>
+
+    <section class="summary" aria-label="Dataset summary">
+      <div class="summary-heading">
+        <div>
+          <h2>Category counts</h2>
+          <p>Counts update with the current filters. Select a bar to filter by that category.</p>
+        </div>
+        <span id="total-count"></span>
+      </div>
+      <div class="summary-groups">
+        <div>
+          <h3>Response type</h3>
+          <div id="response-stats" class="stat-list"></div>
+        </div>
+        <div>
+          <h3>Classification</h3>
+          <div id="quality-stats" class="stat-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="results-heading">
+      <div>
+        <h2>Examples</h2>
+        <p>Ten trials per cell. PSTHs use 20 ms bins with a three-bin moving mean.</p>
+      </div>
+      <label>
+        <span>Sort</span>
+        <select id="sort-order">
+          <option value="cell-asc">Cell number</option>
+          <option value="response">Response type</option>
+          <option value="classification">Classification</option>
+        </select>
+      </label>
+    </section>
+
+    <section id="cell-grid" class="cell-grid" aria-live="polite"></section>
+    <section id="empty-state" class="empty-state" hidden>
+      <h2>No cells match these filters</h2>
+      <p>Try a broader response or classification.</p>
+      <button type="button" data-reset>Clear filters</button>
+    </section>
+  </main>
+
+  <script src="cell_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

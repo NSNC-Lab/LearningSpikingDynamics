@@ -3,7 +3,7 @@ PSTH_gran = 100;
 simlen = 29801;
 n_trials = 10;
 n_cells = 220;
-n_batches = 12;
+n_batches = 21;
 n_bins = (simlen-mod(simlen,PSTH_gran))/PSTH_gran;
 used_timesteps = n_bins*PSTH_gran;
 
@@ -14,7 +14,7 @@ data_object = load('C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data
 [y, Fs] = audioread('C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Targets\200k_target1.wav');
 [y2, Fs2] = audioread('C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Targets\200k_target2.wav');
 
-load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_all_cells_Eprop_lamda2_10.mat")
+load("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\all_inits_100_Eprop.mat")
 sim_PSTH = squeeze(sum(sum(reshape(permute(output(:,:,:,1:used_timesteps),[3,1,2,4]),[n_cells,n_batches,n_trials,PSTH_gran,n_bins]),4),3));
 
 for k = 1:220
@@ -24,15 +24,15 @@ for k = 1:220
 
     %Create a plot
     %figure('Position',[500,0,400,1300]);
-    subplot(13,1,1);
-    spy(data_raster)
-    title(['Cell ', num2str(k), ' data'])
+    %subplot(13,1,1);
+    %spy(data_raster)
+    %title(['Cell ', num2str(k), ' data'])
     %subplot(14,1,14);
     
     for m = 2:13
-        subplot(13,1,m)
-        spy(squeeze(output(m-1,:,k,:)))
-        title(['batch: ',num2str(m-1)])
+        %subplot(13,1,m)
+        %spy(squeeze(output(m-1,:,k,:)))
+        %title(['batch: ',num2str(m-1)])
         %subplot(14,1,14);
         
     end
@@ -40,13 +40,13 @@ for k = 1:220
     [val,idx] = min(sum((data_PSTH' - squeeze(sim_PSTH(k,:,:))).^2,2));
     for m = 1:12
         if m == idx
-            plot(squeeze(sim_PSTH(k,m,:)),'g-','LineWidth',2); hold on;
+            %plot(squeeze(sim_PSTH(k,m,:)),'g-','LineWidth',2); hold on;
         else
             %plot(squeeze(sim_PSTH(k,m,:)),'Color',[0.5,0.5,0.5,0.5],'LineWidth',0.5); hold on;
         end
     end
-    plot(data_PSTH,'r-','LineWidth',2); hold on
-    title(['PSTH comparison Cell ',num2str(k), ' -- Best match: Batch ', num2str(idx)])
+    %plot(data_PSTH,'r-','LineWidth',2); hold on
+    %title(['PSTH comparison Cell ',num2str(k), ' -- Best match: Batch ', num2str(idx)])
 
     sim_raster_holder(k,:,:) = output(idx,:,k,:);
 end

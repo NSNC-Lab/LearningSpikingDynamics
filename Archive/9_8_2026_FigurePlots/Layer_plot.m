@@ -9,13 +9,21 @@ close all; clear all;
 L2_c = 'r';
 L4_c = 'g';
 L6_c = 'b';
-addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE")
-addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
+%close all; clear all;
+script_dir = fileparts(mfilename('fullpath'));
+if ~isempty(script_dir); addpath(script_dir); end
 InitializecSPIKE;
-sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_all_cells_Eprop';
+addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
+sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\200_epoch_Eprop_Subbatch_8.mat';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
 data_object = load(data_location);
-sim_object = load(sim_location);
+sim_object = split_and_load_large_sim_object(sim_location);
+%Method by which to choose the simulation target
+% none -- use all batches in the distrubutions
+% SPIKE -- choose by spike distance
+% SSE -- choose by SSE
+% CV -- choose by CV
+% NCCC -- choose by noise corrected prediction correlation
 Distance_measure = 'RMSE';
 
 %Do selection
@@ -64,38 +72,78 @@ end
 %Olsen and Hausenstaub scatter figure
 
 %Look at just a subset of highly steryotyped cells
-unusable = [2	8	11	16	17	18	20	23	24	26	34	43	46	47	48	50	54	57	59	60	62	63	66	70	72	77	79	81	82	98	100	105	114	115	117	123	125	130	134	135	137	144	147	148	151	153	155	156	158	159	160	164	165	166	167	168	172	173	174	179	180	181	182	183	184	185	187	190	198	204	206	207	209	212	214];
-borderline_unusable = [5	21	22	25	29	33	37	73	75	35	55	80	86	93	94	99	103	104	109	119	120	131	140	152	161	162	169	170	177	189	195	196	197	199	201	205	211	213];
-poor = [3	4	9	10	27	31	32	38	39	40	42	45	49	51	58	65	67	69	71	78	83	85	87	88	89	95	101	107	110	111	112	113	116	118	121	122	136	138	141	142	145	146	150	154	171	175	176	193	208	216];
-medium = [6	12	13	14	28	30	36	41	44	56	61	74	76	84	90	91	97	106	108	126	139	143	149	157	163	178	188	191	192	194	202	203	215	217	218	219	220];
-good = [1	15	19	52	53	64	92	96	124	127	128	129	132	186	200	210];
-great = [7  68  102 133];
+% unusable = [2	8	11	16	17	18	20	23	24	26	34	43	46	47	48	50	54	57	59	60	62	63	66	70	72	77	79	81	82	98	100	105	114	115	117	123	125	130	134	135	137	144	147	148	151	153	155	156	158	159	160	164	165	166	167	168	172	173	174	179	180	181	182	183	184	185	187	190	198	204	206	207	209	212	214];
+% borderline_unusable = [5	21	22	25	29	33	37	73	75	35	55	80	86	93	94	99	103	104	109	119	120	131	140	152	161	162	169	170	177	189	195	196	197	199	201	205	211	213];
+% poor = [3	4	9	10	27	31	32	38	39	40	42	45	49	51	58	65	67	69	71	78	83	85	87	88	89	95	101	107	110	111	112	113	116	118	121	122	136	138	141	142	145	146	150	154	171	175	176	193	208	216];
+% medium = [6	12	13	14	28	30	36	41	44	56	61	74	76	84	90	91	97	106	108	126	139	143	149	157	163	178	188	191	192	194	202	203	215	217	218	219	220];
+% good = [1	15	19	52	53	64	92	96	124	127	128	129	132	186	200	210];
+% great = [7  68  102 133];
+% 
+% chosen_nums = [great,good];
+% chosen_nums2 = 1:220;
 
-chosen_nums = [great,good];
-chosen_nums2 = 1:220;
+%%
+
+%Choices
+%good_cells
+%possibly_usable_cells
+%all_cells
+cell_choice = "good_cells";
+Good_Cells = [7,19,30,33,52,53,61,68,69,77,96,102,106,108,124,126,127,128,129,130,132,133,149,186,200,210,218];
+Possibly_usable_cells = [220,217,215,208,203,202,191,189,175,165,150,143,142,141,139,136,134,119,113,110,103,101,97,95,90,89,84,79,78,76,75,74,71,70,63,62,56,50,49,44,38,32,28,25,22,14,6];
+Possibly_usable_cells = [Possibly_usable_cells,Good_Cells];
+
+if strcmp(cell_choice, 'good_cells')
+    choice_cells = Good_Cells;
+    nbins = 6;
+
+elseif strcmp(cell_choice, 'possibly_usable_cells')
+    choice_cells = Possibly_usable_cells;
+    nbins = 20;
+
+elseif strcmp(cell_choice, 'all_cells')
+    choice_cells = 1:220;
+    nbins = 50;
+end
+
+chosen_nums = choice_cells;
+
 
 balance_vecs = color_vecs./max(color_vecs,[],2);
-figure(Position=[100,100,1200,500]);
-subplot(1,2,1);
-xlabel('Onset Contribution')
-ylabel('Offset Contribution')
+%maxs = max(color_vecs,[],2);
+%balance_vecs = color_vecs./maxs(8);
+figure(Position=[100,100,600,600]);
+%subplot(1,2,1);
 %create_contour(balance_vecs(8,chosen_nums),balance_vecs(9,chosen_nums),balance_vecs(11,chosen_nums),balance_vecs(12,chosen_nums))
 scatter(balance_vecs(8,chosen_nums),balance_vecs(9,chosen_nums),'b','filled'); hold on
 scatter(balance_vecs(11,chosen_nums),balance_vecs(12,chosen_nums),'r','filled'); 
-title('Highly Steryotyped Cells');
-legend({'E \rightarrow E', 'E \rightarrow PV'},'Location','northwest')
-subplot(1,2,2);
+
+for k = 1:length(chosen_nums)
+    text(balance_vecs(8,chosen_nums(k)),balance_vecs(9,chosen_nums(k)),num2str(chosen_nums(k)))
+end
+
+
 xlabel('Onset Contribution')
 ylabel('Offset Contribution')
-%create_contour(balance_vecs(8,chosen_nums2),balance_vecs(9,chosen_nums2),balance_vecs(11,chosen_nums2),balance_vecs(12,chosen_nums2))
-scatter(balance_vecs(8,chosen_nums2),balance_vecs(9,chosen_nums2),'b','filled'); hold on
-scatter(balance_vecs(11,chosen_nums2),balance_vecs(12,chosen_nums2),'r','filled'); 
-title('All Cells');
+% title('Highly Steryotyped Cells');
+% legend({'E \rightarrow E', 'E \rightarrow PV'},'Location','northwest')
+% subplot(1,2,2);
+% xlabel('Onset Contribution')
+% ylabel('Offset Contribution')
+% %create_contour(balance_vecs(8,chosen_nums2),balance_vecs(9,chosen_nums2),balance_vecs(11,chosen_nums2),balance_vecs(12,chosen_nums2))
+% scatter(balance_vecs(8,chosen_nums2),balance_vecs(9,chosen_nums2),'b','filled'); hold on
+% scatter(balance_vecs(11,chosen_nums2),balance_vecs(12,chosen_nums2),'r','filled'); 
+% title('All Cells');
 
+
+
+
+%%
+close all;
 L2 = [];
 L4 = [];
 L6 = [];
-for k = 1:220
+for k = chosen_nums
     if strcmp(data_object.all_data(k).layer, 'L2/3'); L2 = [L2, k]; end
     if strcmp(data_object.all_data(k).layer, 'L4'); L4 = [L4, k]; end
     if strcmp(data_object.all_data(k).layer, 'L5/6'); L6 = [L6, k]; end
@@ -115,15 +163,24 @@ sims = {fr_sim,re_sim,ls_sim,cv_sim};
 layers = {L2,L4,L6};
 Colors = {L2_c,L4_c,L6_c};
 labels = {'L2/3','L4','L5/6'};
-features = {'Firing Rate','Reliability','Lifetime Sparsity','CV'};
+features = {'Firing Rate','SPIKE Distance','Lifetime Sparsity','CV'};
+%Hz here defined as Spikes/s/trial
+%xlabels = {'Hz'};
 
 
 for m = 1:3
     for k = 1:4
         ax((m-1)*4 + k) = nexttile;
-        histogram(datas{k}(layers{m}),20,'FaceColor',[0,0,0],'FaceAlpha',0.2,'Normalization','probability'); hold on
-        histogram(sims{k}(layers{m}),20,'FaceColor',Colors{m},'FaceAlpha',0.7,'Normalization','probability'); hold on
-        xlim([min([datas{k},sims{k}]),max([datas{k},sims{k}])])
+        %[N,edges] = histcounts(datas{k}(layers{m}),20);
+        %N = N/sum(N);
+        %N = [N, N(end)];
+        %centers = edges+ (edges(2)-edges(1))/2;
+        %stairs(centers,N,'k','LineWidth',2); hold on
+        histogram(datas{k}(layers{m}),nbins,'FaceColor',[0.3,0.3,0.3],'FaceAlpha',0.4,'Normalization','probability'); hold on
+        histogram(sims{k}(layers{m}),nbins,'FaceColor',Colors{m},'FaceAlpha',0.2,'Normalization','probability'); hold on
+        max_val = max([datas{k}(chosen_nums),sims{k}(chosen_nums)]);
+        min_val = min([datas{k}(chosen_nums),sims{k}(chosen_nums)]);
+        xlim([min_val-0.10*max_val,max_val+0.10*max_val])
         if (k==1)
             legend({'Data','Model'})
             ylabel(labels{m})
@@ -182,16 +239,17 @@ end
 % histogram(cv_data(L6),50,'FaceColor',L6_c,'FaceAlpha',0.2); hold on
 % histogram(cv_sim(L6),50,'FaceColor',L6_c,'FaceAlpha',1); hold on
 
-figure;
+figure(Position=[170,100,3500,900]);
 t = tiledlayout(3,12,'TileSpacing','compact','Padding','compact');
 colors = {L2_c,L4_c,L6_c};
 indicies = {L2,L4,L6};
 titles = {'L2/3','L4','L5/6'};
+parameter_labels = {'au','~ms','g','ms','au','ms','p(rec)','g','g','g','g','g'};
 
 for m = 1:3
     for k = 1:12
         ax((m-1)*12 + k) = nexttile;
-        histogram(color_vecs(k,indicies{m}),20,'FaceColor',colors{m},'Normalization','probability'); hold on
+        histogram(color_vecs(k,indicies{m}),nbins,'FaceColor',colors{m},'Normalization','probability'); hold on
         if (m == 1)
             title(strrep(f_vals{k},'_',' '))
         end
@@ -199,6 +257,17 @@ for m = 1:3
             ylabel(titles{m})
         end
         xlim([min(color_vecs(k,:)),max(color_vecs(k,:))])
+
+        if m == 3
+            xlabel(parameter_labels{k})
+        end
+
+        vec = color_vecs(k,chosen_nums);
+
+        max_val = max(vec);
+        min_val = min(vec);
+        xlim([min_val-0.10*max_val,max_val+0.10*max_val])
+
     end
 end
 
@@ -244,6 +313,27 @@ for k = 1:4
     ps3 = [ps3,p];
 end
 
+
+hs4 = [];
+ps4 = [];
+
+for m = 1:3
+    for k = 1:4
+        d = sims{k}(layers{m}) - datas{k}(layers{m});
+        d = d(isfinite(d));
+        
+        mean_bias = mean(d);
+        bias_ci = bootci(10000, @mean, d);
+        mae = mean(abs(d));
+        rmse = sqrt(mean(d.^2));
+        cohens_dz = mean(d) / std(d);
+        
+        [p, h] = ttest(d);
+        hs4 = [hs4,h];
+        ps4 = [ps4,p];
+    end
+end
+
 function create_contour(dist1x,dist1y,dist2x,dist2y)
 
     edges = linspace(0,1,50);
@@ -266,8 +356,8 @@ function create_contour(dist1x,dist1y,dist2x,dist2y)
     density2 = rescale(counts2',0,1);
     
     % Only values between these limits will be visible
-    lowerLevel = 0.35;
-    upperLevel = 0.55;
+    lowerLevel = 0.5;
+    upperLevel = 0.7;
     
     ring1 = density1 >= lowerLevel & density1 <= upperLevel;
     ring2 = density2 >= lowerLevel & density2 <= upperLevel;
@@ -300,6 +390,9 @@ end
 
 
 function selection = calculate_selction(choose_by, sim_object, data_object)
+    
+    output_size = size(sim_object.output);
+    n_batches = output_size(1);
 
     selection = [];
     if strcmp(choose_by, 'none')
@@ -310,7 +403,7 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
             if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
             sses = [];
-            for m = 1:12
+            for m = 1:n_batches
                 for z = 1:10
                     spikes{z+10} = find(sim_object.output(m,z,k,:))/10000;
                 end
@@ -338,16 +431,16 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
             if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
             NCCCs = [];
-            for m = 1:12
+            for m = 1:n_batches
                 for z = 1:10
                     spikes{z+10} = find(sim_object.output(m,z,k,:))/10000;
                 end
                 data_times = [];
                 ris = [];
                 bin_edges = (0:100:29799)/10000;
-                for m = 1:10
-                    data_times = [data_times;spikes{m}];
-                    ris = [ris;histcounts(spikes{m},bin_edges)];
+                for qq = 1:10
+                    data_times = [data_times;spikes{qq}];
+                    ris = [ris;histcounts(spikes{qq},bin_edges)];
                 end
                 
                 sim_times = [];
@@ -385,7 +478,7 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
     elseif strcmp(choose_by, 'SPIKE')
         for k = 1:220
             distances = [];
-            for m = 1:12
+            for m = 1:n_batches
                 tuning = lower(char(string(data_object.all_data(k).tuning_type)));
                 if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
                 spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
@@ -407,7 +500,7 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
             data_cv = calc_cv_data(spikes);
             cv_val = [];
-            for m = 1:12 %For all batches
+            for m = 1:n_batches %For all batches
                 isi_s = []; 
                 for z  = 1:10 % For all trials
                     isi_s = [isi_s,squeeze(diff(find(sim_object.output(m,z,k,:)))/10000)'];
@@ -423,6 +516,8 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
 end
 
 function re_val = calc_re_data(spikes)
+
+    
     
     %Split half reliability with Spearman Brown correction
     % train1 = [];
@@ -487,10 +582,14 @@ function re_val = calc_re_sim(sim_object,k, selection)
     %     re_val = re_vals(selection(k));
     % end
 
+    output_size = size(sim_object.output);
+    n_batches = output_size(1);
+
+
 
     %Using UT of spike distance mat
     re_vals = [];
-    for m = 1:12
+    for m = 1:n_batches
         spikes = {};
         for z = 1:10
             spikes{z} = find(sim_object.output(m,z,k,:))/10000;
@@ -526,8 +625,11 @@ end
 function ls_val = calc_ls_sim(sim_object,k, selection)
     
     
+    output_size = size(sim_object.output);
+    n_batches = output_size(1);
+
     lss = [];
-    for m = 1:12
+    for m = 1:n_batches
         spikes = {};
         for z = 1:10
             spikes{z} = find(sim_object.output(m,z,k,:))/10000;
@@ -557,8 +659,13 @@ function cv_val = calc_cv_data(spikes)
 end
 
 function cv_val = calc_cv_sim(sim_object,k, selection)
+    
+
+    output_size = size(sim_object.output);
+    n_batches = output_size(1);
+
     cv_val = [];
-    for m = 1:12 %For all batches
+    for m = 1:n_batches %For all batches
         isi_s = []; 
         for z  = 1:10 % For all trials
             isi_s = [isi_s,squeeze(diff(find(sim_object.output(m,z,k,:)))/10000)'];
@@ -574,6 +681,7 @@ end
 
 
 function Hz = calc_fr_sim(sim_object,k, selection)
+
     if nnz(size(selection) > 1) > 1
         Hz = (sum(sum(sim_object.output(selection(k,:),:,k,:),2),4)/10/2.9801)';
     else

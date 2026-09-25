@@ -2,7 +2,7 @@
 %close all; clear all;
 InitializecSPIKE;
 addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
-sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\100_epoch_all_cells_Eprop';
+sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\all_inits_100_Eprop';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
 data_object = load(data_location);
 sim_object = load(sim_location);

@@ -20,7 +20,7 @@ def init_params(args):
     # Broader Both
     # Tonic lower Firing
 
-    kz = 8
+    kz = 1
 
     #Sharp Onset
     params['Strf_alpha'] = np.zeros((args['simulation']['batch_size'],len(args['simulation']['cell_targets'])))

@@ -112,11 +112,23 @@ def compute_rates(args, states, rates, device):
 
     offset_rate =  np.maximum(-rates['a'] + 2*np.mean(rates['a'][10000:20000,:,:], axis=0, keepdims=True), 0)
 
+    #Idea 1: Try making it so that the offset rate is 0 for approximately the first 1200 bins. This might get rid of the artifact at the start.
+    #Idea 2: Find the peak within the first 5000 bins in the offset signal. Set the offset rate to 0 before that point.
+
     onset_rate_gain_deriv = rates['a_deriv_gain'] * (rates['a'] > 0)
     offset_rate_gain_deriv = (-rates['a_deriv_gain'] + np.take_along_axis(rates['a_deriv_gain'], np.argmax(rates['a'], axis=0, keepdims=True), axis=0)) * ((-rates['a'] + np.max(rates['a'], axis=0, keepdims=True)) > 0)
 
     onset_rate_deriv = rates['a_deriv_alpha'] * (rates['a'] > 0)
     offset_rate_deriv = (-rates['a_deriv_alpha'] + np.take_along_axis(rates['a_deriv_alpha'], np.argmax(rates['a'], axis=0, keepdims=True), axis=0)) * ((-rates['a'] + np.max(rates['a'], axis=0, keepdims=True)) > 0)
+
+    _,b,c = np.shape(onset_rate)
+    
+    for k in range(b):
+        for j in range(c):
+            peak_index = np.argmax(onset_rate[0:5000,k,j])
+            offset_rate[0:peak_index,k,j] = 0
+            offset_rate_gain_deriv[0:peak_index,k,j] = 0
+            offset_rate_deriv[0:peak_index,k,j] = 0
 
     return {'onset_rate': torch.tensor(onset_rate, device=device),
             'offset_rate': torch.tensor(offset_rate, device=device),

@@ -1,0 +1,9 @@
+{
+  "columns": [
+    "activity_angle_1_hz",
+    "activity_angle_2_hz",
+    "activity_angle_3_hz",
+    "activity_angle_4_hz",
+    "peak_angle"
+  ]
+}

@@ -25,7 +25,7 @@ TUNING_TO_ANGLE = {
 
 
 def repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+    return Path(__file__).resolve().parents[2]
 
 
 def peak_angle_from_tuning(tuning_type: object) -> int:
@@ -52,8 +52,9 @@ def silent_activity_hz(spike_times_by_trial: np.ndarray, silent_duration_s: floa
     return counts.sum(axis=0) / (trials_per_angle * silent_duration_s)
 
 
-def build_matrix(all_data: np.ndarray, timestamp_field: str, silent_duration_s: float) -> np.ndarray:
-    matrix = np.full((len(all_data), len(COLUMNS)), np.nan, dtype=float)
+
+def build_matrix(all_data: np.ndarray, all_data2: np.ndarray, timestamp_field: str, timestamp_field2: str, silent_duration_s: float) -> np.ndarray:
+    matrix = np.full((len(all_data) + len(all_data2), len(COLUMNS)), np.nan, dtype=float)
     for cell_idx, unit in enumerate(all_data):
         spike_times_by_trial = getattr(unit, timestamp_field)
         activity = silent_activity_hz(spike_times_by_trial, silent_duration_s)
@@ -61,6 +62,14 @@ def build_matrix(all_data: np.ndarray, timestamp_field: str, silent_duration_s: 
             raise ValueError(f"Cell {cell_idx} has {activity.shape[0]} angles, expected 4.")
         matrix[cell_idx, :4] = activity
         matrix[cell_idx, 4] = peak_angle_from_tuning(unit.tuning_type)
+
+    for cell_idx, unit in enumerate(all_data2):
+            spike_times_by_trial = getattr(unit, timestamp_field2)
+            activity = silent_activity_hz(spike_times_by_trial, silent_duration_s)
+            if activity.shape[0] != 4:
+                raise ValueError(f"Cell {cell_idx} in dataset2 has {activity.shape[0]} angles, expected 4.")
+            matrix[cell_idx + len(all_data), :4] = activity
+            matrix[cell_idx + len(all_data), 4] = peak_angle_from_tuning(unit.tuning_type)
     return matrix
 
 
@@ -79,7 +88,15 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=root / "Data" / "Data" / "all_units_info_with_polished_criteria_modified_perf.mat",
     )
+
+    parser.add_argument(
+            "--mat-path2",
+            type=Path,
+            default=root / "Data" / "Data" / "all_cluster_info_atten_modMartin_OliverCriterion.mat",
+    )
+
     parser.add_argument("--timestamp-field", default="ctrl_tar1_timestamps")
+    parser.add_argument("--timestamp-field2", default="passive_tar1_timestamps")
     parser.add_argument("--silent-duration-s", type=float, default=1.0)
     parser.add_argument("--out-npy", type=Path, default=root / "Archive" / "silent_activity_matrix.npy")
     parser.add_argument("--out-csv", type=Path, default=root / "Archive" / "silent_activity_matrix.csv")
@@ -90,7 +107,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     mat = loadmat(args.mat_path, variable_names=["all_data"], squeeze_me=True, struct_as_record=False)
-    matrix = build_matrix(mat["all_data"], args.timestamp_field, args.silent_duration_s)
+    mat2 = loadmat(args.mat_path2, variable_names=["all_data"], squeeze_me=True, struct_as_record=False)
+    matrix = build_matrix(mat["all_data"], mat2["all_data"], args.timestamp_field, args.timestamp_field2, args.silent_duration_s)
 
     args.out_npy.parent.mkdir(parents=True, exist_ok=True)
     np.save(args.out_npy, matrix)

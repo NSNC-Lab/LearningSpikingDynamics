@@ -1,0 +1,29 @@
+#!/bin/bash -l
+#$ -N grad_dir_compare
+#$ -cwd
+#$ -j y
+#$ -l h_rt=02:00:00
+#$ -pe omp 4
+#$ -l mem_per_core=8G
+#$ -l gpus=1
+
+set -Eeo pipefail
+trap 'rc=$?; echo "FAILED: line $LINENO, status $rc: $BASH_COMMAND" >&2' ERR
+
+PROJECT_ROOT="${SCC_PROJECT_ROOT:-${SGE_O_WORKDIR:-$PWD}}"
+cd "$PROJECT_ROOT"
+
+module purge
+module load miniconda
+module load academic-ml/spring-2026
+conda activate spring-2026-pyt
+
+export OMP_NUM_THREADS="${NSLOTS:-1}"
+export MKL_NUM_THREADS="${NSLOTS:-1}"
+export OPENBLAS_NUM_THREADS="${NSLOTS:-1}"
+export MPLBACKEND=Agg
+export PYTHONUNBUFFERED=1
+
+python -u Archive/gradient_direction_comparison/run_gradient_direction_comparison.py \
+  --cell 7 \
+  --device cuda
