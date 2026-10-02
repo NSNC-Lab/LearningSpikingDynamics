@@ -16,7 +16,7 @@ trap 'rc=$?; echo "FAILED: line $LINENO, status $rc: $BASH_COMMAND" >&2' ERR
 
 PROJECT_ROOT="${SCC_PROJECT_ROOT:-${SGE_O_WORKDIR:-$PWD}}"
 cd "$PROJECT_ROOT"
-test -f Archive/july1_local_eligibility_backup_2026-07-15/Main.py || { echo "Main.py was not found in $PROJECT_ROOT" >&2; exit 2; }
+test -f Archive/Three_Level_Comparison/Local_Estimates/Main.py || { echo "Main.py was not found in $PROJECT_ROOT" >&2; exit 2; }
 
 module purge
 module load miniconda
@@ -42,5 +42,5 @@ git rev-parse --short HEAD 2>/dev/null || true
 git status --short 2>/dev/null || true
 nvidia-smi
 python -u SCC/check_scc_environment.py
-python -u Archive/july1_local_eligibility_backup_2026-07-15/Main.py
+python -u Archive/Three_Level_Comparison/Local_Estimates/Main.py
 echo "Finished: $(date)"

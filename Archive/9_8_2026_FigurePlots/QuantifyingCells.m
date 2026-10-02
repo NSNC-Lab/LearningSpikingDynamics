@@ -6,14 +6,18 @@ addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEAS
 sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\tar2_test.mat';
 sim_location2 = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\all_inits_100_epochs_sub_batch_5_split.mat';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
-data_object = load(data_location);
+data_location2 = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_cluster_info_atten_modMartin_OliverCriterion.mat';
+data_object = load(data_location2);
 %sim_object = split_and_load_large_sim_object(sim_location);
 
-Data_Rasters = zeros([220,10,29801]);
-for k = 1:220
+data_length = length(data_object.all_data);
+
+Data_Rasters = zeros([data_length,10,29801]);
+for k = 1:data_length
     tuning = lower(char(string(data_object.all_data(k).tuning_type)));
     if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
-    spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+    %spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+    spikes = data_object.all_data(k).passive_tar1_timestamps(:,focus);
     for m = 1:10
         spike_trial = spikes{m};
         valid_spikes = round(spike_trial((spike_trial>0) & (spike_trial<2.9801))*10000);
@@ -31,10 +35,11 @@ psth_time = psth_bin_edges(1:end-1);   % plot each bin at its left edge
 
 re_vals = [];
 
-for k = 1:220
+for k = 1:data_length
     tuning = lower(char(string(data_object.all_data(k).tuning_type)));
     if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
-    spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+    %spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+    spikes = data_object.all_data(k).passive_tar1_timestamps(:,focus);
     data_times = [];
     for m = 1:10
         data_times = [data_times;spikes{m}];
@@ -51,9 +56,9 @@ end
 
 close all;
 
-for cell = 130
+for cell = 160%fliplr(141:211)
 
-    figure(Position=[0,0,800,700]);
+    figure(Position=[2500,200,800,700]);
     outer = tiledlayout(3,1, 'TileSpacing','none','Padding','none');
     ax(1) = nexttile(outer);
     Raster_matrix = squeeze(Data_Rasters(cell,:,:));
@@ -70,7 +75,7 @@ for cell = 130
     yticklabels('')
     yticks([])
     xticks(0:0.5:time(end))
-    sgtitle(['Cell: ',num2str(cell),' RE = ',num2str(re_vals(cell))])
+    sgtitle(['Cell: ',num2str(cell+220),' RE = ',num2str(re_vals(cell))])
 
 
     for a = ax([1,2,3])

@@ -33,7 +33,6 @@ def run_odes(args, states, pre_processed_spike_object, pre_processed_rate_object
         
         cur_post_neuron_dynamic = states['neurons']['Dynamic'][k.split("_")[-1]]
         cur_post_neuron_static = states['neurons']['Static'][k.split("_")[-1]]
-
         
         cur_running_grads = states['synapses']['Running_grads'][k]
         cur_running_grads['total_running_contribution'][:,:,:,-2] = cur_running_grads['total_running_contribution'][:,:,:,-1]

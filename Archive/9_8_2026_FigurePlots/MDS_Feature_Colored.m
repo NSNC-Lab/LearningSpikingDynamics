@@ -5,22 +5,31 @@
 close all; clear all;
 InitializecSPIKE;
 addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
-sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\rasters_epoch_135.mat';
+sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\200_double_data_set.mat';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
+data_location2 = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_cluster_info_atten_modMartin_OliverCriterion.mat';
 data_object = load(data_location);
+data_object2 = load(data_location2);
 sim_object = split_and_load_large_sim_object(sim_location);
 Distance_measure = 'RMSE';
 
+
+%Get Sizes
+sizes = size(sim_object.output);
+cell_size = sizes(3);
+
 %Do selection
 Choose_by = 'SPIKE';
-selection = calculate_selction(Choose_by, sim_object, data_object);
+selection = calculate_selction(Choose_by, sim_object, data_object,data_object2,cell_size);
 
 %Choices
 %good_cells
 %possibly_usable_cells
 %all_cells
-cell_choice = "all_cells";
+cell_choice = "good_cells";
 Good_Cells = [7,19,30,33,52,53,61,68,69,77,96,102,106,108,124,126,127,128,129,130,132,133,149,186,200,210,218];
+Good_Cells2 = [225,226,227,231,235,237,240,242,244,251,254,257,262,270,272,273,274,275,279,290,297,305,313,317,318,319,322,323,324,325,326,327,337,350,354, 361,362,363,364,380,386,388,400,403,407,410,411,413,422,429];
+Good_Cells = [Good_Cells,Good_Cells2];
 Possibly_usable_cells = [220,217,215,208,203,202,191,189,175,165,150,143,142,141,139,136,134,119,113,110,103,101,97,95,90,89,84,79,78,76,75,74,71,70,63,62,56,50,49,44,38,32,28,25,22,14,6];
 Possibly_usable_cells = [Possibly_usable_cells,Good_Cells];
 
@@ -31,11 +40,11 @@ elseif strcmp(cell_choice, 'possibly_usable_cells')
     choice_cells = Possibly_usable_cells;
 
 elseif strcmp(cell_choice, 'all_cells')
-    choice_cells = 1:220;
+    choice_cells = 1:cell_size;
 end
 
 %Calculate MDS positions from joint Projection
-dis_mat = calc_dis(Distance_measure,data_object,sim_object,selection,Good_Cells,Possibly_usable_cells,cell_choice); 
+dis_mat = calc_dis(Distance_measure,data_object,data_object2,sim_object,selection,Good_Cells,Possibly_usable_cells,cell_choice,cell_size); 
 [Y,stress] = mdscale(dis_mat,2, 'criterion','metricsstress');
 
 %Calculate feature distributions
@@ -49,9 +58,17 @@ re_data = [];
 re_sim = [];
 for k = choice_cells
     %Calculate Data spikes beforehand for efficiency
-    tuning = lower(char(string(data_object.all_data(k).tuning_type)));
-    if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
-    spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+    if k > 220
+        tuning = lower(char(string(data_object2.all_data(k-220).tuning_type)));
+        if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+        spikes = data_object2.all_data(k-220).passive_tar1_timestamps(:,focus);
+
+    else
+        tuning = lower(char(string(data_object.all_data(k).tuning_type)));
+        if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+        spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+
+    end
 
     fr_data = [fr_data, calc_fr_data(spikes)];
     fr_sim = [fr_sim,calc_fr_sim(sim_object,k, selection)];
@@ -64,8 +81,10 @@ for k = choice_cells
 end
 
 %%
-xlim_val = -2;
-xlim_val2 = 6;
+xlim_val = -5;
+xlim_val2 = 5;
+ylim_val = -3;
+ylim_val2 = 5;
 
 close all
 %Plot
@@ -73,51 +92,67 @@ figure(Position=[100,100,1500,750]);
 t = tiledlayout(2,4,'TileSpacing','compact','Padding','compact');
 ax(1) = nexttile;
 scatter(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),20,fr_data,'filled');
+%scatter(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),20,"black",'filled');
+%create_contour_pspace(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),fr_data,xlim_val,xlim_val2,ylim_val,ylim_val2); hold on;
 title('Firing rate')
 ylabel('Data','FontWeight','bold')
 xlim([xlim_val,xlim_val2])
-ylim([-4,4])
+ylim([ylim_val,ylim_val2])
 colorbar;
 colormap('parula')
 ax(2) = nexttile;
 scatter(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),20,re_data,'filled');
-title('Reliability')
+%scatter(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),20,"black",'filled');
+%create_contour_pspace(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),re_data,xlim_val,xlim_val2,ylim_val,ylim_val2); hold on;
+title('Spike Distance')
 xlim([xlim_val,xlim_val2])
-ylim([-4,4])
+ylim([ylim_val,ylim_val2])
 colorbar;
 ax(3) = nexttile;
 scatter(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),20,ls_data,'filled');
+%scatter(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),20,"black",'filled');
+%create_contour_pspace(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),ls_data,xlim_val,xlim_val2,ylim_val,ylim_val2); hold on;
 title('Lifetime sparseness')
 xlim([xlim_val,xlim_val2])
-ylim([-4,4])
+ylim([ylim_val,ylim_val2])
 colorbar;
 ax(4) = nexttile;
 scatter(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),20,cv_data,'filled');
+%scatter(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),20,"black",'filled');
+%create_contour_pspace(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),cv_data,xlim_val,xlim_val2,ylim_val,ylim_val2); hold on;
 title('CV')
 xlim([xlim_val,xlim_val2])
-ylim([-4,4])
+ylim([ylim_val,ylim_val2])
 colorbar;
 
 ax(5) = nexttile;
 scatter(Y(length(Y)/2+1:length(Y),1),Y(length(Y)/2+1:length(Y),2),20,fr_sim,'filled');
+%scatter(Y(length(Y)/2+1:length(Y),1),Y(length(Y)/2+1:length(Y),2),20,'black','filled');
+%create_contour_pspace(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),fr_sim,xlim_val,xlim_val2,ylim_val,ylim_val2); hold on;
 ylabel('Model','FontWeight','bold')
 xlim([xlim_val,xlim_val2])
-ylim([-4,4])
+ylim([ylim_val,ylim_val2])
 colorbar;
 ax(6) = nexttile;
 scatter(Y(length(Y)/2+1:length(Y),1),Y(length(Y)/2+1:length(Y),2),20,re_sim,'filled');
+%scatter(Y(length(Y)/2+1:length(Y),1),Y(length(Y)/2+1:length(Y),2),20,'black','filled');
+%create_contour_pspace(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),re_sim,xlim_val,xlim_val2,ylim_val,ylim_val2); hold on;
 xlim([xlim_val,xlim_val2])
-ylim([-4,4])
+ylim([ylim_val,ylim_val2])
 colorbar;
 ax(7) = nexttile;
 scatter(Y(length(Y)/2+1:length(Y),1),Y(length(Y)/2+1:length(Y),2),20,ls_sim,'filled');
+%scatter(Y(length(Y)/2+1:length(Y),1),Y(length(Y)/2+1:length(Y),2),20,'black','filled');
+%create_contour_pspace(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),ls_sim,xlim_val,xlim_val2,ylim_val,ylim_val2); hold on;
 xlim([xlim_val,xlim_val2])
-ylim([-4,4])
+ylim([ylim_val,ylim_val2])
 colorbar;
 ax(8) = nexttile;
 scatter(Y(length(Y)/2+1:length(Y),1),Y(length(Y)/2+1:length(Y),2),20,cv_sim,'filled');
+%scatter(Y(length(Y)/2+1:length(Y),1),Y(length(Y)/2+1:length(Y),2),20,'black','filled');
+%create_contour_pspace(Y(1:length(Y)/2,1),Y(1:length(Y)/2,2),cv_sim,xlim_val,xlim_val2,ylim_val,ylim_val2); hold on;
 xlim([xlim_val,xlim_val2])
-ylim([-4,4])
+ylim([ylim_val,ylim_val2])
 colorbar;
 sgtitle(t,'MDS projections colored by features')
 
@@ -150,7 +185,7 @@ sgtitle(t,'MDS projections colored by features')
 %     'Position',[0 0 650 70]);
 
 
-function dissimilarity_matrix = calc_dis(Distance_measure,data_object,sim_object,selection,Good_Cells,Possibly_usuable_cells,cell_choice)
+function dissimilarity_matrix = calc_dis(Distance_measure,data_object,data_object2,sim_object,selection,Good_Cells,Possibly_usuable_cells,cell_choice,cell_size)
     
 
     if strcmp(cell_choice, 'good_cells')
@@ -158,7 +193,7 @@ function dissimilarity_matrix = calc_dis(Distance_measure,data_object,sim_object
     elseif strcmp(cell_choice, 'possibly_usable_cells')
         choices = Possibly_usuable_cells;
     elseif strcmp(cell_choice, 'all_cells')
-        choices = 1:220;
+        choices = 1:cell_size;
     else
         disp('pick valid choice')
     end
@@ -169,9 +204,17 @@ function dissimilarity_matrix = calc_dis(Distance_measure,data_object,sim_object
         data_PSTHs = [];
 
         for k = choices
-            tuning = lower(char(string(data_object.all_data(k).tuning_type)));
-            if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
-            spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+            if k > 220
+                tuning = lower(char(string(data_object2.all_data(k-220).tuning_type)));
+                if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+                spikes = data_object2.all_data(k-220).passive_tar1_timestamps(:,focus);
+        
+            else
+                tuning = lower(char(string(data_object.all_data(k).tuning_type)));
+                if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+                spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+
+            end
             
             for z = 1:10
                 spikes{z+10} = find(sim_object.output(selection(k),z,k,:))/10000;
@@ -207,7 +250,7 @@ function dissimilarity_matrix = calc_dis(Distance_measure,data_object,sim_object
 end
 
 
-function selection = calculate_selction(choose_by, sim_object, data_object)
+function selection = calculate_selction(choose_by, sim_object, data_object, data_object2, cell_size)
     
     output_size = size(sim_object.output);
     n_batches = output_size(1);
@@ -216,7 +259,7 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
     if strcmp(choose_by, 'none')
         selection = repmat(1:12,220,1);
     elseif strcmp(choose_by, 'SSE')
-        for k = 1:220
+        for k = 1:cell_size
             tuning = lower(char(string(data_object.all_data(k).tuning_type)));
             if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
@@ -226,8 +269,8 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
                     spikes{z+10} = find(sim_object.output(m,z,k,:))/10000;
                 end
                 data_times = [];
-                for m = 1:10
-                    data_times = [data_times;spikes{m}];
+                for qq = 1:10
+                    data_times = [data_times;spikes{qq}];
                 end
                 sim_times = [];
                 for d = 11:20
@@ -244,7 +287,7 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
 
     elseif strcmp(choose_by, 'NCCC')
 
-        for k = 1:220
+        for k = 1:cell_size
             tuning = lower(char(string(data_object.all_data(k).tuning_type)));
             if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
@@ -294,12 +337,26 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
             selection = [selection, idx];
         end
     elseif strcmp(choose_by, 'SPIKE')
-        for k = 1:220
+        for k = 1:cell_size
+
+           
+
             distances = [];
             for m = 1:n_batches
-                tuning = lower(char(string(data_object.all_data(k).tuning_type)));
-                if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
-                spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+                
+                if k > 220
+                    tuning = lower(char(string(data_object2.all_data(k-220).tuning_type)));
+                    if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+                    spikes = data_object2.all_data(k-220).passive_tar1_timestamps(:,focus);
+            
+                else
+                    tuning = lower(char(string(data_object.all_data(k).tuning_type)));
+                    if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+                    spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+    
+                end
+
+                
                 for z = 1:10
                     spikes{z+10} = find(sim_object.output(m,z,k,:))/10000;
                 end
@@ -312,7 +369,7 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
             selection = [selection, idx];
         end
     elseif strcmp(choose_by, 'CV')
-        for k = 1:220
+        for k = 1:cell_size
             tuning = lower(char(string(data_object.all_data(k).tuning_type)));
             if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
@@ -362,7 +419,7 @@ function re_val = calc_re_data(spikes)
     spikes = cellfun(@transpose, spikes, 'UniformOutput', false)';
     STS = SpikeTrainSet(spikes,0,3);
     dist_mat = STS.SPIKEdistanceMatrix();
-    re_val = 1 - mean(dist_mat(triu(true(size(dist_mat)),1)),'omitnan');
+    re_val = mean(dist_mat(triu(true(size(dist_mat)),1)),'omitnan');
 
 end
 
@@ -417,7 +474,7 @@ function re_val = calc_re_sim(sim_object,k, selection)
         spikes = cellfun(@transpose, spikes, 'UniformOutput', false);
         STS = SpikeTrainSet(spikes,0,3);
         dist_mat = STS.SPIKEdistanceMatrix();
-        re_vals = [re_vals,1 - mean(dist_mat(triu(true(size(dist_mat)),1)),'omitnan')];
+        re_vals = [re_vals, mean(dist_mat(triu(true(size(dist_mat)),1)),'omitnan')];
 
     end
 
@@ -529,4 +586,51 @@ function spike_times = calc_spike_times(spike_object,data_location,data_cell,epo
         spike_times{k} = transpose(spike_times{k});
     end
     spike_times = transpose(spike_times);
+end
+
+
+function create_contour_pspace(x,y,weight,xlim_val,xlim_val2,ylim_val,ylim_val2)
+    ax = gca;
+    scatter_clim = clim(ax);
+
+    x = x(:);
+    y = y(:);
+    weight = weight(:);
+    n_bins = 100;
+
+    x_edges = linspace(xlim_val,xlim_val2,n_bins+1);
+    y_edges = linspace(ylim_val,ylim_val2,n_bins+1);
+    x_centers = x_edges(1:end-1) + diff(x_edges)/2;
+    y_centers = y_edges(1:end-1) + diff(y_edges)/2;
+
+    x_bin = discretize(x,x_edges);
+    y_bin = discretize(y,y_edges);
+    valid = isfinite(weight) & ~isnan(x_bin) & ~isnan(y_bin);
+
+    weighted_sum = accumarray([y_bin(valid),x_bin(valid)],weight(valid), ...
+        [n_bins,n_bins],@sum,0);
+    sample_count = accumarray([y_bin(valid),x_bin(valid)],1, ...
+        [n_bins,n_bins],@sum,0);
+    
+    kernel_gran = 20;
+    std_val = 4;
+
+    kernel_axis = -kernel_gran:kernel_gran;
+    [kernel_x,kernel_y] = meshgrid(kernel_axis,kernel_axis);
+    gaussian_kernel = exp(-(kernel_x.^2 + kernel_y.^2)/(2*std_val^2));
+    gaussian_kernel = gaussian_kernel/sum(gaussian_kernel,'all');
+
+    smooth_sum = conv2(weighted_sum,gaussian_kernel,"same");
+    smooth_count = conv2(sample_count,gaussian_kernel,"same");
+    smooth_weight = smooth_sum./smooth_count;
+    smooth_weight(smooth_count < 1e-6) = NaN;
+
+    hold(ax,'on')
+    h = imagesc(ax,x_centers,y_centers,smooth_weight);
+    set(ax,'YDir','normal')
+    h.AlphaData = 10*min(smooth_count/max(smooth_count,[],'all'),1);
+    uistack(h,'bottom')
+
+    % Prevent the image CData from changing the scatter's color mapping.
+    %clim(ax,scatter_clim)
 end

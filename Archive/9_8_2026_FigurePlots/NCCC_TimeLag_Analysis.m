@@ -7,9 +7,11 @@ script_dir = fileparts(mfilename('fullpath'));
 if ~isempty(script_dir); addpath(script_dir); end
 InitializecSPIKE;
 addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
-sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\200_epoch_Eprop_Subbatch_8.mat';
+sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\200_double_data_set.mat';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
+data_location2 = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_cluster_info_atten_modMartin_OliverCriterion.mat';
 data_object = load(data_location);
+data_object2 = load(data_location2);
 sim_object = split_and_load_large_sim_object(sim_location);
 %Method by which to choose the simulation target
 % none -- use all batches in the distrubutions
@@ -18,9 +20,17 @@ sim_object = split_and_load_large_sim_object(sim_location);
 % CV -- choose by CV
 % NCCC -- choose by noise corrected prediction correlation
 
-%Do selection
+%Get Sizes
+sizes = size(sim_object.output);
+cell_size = sizes(3);
+
+%Distributions
+% 1. Noise corrected split half correlation
+% 2. Firing Rate
+% 3. CV
 Choose_by = 'SPIKE';
-selection = calculate_selction(Choose_by, sim_object, data_object);
+selection = calculate_selction(Choose_by, sim_object, data_object,data_object2,cell_size);
+
 
 
 %%
@@ -29,8 +39,10 @@ selection = calculate_selction(Choose_by, sim_object, data_object);
 %good_cells
 %possibly_usable_cells
 %all_cells
-cell_choice = "all_cells";
+cell_choice = "good_cells";
 Good_Cells = [7,19,30,33,52,53,61,68,69,77,96,102,106,108,124,126,127,128,129,130,132,133,149,186,200,210,218];
+Good_Cells2 = [225,226,227,231,235,237,240,242,244,251,254,257,262,270,272,273,274,275,279,290,297,305,313,317,318,319,322,323,324,325,326,327,337,350,354, 361,362,363,364,380,386,388,400,403,407,410,411,413,422,429];
+Good_Cells = [Good_Cells,Good_Cells2];
 Possibly_usable_cells = [220,217,215,208,203,202,191,189,175,165,150,143,142,141,139,136,134,119,113,110,103,101,97,95,90,89,84,79,78,76,75,74,71,70,63,62,56,50,49,44,38,32,28,25,22,14,6];
 Possibly_usable_cells = [Possibly_usable_cells,Good_Cells];
 
@@ -43,7 +55,7 @@ elseif strcmp(cell_choice, 'possibly_usable_cells')
     nbins = 20;
 
 elseif strcmp(cell_choice, 'all_cells')
-    choice_cells = 1:220;
+    choice_cells = 1:cell_size;
     nbins = 50;
 end
 
@@ -54,9 +66,17 @@ mean_prediction_correlations = nan(50, length(choice_cells));
 max_lag = 50;
 
 for k = 1:length(choice_cells)
-    tuning = lower(char(string(data_object.all_data(choice_cells(k)).tuning_type))) ;
-    if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
-    spikes = data_object.all_data(choice_cells(k)).ctrl_tar1_timestamps(:,focus);
+    if choice_cells(k) > 220
+        tuning = lower(char(string(data_object2.all_data(choice_cells(k)-220).tuning_type)));
+        if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+        spikes = data_object2.all_data(choice_cells(k)-220).passive_tar1_timestamps(:,focus);
+
+    else
+        tuning = lower(char(string(data_object.all_data(choice_cells(k)).tuning_type)));
+        if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+        spikes = data_object.all_data(choice_cells(k)).ctrl_tar1_timestamps(:,focus);
+
+    end
     
     %for m = 1:n_batches
     for z = 1:10
@@ -105,8 +125,41 @@ end
 
 
 
-figure;
+% figure;
+% zero_NCCCs = NCCCs(1,:);
+% histogram(zero_NCCCs(isfinite(zero_NCCCs)),20); hold on
+% histogram(best_NCCCs(isfinite(best_NCCCs)),65); hold on
+% xlabel('Noise-corrected prediction correlation')
+% ylabel('Cell count')
+% title(sprintf('Valid cells: %d/%d', nnz(isfinite(best_NCCCs)), numel(best_NCCCs)))
+% xlim([-0.75,1.5])
+
 zero_NCCCs = NCCCs(1,:);
+
+figure;
+histogram(best_lags);
+title('best lags')
+
+%%
+cumulative_dist1 = [];
+cumulative_dist2 = [];
+thresholds = -1:0.01:1.5;
+for k = thresholds
+    cumulative_dist1 = [cumulative_dist1, length(zero_NCCCs(zero_NCCCs<k))/length(zero_NCCCs)];
+    cumulative_dist2 = [cumulative_dist2, length(zero_NCCCs(best_NCCCs<k))/length(best_NCCCs)];
+end
+figure(Position=[100,100,400,900]);
+
+subplot(3,1,1);
+plot(thresholds,cumulative_dist1,'LineWidth',1); hold on
+
+plot(thresholds,cumulative_dist2,'LineWidth',1)
+legend({'Zero lag','Best lag'})
+ylabel('Probability')
+xlabel('Threshold')
+xlim([-0.75,1.5])
+
+subplot(3,1,2);
 histogram(zero_NCCCs(isfinite(zero_NCCCs)),20); hold on
 histogram(best_NCCCs(isfinite(best_NCCCs)),65); hold on
 xlabel('Noise-corrected prediction correlation')
@@ -114,9 +167,10 @@ ylabel('Cell count')
 title(sprintf('Valid cells: %d/%d', nnz(isfinite(best_NCCCs)), numel(best_NCCCs)))
 xlim([-0.75,1.5])
 
-figure;
+subplot(3,1,3)
 histogram(best_lags);
 title('best lags')
+
 
 % 
 % num_nans = nnz(isnan(NCCCs));
@@ -178,7 +232,7 @@ title('best lags')
 % 
 % end
 
-function selection = calculate_selction(choose_by, sim_object, data_object)
+function selection = calculate_selction(choose_by, sim_object, data_object, data_object2, cell_size)
     
     output_size = size(sim_object.output);
     n_batches = output_size(1);
@@ -187,7 +241,7 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
     if strcmp(choose_by, 'none')
         selection = repmat(1:12,220,1);
     elseif strcmp(choose_by, 'SSE')
-        for k = 1:220
+        for k = 1:cell_size
             tuning = lower(char(string(data_object.all_data(k).tuning_type)));
             if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
@@ -215,12 +269,11 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
 
     elseif strcmp(choose_by, 'NCCC')
 
-        for k = 1:220
+        for k = 1:cell_size
             tuning = lower(char(string(data_object.all_data(k).tuning_type)));
             if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
-            NCCCs = nan(1, n_batches);
-            prediction_correlations = nan(1, n_batches);
+            NCCCs = [];
             for m = 1:n_batches
                 for z = 1:10
                     spikes{z+10} = find(sim_object.output(m,z,k,:))/10000;
@@ -228,9 +281,9 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
                 data_times = [];
                 ris = [];
                 bin_edges = (0:100:29799)/10000;
-                for qq = 1:10
-                    data_times = [data_times;spikes{qq}];
-                    ris = [ris;histcounts(spikes{qq},bin_edges)];
+                for m = 1:10
+                    data_times = [data_times;spikes{m}];
+                    ris = [ris;histcounts(spikes{m},bin_edges)];
                 end
                 
                 sim_times = [];
@@ -243,37 +296,49 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
                 data_PSTH = histcounts(data_times,bin_edges);
                 sim_PSTH = histcounts(sim_times,bin_edges);
                 
-                [NCCCs(m), ~, prediction_correlations(m)] = ...
-                    calculate_nccc_from_histograms(ris, sim_PSTH);
+                cor_vals = zeros([10, 10]);
+                for mm = 1:10
+                   for zz = 1:10
+                       corr_mat = corrcoef(ris(mm,:),ris(zz,:));
+                       cor_vals(mm,zz) = corr_mat(2,1);
+                   end
+                end
+                
+                TTRC = mean(cor_vals(triu(true(size(cor_vals)), 1)), 'omitnan');
+                
+                pred_cor = zeros([10, 1]);
+                for mm = 1:10
+                    corr_mat = corr(ris(mm,:),sim_PSTH);
+                    pred_cor(mm) = corr(ris(mm,:)', sim_PSTH','Rows', 'complete');
+                end
+
+                NCCCs = [NCCCs, (1/sqrt(TTRC))*mean(pred_cor)];
 
             end
-            valid = find(isfinite(NCCCs));
-            if ~isempty(valid)
-                [~, local_idx] = max(NCCCs(valid));
-                idx = valid(local_idx);
-            else
-                % TTRC is a cell-specific scaling factor, so uncorrected
-                % prediction correlation preserves the batch ranking when
-                % the reliability correction itself is undefined.
-                valid = find(isfinite(prediction_correlations));
-                if ~isempty(valid)
-                    [~, local_idx] = max(prediction_correlations(valid));
-                    idx = valid(local_idx);
-                else
-                    idx = 1;
-                    warning('NCCC:NoValidCorrelation', ...
-                        'Cell %d has no valid NCCC or prediction correlation; using batch 1.', k);
-                end
-            end
+            [val,idx] = max(NCCCs);
             selection = [selection, idx];
         end
     elseif strcmp(choose_by, 'SPIKE')
-        for k = 1:220
+        for k = 1:cell_size
+
+           
+
             distances = [];
             for m = 1:n_batches
-                tuning = lower(char(string(data_object.all_data(k).tuning_type)));
-                if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
-                spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+                
+                if k > 220
+                    tuning = lower(char(string(data_object2.all_data(k-220).tuning_type)));
+                    if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+                    spikes = data_object2.all_data(k-220).passive_tar1_timestamps(:,focus);
+            
+                else
+                    tuning = lower(char(string(data_object.all_data(k).tuning_type)));
+                    if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
+                    spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
+    
+                end
+
+                
                 for z = 1:10
                     spikes{z+10} = find(sim_object.output(m,z,k,:))/10000;
                 end
@@ -286,7 +351,7 @@ function selection = calculate_selction(choose_by, sim_object, data_object)
             selection = [selection, idx];
         end
     elseif strcmp(choose_by, 'CV')
-        for k = 1:220
+        for k = 1:cell_size
             tuning = lower(char(string(data_object.all_data(k).tuning_type)));
             if contains(tuning,'contra') focus = 1; elseif contains(tuning,'45') focus = 2; elseif contains(tuning,'center') focus = 3; elseif contains(tuning,'ipsi') focus = 4; end
             spikes = data_object.all_data(k).ctrl_tar1_timestamps(:,focus);
