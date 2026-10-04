@@ -128,6 +128,7 @@ def run_odes(args, states, pre_processed_spike_object,rate_object,timestep):
     on_dynamic = states['neurons']["Dynamic"]['on']
     off_static = states['neurons']["Static"]['off']
     off_dynamic = states['neurons']["Dynamic"]['off']
+    ron_dynamic = states['neurons']["Dynamic"]['ron']
 
     states['neurons']["Dynamic"]['strf_gain_on']["epsilon_v"][:,:,:,-2] = states['neurons']["Dynamic"]['strf_gain_on']["epsilon_v"][:,:,:,-1]
     states['neurons']["Dynamic"]['strf_gain_off']["epsilon_v"][:,:,:,-2] = states['neurons']["Dynamic"]['strf_gain_off']["epsilon_v"][:,:,:,-1]
@@ -146,6 +147,12 @@ def run_odes(args, states, pre_processed_spike_object,rate_object,timestep):
     states['neurons']["Dynamic"]['strf_alpha_off']["epsilon_v"][:,:,:,-1] = off_dynamic['Jvv'][:,:,:,-1]*states['neurons']["Dynamic"]['strf_alpha_off']['epsilon_v'][:,:,:,-1] + off_dynamic['Jva'][:,:,:,-1]*states['neurons']["Dynamic"]['strf_alpha_off']['epsilon_a'][:,:,:,-1] - (args['simulation']['dt']/1000)*(args['simulation']['dt']/off_static['tau'])*off_static['R']*off_static['g_postIC']*rate_object['offset_rate_deriv'][timestep,:,None,:]*(off_dynamic['V'][:,:,:,-2]-off_static['E_exc'])
     states['neurons']["Dynamic"]['strf_alpha_on']["epsilon_a"][:,:,:,-1] = on_dynamic['Jaa'][:,:,:,-1]*states['neurons']["Dynamic"]['strf_alpha_on']['epsilon_a'][:,:,:,-1]
     states['neurons']["Dynamic"]['strf_alpha_off']["epsilon_a"][:,:,:,-1] = off_dynamic['Jaa'][:,:,:,-1]*states['neurons']["Dynamic"]['strf_alpha_off']['epsilon_a'][:,:,:,-1]
+
+    states['neurons']["Dynamic"]['adaptation_ron']["epsilon_v"][:,:,:,-2] = states['neurons']["Dynamic"]['adaptation_ron']["epsilon_v"][:,:,:,-1]
+    states['neurons']["Dynamic"]['adaptation_ron']["epsilon_a"][:,:,:,-2] = states['neurons']["Dynamic"]['adaptation_ron']["epsilon_a"][:,:,:,-1]
+
+    states['neurons']["Dynamic"]['adaptation_ron']["epsilon_v"][:,:,:,-1] = ron_dynamic['Jvv'][:,:,:,-1]*states['neurons']["Dynamic"]['adaptation_ron']["epsilon_v"][:,:,:,-1] + ron_dynamic['Jva'][:,:,:,-1]*states['neurons']["Dynamic"]['adaptation_ron']["epsilon_a"][:,:,:,-1] 
+    states['neurons']["Dynamic"]['adaptation_ron']["epsilon_a"][:,:,:,-1] = ron_dynamic['Jaa'][:,:,:,-1]*states['neurons']["Dynamic"]['adaptation_ron']["epsilon_a"][:,:,:,-1]
 
     return states
 

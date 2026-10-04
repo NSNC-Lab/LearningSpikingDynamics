@@ -56,6 +56,12 @@ def build_network(args, device, params):
     neuron_init["Dynamic"]['strf_gain_off']["et"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
     neuron_init["Dynamic"]['strf_alpha_off']["et"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
 
+
+    neuron_init["Dynamic"]['adaptation_ron'] = {}
+    neuron_init["Dynamic"]['adaptation_ron']["epsilon_v"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+    neuron_init["Dynamic"]['adaptation_ron']["epsilon_a"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+    neuron_init["Dynamic"]['adaptation_ron']["et"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+
     return {"neurons": neuron_init, "synapses": synapase_init}
 
 def declare_neuron_properties(args, device, params, this_neuron_init, name, C = 0.1, g_L = 1/200, E_L = -65, t_ref = 0, E_k = -80, tau_ad = 100, g_inc = 0.0003, Itonic = 0 , V_thresh = -47, V_reset = -54, g_postIC = 0.17, E_exc = 0, nSYN = 0.015, noise_E_exc = 0, tauR_N = 0.7, tauD_N = 1.5, noise = 0,output=0, input=0):

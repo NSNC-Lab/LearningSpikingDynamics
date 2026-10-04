@@ -7,11 +7,11 @@ def update_eligibility(args, states, rate_object, timestep):
     states['synapses']['Learnable']['on_ron']['gSYN_accum'] += torch.sum(states['synapses']['Dynamic']['on_ron']['et'][:,:,:,-1]*states['neurons']['Static']['ron']['psi'],dim=1)
     states['synapses']['Learnable']['off_ron']['gSYN_accum'] += torch.sum(states['synapses']['Dynamic']['off_ron']['et'][:,:,:,-1]*states['neurons']['Static']['ron']['psi'],dim=1)
     states['synapses']['Learnable']['sonoff_ron']['gSYN_accum'] += torch.sum(states['synapses']['Dynamic']['sonoff_ron']['et'][:,:,:,-1]*states['neurons']['Static']['ron']['psi'],dim=1)
+    states['neurons']['Learnable']['STRF_gain_accum'] += torch.sum(states['neurons']["Dynamic"]['strf_gain_on']["et"][:,:,:,-1]*states['neurons']['Static']['on']['psi'] + states['neurons']["Dynamic"]['strf_gain_off']["et"][:,:,:,-1]*states['neurons']['Static']['off']['psi'],dim=1)
+    states['neurons']['Learnable']['STRF_alpha_accum'] += torch.sum(states['neurons']["Dynamic"]['strf_alpha_on']["et"][:,:,:,-1]*states['neurons']['Static']['on']['psi'] + states['neurons']["Dynamic"]['strf_alpha_off']["et"][:,:,:,-1]*states['neurons']['Static']['off']['psi'],dim=1)
+    states['neurons']['Learnable']['ron']["output_ad_accum"] += torch.sum(states['neurons']["Dynamic"]['adaptation_ron']["et"][:,:,:,-1]*states['neurons']['Static']['ron']['psi'],dim=1)
 
     states['neurons']['Learnable']['Bk'] = -states['synapses']['Learnable']['sonoff_ron']['gSYN']*(states['neurons']['Static']['ron']['V_thresh']-states['synapses']['Static']['sonoff_ron']['ESYN'])
-
-    states['neurons']['Learnable']['STRF_gain_accum'] = torch.sum(states['neurons']["Dynamic"]['strf_gain_on']["et"][:,:,:,-1]*states['neurons']['Static']['on']['psi'] + states['neurons']["Dynamic"]['strf_gain_off']["et"][:,:,:,-1]*states['neurons']['Static']['off']['psi'],dim=1)
-    states['neurons']['Learnable']['STRF_alpha_accum'] = torch.sum(states['neurons']["Dynamic"]['strf_alpha_on']["et"][:,:,:,-1]*states['neurons']['Static']['on']['psi'] + states['neurons']["Dynamic"]['strf_alpha_off']["et"][:,:,:,-1]*states['neurons']['Static']['off']['psi'],dim=1)
 
     
 

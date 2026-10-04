@@ -21,6 +21,11 @@ def reset_dyanmics(states,args,device):
     states["neurons"]["Dynamic"]['strf_alpha_on']["et"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
     states["neurons"]["Dynamic"]['strf_gain_off']["et"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
     states["neurons"]["Dynamic"]['strf_alpha_off']["et"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+
+    states["neurons"]["Dynamic"]['adaptation_ron']["epsilon_v"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+    states["neurons"]["Dynamic"]['adaptation_ron']["epsilon_a"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+    states["neurons"]["Dynamic"]['adaptation_ron']["et"] = torch.zeros((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32)
+    
     
     for name in list(states["neurons"]["Static"].keys()):
         states["neurons"]["Dynamic"][name]["V"] = torch.ones((args['simulation']['batch_size'],10,len(args['simulation']['cell_targets']),2), device=device, dtype=torch.float32) * states["neurons"]["Static"][name]["E_L"]
