@@ -3,7 +3,7 @@ script_dir = fileparts(mfilename('fullpath'));
 if ~isempty(script_dir); addpath(script_dir); end
 InitializecSPIKE;
 addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
-sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\200_double_data_set.mat';
+sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\300_our_method_ref_SEE_opt.mat';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
 data_location2 = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_cluster_info_atten_modMartin_OliverCriterion.mat';
 data_object = load(data_location);
@@ -128,9 +128,9 @@ end
 close all;
 %Plot
 %Label a cell
-Labeled_cell = 7;
-Labeled_cell2 = 102;
-Labeled_cell3 = 61;
+Labeled_cell = 290; %7
+Labeled_cell2 = 257; %102
+Labeled_cell3 = 361; %61 
 
 ic1 = find(choice_cells == Labeled_cell);
 ic2 = find(choice_cells == Labeled_cell2);

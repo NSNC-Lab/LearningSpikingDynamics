@@ -98,8 +98,10 @@ def calculate_CV_loss(states,gt_data,args,timestep):
                 loss = (sim_cv - data_cv)**2
                 states["neurons"]["Dynamic"]['ron']['mean_CV_loss'] += loss
 
+                stationary_part_of_the_cv_deriv = 1/(torch.std(torch.cat(isi_holder_data).to(torch.float32))*len(torch.cat(isi_holder_data).to(torch.float32))*torch.mean(torch.cat(isi_holder_data).to(torch.float32)))
+
                 lamda2 = 2
-                gradient[k,m] = 2*(sim_cv - data_cv)*lamda2
+                gradient[k,m] = 2*(sim_cv - data_cv)*lamda2*stationary_part_of_the_cv_deriv
 
     return {'loss': loss, 'gradient': gradient}    
 

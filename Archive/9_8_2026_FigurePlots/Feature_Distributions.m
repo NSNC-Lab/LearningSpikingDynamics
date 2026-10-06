@@ -4,7 +4,7 @@ if ~isempty(script_dir); addpath(script_dir); end
 addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE\cSPIKEmex")
 addpath("C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\SPIKY_SPIKEMEASURE\cSPIKE\cSPIKE")
 InitializecSPIKE;
-sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\300_our_method_ref_SEE_opt.mat';
+sim_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\200_our_method_early_epoch.mat';
 data_location = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_units_info_with_polished_criteria_modified_perf.mat';
 data_location2 = 'C:\Users\ipboy\Documents\GitHub\LearningSpikingDynamics\Data\Data\all_cluster_info_atten_modMartin_OliverCriterion.mat';
 data_object = load(data_location);
@@ -128,7 +128,7 @@ end
 
 %Figure 3 Plot (Combined, currently choosing by SPIKE-distance)
 
-plot_fig_3(fr_data,fr_sim,cv_data,cv_sim,ls_data,ls_sim,re_data,re_sim,choose_by,nbins)
+plot_fig_3(fr_data,fr_sim,cv_data,cv_sim,ls_data,ls_sim,re_data,re_sim,Choose_by,nbins)
 
 %dual_plot_reliability(d1_data,d2_data,s1_data,s2_data,choose_by)
 
