@@ -41,10 +41,10 @@ def run_adam(states, args, lrs):
     for val,k in enumerate(list(states["synapses"]["Static"].keys())):
         states["synapses"]["Learnable"][k]["gSYN"] = states["synapses"]["Learnable"][k]["gSYN"] - (lrs[f'{k}_gSYN']*m_hat[:,:,val+3])/(torch.sqrt(v_hat[:,:,val+3]) + eps)
 
-    states["neurons"]["Learnable"]["ron"]["abs_ref"] = states["neurons"]["Learnable"]["ron"]["abs_ref"] - (lrs['abs_ref']*m_hat[:,:,8])/(torch.sqrt(v_hat[:,:,8]) + eps)
-    states["neurons"]["Learnable"]["ron"]["rel_ref_a"] = states["neurons"]["Learnable"]["ron"]["rel_ref_a"] - (lrs['rel_ref_a']*m_hat[:,:,9])/(torch.sqrt(v_hat[:,:,9]) + eps)
-    states["neurons"]["Learnable"]["ron"]["rel_ref_b"] = states["neurons"]["Learnable"]["ron"]["rel_ref_b"] - (lrs['rel_ref_b']*m_hat[:,:,10])/(torch.sqrt(v_hat[:,:,10]) + eps)
-    states["neurons"]["Learnable"]["ron"]["rel_ref_c"] = states["neurons"]["Learnable"]["ron"]["rel_ref_c"] - (lrs['rel_ref_c']*m_hat[:,:,11])/(torch.sqrt(v_hat[:,:,11]) + eps)
+    states["neurons"]["Learnable"]["ron"]["abs_ref"] = states["neurons"]["Learnable"]["ron"]["abs_ref"] - 0*(lrs['abs_ref']*m_hat[:,:,8])/(torch.sqrt(v_hat[:,:,8]) + eps)
+    states["neurons"]["Learnable"]["ron"]["rel_ref_a"] = states["neurons"]["Learnable"]["ron"]["rel_ref_a"] - 0*(lrs['rel_ref_a']*m_hat[:,:,9])/(torch.sqrt(v_hat[:,:,9]) + eps)
+    states["neurons"]["Learnable"]["ron"]["rel_ref_b"] = states["neurons"]["Learnable"]["ron"]["rel_ref_b"] - 0*(lrs['rel_ref_b']*m_hat[:,:,10])/(torch.sqrt(v_hat[:,:,10]) + eps)
+    states["neurons"]["Learnable"]["ron"]["rel_ref_c"] = states["neurons"]["Learnable"]["ron"]["rel_ref_c"] - 0*(lrs['rel_ref_c']*m_hat[:,:,11])/(torch.sqrt(v_hat[:,:,11]) + eps)
 
     states["neurons"]["Learnable"]["STRF_gain"] = torch.clamp(states["neurons"]["Learnable"]["STRF_gain"],min=0)
     states["neurons"]["Learnable"]["STRF_alpha"] = torch.clamp(states["neurons"]["Learnable"]["STRF_alpha"],min=5,max=250)

@@ -80,8 +80,8 @@ def create_strf(args,states,f):
     strf['H'] = strf['H'] * states['neurons']['Learnable']['STRF_gain'][None,:,:]
 
     #Outer Product to get STRF
-    strf['w1']=strf['G'][:,None,None,None]*strf['H'][None,:,:,:]
-    strf_deriv['w1'] = strf['G'][:,None,None,None]*strf_deriv['H'][None,:,:,:] 
+    #strf['w1']=strf['G'][:,None,None,None]*strf['H'][None,:,:,:]
+    #strf_deriv['w1'] = strf['G'][:,None,None,None]*strf_deriv['H'][None,:,:,:] 
 
     return {'strf': strf, 'strf_deriv_alpha': strf_deriv_alpha, 'strf_deriv_gain': strf_deriv_gain}
 

@@ -5,25 +5,6 @@ def handle_loss(args, states, gt_data, timestep):
 
     if (timestep + 1) % args['simulation']['PSTH_granularity'] == 0 and timestep > 0:
         loss = calculate_loss(states, gt_data['psth_holder'], args, timestep)
-        lam = 5.0
-        width = args['simulation']['PSTH_granularity']
-        bins = args['simulation']['sim_len'] // width
-        output = states['neurons']['Dynamic']['ron']
-        if timestep + 1 == width:
-            output['rate_error'] = torch.zeros_like(loss['gradient'])
-        output['rate_error'] += loss['gradient'] / 2
-        # Preserve feedback-weighted eligibility before update_grad clears each bin.
-        learnable = states['neurons']['Learnable']
-        groups = [(states['synapses']['Learnable'][k], 1 if k.rsplit('_', 1)[-1] == 'ron' else learnable['Bk'])
-                  for k in states['synapses']['Static']] + [(learnable, 1), (learnable['ron'], 1)]
-        for group, feedback in groups:
-            for key in [k for k in group if k.endswith('_accum')]:
-                if timestep + 1 == width:
-                    group[key + '_rate'] = torch.zeros_like(group[key])
-                group[key + '_rate'] += group[key] * feedback
-                if timestep + 1 == bins * width:
-                    # L_rate = lam / bins * (sum of bin-count errors)**2.
-                    group[key[:-6] + '_grad'] += 2 * lam * output['rate_error'] / bins * group[key + '_rate']
         states = update_grad(states, loss['gradient'])
 
     return states

@@ -36,8 +36,8 @@ def run_optimization(args, params, gt_data):
             for timestep in range(args['simulation']['sim_len']):
 
                 states = ode_handler.run_odes(args, states, pre_processed_object['spks'],timestep)
+                states = Eligibility_handler.update_eligibility(args, states, pre_processed_object['onset_offset_rates'],timestep) #Moved to keep timing of eligbility calculations consistant across methodologies 10-7-2026
                 states = conditional_handler.run_conditionals(args, states,timestep)
-                states = Eligibility_handler.update_eligibility(args, states, pre_processed_object['onset_offset_rates'],timestep)
                 states = Loss_handler.handle_loss(args, states, gt_data,timestep)
 
             del pre_processed_object

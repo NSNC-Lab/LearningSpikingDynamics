@@ -28,7 +28,7 @@ def calculate_loss(states,gt_data,args,timestep):
     states["neurons"]["Dynamic"]['ron']['mean_sse_loss'] += torch.mean(loss.flatten()).cpu()
 
     #Associated SSE gradient
-    gradient = 2*(sim_psth - gt_data[None,:,target_index] - 0.5)
+    gradient = 2*(sim_psth - gt_data[None,:,target_index])
     return {'loss': loss, 'gradient': gradient}
 
 
